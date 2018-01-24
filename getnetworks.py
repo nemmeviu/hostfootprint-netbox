@@ -7,10 +7,11 @@ class NetboxAPI(object):
     NetboxAPI 
     '''
     def __init__(self):
-        try:
-            self.netbox_api_url = os.getenv('NETBOX_API_URL')
-        except:
+
+        if os.getenv('NETBOX_API_URL') == None
             self.netbox_api_url = 'http://localhost/api/'
+        else:
+            self.netbox_api_url = os.getenv('NETBOX_API_URL')            
 
         # path API URLs
         self.nb_api = {
@@ -48,6 +49,6 @@ class NetboxAPI(object):
 
 #/home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
 
-test = NetboxAPI()
+test = NetboxAPI(netbox_api_url)
 
 print(test.get_nb_api('prefix'))
