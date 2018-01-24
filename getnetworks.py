@@ -8,7 +8,7 @@ class NetboxAPI(object):
     '''
     def __init__(self):
 
-        if os.getenv('NETBOX_API_URL') == None
+        if os.getenv('NETBOX_API_URL') == None:
             self.netbox_api_url = 'http://localhost/api/'
         else:
             self.netbox_api_url = os.getenv('NETBOX_API_URL')            
@@ -38,17 +38,16 @@ class NetboxAPI(object):
 
         try:
             print(nb_target)
-            enprint('GET ' + nb_target)
             nb_result = http.request('GET', nb_target)
-        except MaxRetryError:
+        except:
             print('Fail to connect on: ' + nb_target)
             sys.exit(2)
 
         if nb_result.status == 200:
-            return(json_import(nb_result.data))
+            return(self.json_import(nb_result))
 
 #/home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
 
-test = NetboxAPI(netbox_api_url)
+test = NetboxAPI()
 
 print(test.get_nb_api('prefix'))
