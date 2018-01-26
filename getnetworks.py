@@ -36,9 +36,10 @@ class NetboxAPI(object):
         self.nb_api = {
             # RIR Aggregates            
             'rir': self.netbox_api_url + 'ipam/aggregates/',
-            # IPAM Prefixes
             'prefix': self.netbox_api_url + 'ipam/prefixes/',
-
+            'site': self.netbox_api_url + 'dcim/sites/',
+            'tenancy': self.netbox_api_url + 'tenancy/tenants/',
+            'regions': self.netbox_api_url + 'dcim/regions/'
         }
 
     def json_import(self, nb_obj):
@@ -52,11 +53,15 @@ class NetboxAPI(object):
         '''
         Make the api request
         '''
+
         if identity == 'all':
             nb_target = self.nb_api[nb_target]
         else:
-            nb_target = self.nb_api[nb_target] + '?parent=' + identity
+            if nb_target == 'prefix':
+                nb_target = self.nb_api[nb_target] + '?parent=' + identity
 
+            if nb_target in ('site', 'tenancy','regions'):
+                nb_target = self.nb_api[nb_target] + identity
 
         try:
             print(nb_target)
@@ -74,51 +79,64 @@ class NetboxAPI(object):
     def get_countries(self):
         list_country = []
         all_agreggates = self.get_nb_api('rir', 'all')
-        # print(countries)
 
         for agreggate in all_agreggates['results']:
-            print(agreggate)
             country = {
                 'network': agreggate['prefix'],
                 'country': agreggate['rir']['name']
             }
+
             list_country.append(country)
-        # print(list_country)
+
         return list_country
 
 
-
     def parse_prefixes(self):
-        all_prefixes = self.get_nb_api('prefix', 'all')
         countries = self.get_countries()
+        network_valid = []
+        network_invalid = []
 
-        prefixes_list = []
         for country in countries:
             network = country['network']
             network = network.replace('/','%2F')
             prefixes_by_country = self.get_nb_api('prefix', network)
 
-            for prefix in prefixes_by_country:
-                # print(prefix)
-            
-            print(json.dumps(prefixes_by_country, indent=4, sort_keys=True))
+            for prefix in prefixes_by_country['results']:
+                
+                site_id = prefix['site']['id']
+                site = self.get_nb_api('site', str(site_id))
+                site_address = site['physical_address']
+                site_city = site['region']['name']
+                tenant_id = site['tenant']['id']
 
-            # for prefix in prefixes_by_country:
-            #     # print(json.dumps(prefix , indent=4, sort_keys=True))
-            #     # print(country['country'])
-            #     prefixes_list.append(prefix)
-            #     print(json.dumps(prefix, indent=4, sort_keys=True))
+                tenant = self.get_nb_api('tenancy', str(tenant_id))
+                flag = tenant['name']
+                businessunit = tenant['group']['name']
 
+                # validate region
+                region_id = site['region']['id']
+                region = self.get_nb_api('regions', str(region_id))
+                site_country = region['parent']['name']
 
+                parsed = {
+                    'country' : country['country'],
+                    'network' : prefix['prefix'],
+                    'site_name' : prefix['site']['name'],
+                    'site_id' : site_id,
+                    'site_address': site_address,
+                    'site_city': site_city,
+                    'flag': flag,
+                    'businessunit':businessunit,
+                }
+                
+                if country['country'] == site_country:
+                    network_valid.append(parsed)
+                else:
+                    network_invalid.append(parsed)
 
-        # print(json.dumps(prefixes_list, indent=4, sort_keys=True))
-        # for prefix in all_prefixes:
-            
-
-
-        # print(countries)
-        
-
+        print(json.dumps(network_valid, indent=4, sort_keys=True))
+        print('===============================')            
+        print(json.dumps(network_invalid, indent=4, sort_keys=True))
 
 
 #/home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
@@ -126,4 +144,4 @@ class NetboxAPI(object):
 test = NetboxAPI()
 
 # print(test.get_nb_api('prefix'))
-print(test.parse_prefixes())
+test.parse_prefixes()
