@@ -102,37 +102,44 @@ class NetboxAPI(object):
             prefixes_by_country = self.get_nb_api('prefix', network)
 
             for prefix in prefixes_by_country['results']:
-                
-                site_id = prefix['site']['id']
-                site = self.get_nb_api('site', str(site_id))
-                site_address = site['physical_address']
-                site_city = site['region']['name']
-                tenant_id = site['tenant']['id']
+                # print(json.dumps(prefix, indent=4, sort_keys=True))
+                try:
+                    site_id = prefix['site']['id']       
+                    site = self.get_nb_api('site', str(site_id))
+                    site_address = site['physical_address']
+                    site_city = site['region']['name']
+                    tenant_id = site['tenant']['id']
 
-                tenant = self.get_nb_api('tenancy', str(tenant_id))
-                flag = tenant['name']
-                businessunit = tenant['group']['name']
+                    tenant = self.get_nb_api('tenancy', str(tenant_id))
+                    flag = tenant['name']
+                    businessunit = tenant['group']['name']
 
-                # validate region
-                region_id = site['region']['id']
-                region = self.get_nb_api('regions', str(region_id))
-                site_country = region['parent']['name']
+                    # validate region
+                    region_id = site['region']['id']
+                    region = self.get_nb_api('regions', str(region_id))
+                    site_country = region['parent']['name']
 
-                parsed = {
-                    'country' : country['country'],
-                    'network' : prefix['prefix'],
-                    'site_name' : prefix['site']['name'],
-                    'site_id' : site_id,
-                    'site_address': site_address,
-                    'site_city': site_city,
-                    'flag': flag,
-                    'businessunit':businessunit,
-                }
-                
-                if country['country'] == site_country:
-                    network_valid.append(parsed)
-                else:
-                    network_invalid.append(parsed)
+                    parsed = {
+                        'country' : country['country'],
+                        'network' : prefix['prefix'],
+                        'site_name' : prefix['site']['name'],
+                        'site_id' : site_id,
+                        'site_address': site_address,
+                        'site_city': site_city,
+                        'flag': flag,
+                        'businessunit':businessunit,
+                    }
+
+                    if prefix['vlan'] is not None:
+                        parsed['vlan_id'] = prefix['vlan']['vid']
+                        parsed['vlan_name'] = prefix['vlan']['name']
+                    
+                    if country['country'] == site_country:
+                        network_valid.append(parsed)
+                    else:
+                        network_invalid.append(parsed)
+                except:
+                    pass
 
         print(json.dumps(network_valid, indent=4, sort_keys=True))
         print('===============================')            
