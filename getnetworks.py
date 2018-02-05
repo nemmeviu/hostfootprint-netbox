@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import urllib3, json, os, sys
+import urllib3, json, os, sys, argparse
 http = urllib3.PoolManager()
 
 # attribute = {
@@ -71,9 +71,6 @@ class NetboxAPI(object):
         if nb_result.status == 200:
             return(self.json_import(nb_result))
 
-
-    
-
     def get_countries(self):
         list_country = []
         all_agreggates = self.get_nb_api('rir', 'all')
@@ -97,18 +94,25 @@ class NetboxAPI(object):
         for country in countries:
             network = country['network']
             network = network.replace('/','%2F')
+
+            # need FIX - no get inside loop
             prefixes_by_country = self.get_nb_api('prefix', network)
 
             for prefix in prefixes_by_country['results']:
                 # print(json.dumps(prefix, indent=4, sort_keys=True))
                 try:
-                    site_id = prefix['site']['id']       
+                    site_id = prefix['site']['id']
+
+                    # need FIX - get inside loop, inside loop - bad!!!
                     site = self.get_nb_api('site', str(site_id))
+                    #
                     site_address = site['physical_address']
                     site_city = site['region']['name']
                     tenant_id = site['tenant']['id']
 
+                    # need FIX - get inside loop, inside loop - bad!!!                    
                     tenant = self.get_nb_api('tenancy', str(tenant_id))
+                    #
                     flag = tenant['name']
                     businessunit = tenant['group']['name']
 
@@ -146,7 +150,22 @@ class NetboxAPI(object):
 
 #/home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
 
-test = NetboxAPI()
-
+#test = NetboxAPI()
+#test.parse_prefixes()
 # print(test.get_nb_api('prefix'))
-test.parse_prefixes()
+
+
+parser = argparse.ArgumentParser(
+    description='Netbox API -> pynmap -> elasticsearch',
+    epilog='''
+    hostfootprint with netbox, elasticsearch and nmap integration.
+    \n
+    Responsable: Millar Bravo.'''
+)
+parser.add_argument(
+    '--country',
+    dest='country',
+    
+)
+
+args = parser.parse_args()
