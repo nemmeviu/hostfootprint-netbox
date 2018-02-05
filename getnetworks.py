@@ -147,25 +147,36 @@ class NetboxAPI(object):
         print('===============================')            
         print(json.dumps(network_invalid, indent=4, sort_keys=True))
 
-
 #/home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
 
 #test = NetboxAPI()
 #test.parse_prefixes()
 # print(test.get_nb_api('prefix'))
 
-
 parser = argparse.ArgumentParser(
     description='Netbox API -> pynmap -> elasticsearch',
-    epilog='''
-    hostfootprint with netbox, elasticsearch and nmap integration.
-    \n
-    Responsable: Millar Bravo.'''
+    epilog='hostfootprint with netbox, elasticsearch and nmap integration.'
 )
 parser.add_argument(
     '--country',
     dest='country',
-    
+    nargs='*',
+    required=True,
+    help='''Country or Countries with spaces:\
+    --country Chile China
+    '''
+)
+# 
+parser.add_argument(
+    '--tenentgroup',
+    dest='tenentgroup',
+    nargs='*',
+    required=True,
+    help='''Tenent group o tenents groups with spaces:\
+    --tenent-group super-marketing
+    '''
 )
 
 args = parser.parse_args()
+print(args.country)
+print(args.tenentgroup)
