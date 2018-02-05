@@ -2,7 +2,6 @@
 import urllib3, json, os, sys
 http = urllib3.PoolManager()
 
-
 # attribute = {
 #     'map_type': '',
 #     'ip': '',
@@ -20,7 +19,6 @@ http = urllib3.PoolManager()
 #     }
 # }
 
-
 class NetboxAPI(object):
     '''
     NetboxAPI 
@@ -28,7 +26,7 @@ class NetboxAPI(object):
     def __init__(self):
 
         if os.getenv('NETBOX_API_URL') == None:
-            self.netbox_api_url = 'http://netbox.cencosud.corp/api/'
+            self.netbox_api_url = 'http://localhost/api/'
         else:
             self.netbox_api_url = os.getenv('NETBOX_API_URL')            
 
