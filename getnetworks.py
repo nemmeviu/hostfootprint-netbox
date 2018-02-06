@@ -51,7 +51,6 @@ class NetboxAPI(object):
         '''
         Make the api request
         '''
-
         if identity == 'all':
             nb_target = self.nb_api[nb_target]
         else:
@@ -71,6 +70,8 @@ class NetboxAPI(object):
         if nb_result.status == 200:
             return(self.json_import(nb_result))
 
+
+        
     def get_countries(self):
         list_country = []
         all_agreggates = self.get_nb_api('rir', 'all')
@@ -82,7 +83,6 @@ class NetboxAPI(object):
             }
 
             list_country.append(country)
-
         return list_country
 
 
@@ -147,7 +147,21 @@ class NetboxAPI(object):
         print('===============================')            
         print(json.dumps(network_invalid, indent=4, sort_keys=True))
 
-#/home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
+    def base_scan(self, prefix, sites):
+
+        for x in prefix:
+            if x['site'] is not None:
+                for k in sites:
+                    if x['site']['id'] == k['id']:
+                        print(k)
+                        print(x)
+                
+            #print(sites['id'][x['sites']['id']])
+            
+        #pass
+        
+
+# /home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
 
 #test = NetboxAPI()
 #test.parse_prefixes()
@@ -166,17 +180,27 @@ parser.add_argument(
     --country Chile China
     '''
 )
-# 
+#
 parser.add_argument(
     '--tenentgroup',
     dest='tenentgroup',
     nargs='*',
     required=True,
     help='''Tenent group o tenents groups with spaces:\
-    --tenent-group super-marketing
+    --tenentgroup super-marketing
     '''
 )
 
 args = parser.parse_args()
 print(args.country)
 print(args.tenentgroup)
+
+netbox = NetboxAPI()
+prefix = netbox.get_nb_api('prefix', 'all')
+#print(json.dumps(prefix, indent=4, sort_keys=True))
+prefix = prefix['results']
+sites = netbox.get_nb_api('site', 'all')
+sites = sites['results']
+#print(json.dumps(sites, indent=4, sort_keys=True))
+
+base_scan = netbox.base_scan(prefix, sites)
