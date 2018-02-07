@@ -69,7 +69,6 @@ class NetboxAPI(object):
 
         if nb_result.status == 200:
             return(self.json_import(nb_result))
-
         
     def get_countries(self):
         list_country = []
@@ -110,7 +109,7 @@ class NetboxAPI(object):
                     site_city = site['region']['name']
                     tenant_id = site['tenant']['id']
 
-                    # need FIX - get inside loop, inside loop - bad!!!                    
+                    # need FIX - get inside loop, inside loop - bad!!!
                     tenant = self.get_nb_api('tenancy', str(tenant_id))
                     #
                     flag = tenant['name']
