@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import urllib3, json, os, sys
+import urllib3, json, os, sys, argparse
 http = urllib3.PoolManager()
 
 # attribute = {
@@ -51,15 +51,14 @@ class NetboxAPI(object):
         '''
         Make the api request
         '''
-
         if identity == 'all':
-            nb_target = self.nb_api[nb_target]
+            nb_target = self.nb_api[nb_target] + '?limit=4000'
         else:
             if nb_target == 'prefix':
-                nb_target = self.nb_api[nb_target] + '?parent=' + identity
+                nb_target = self.nb_api[nb_target] + '?parent=' + identity + '&limit=4000'
 
             if nb_target in ('site', 'tenancy','regions'):
-                nb_target = self.nb_api[nb_target] + identity
+                nb_target = self.nb_api[nb_target] + identity + '&limit=4000'
 
         try:
             print(nb_target)
@@ -70,10 +69,7 @@ class NetboxAPI(object):
 
         if nb_result.status == 200:
             return(self.json_import(nb_result))
-
-
-    
-
+        
     def get_countries(self):
         list_country = []
         all_agreggates = self.get_nb_api('rir', 'all')
@@ -85,30 +81,37 @@ class NetboxAPI(object):
             }
 
             list_country.append(country)
-
         return list_country
 
 
     def parse_prefixes(self):
         countries = self.get_countries()
-        network_valid = []
-        network_invalid = []
+        networks = []
+        #network_valid = []
+        #network_invalid = []
 
         for country in countries:
             network = country['network']
             network = network.replace('/','%2F')
+
+            # need FIX - no get inside loop
             prefixes_by_country = self.get_nb_api('prefix', network)
 
             for prefix in prefixes_by_country['results']:
                 # print(json.dumps(prefix, indent=4, sort_keys=True))
                 try:
-                    site_id = prefix['site']['id']       
+                    site_id = prefix['site']['id']
+
+                    # need FIX - get inside loop, inside loop - bad!!!
                     site = self.get_nb_api('site', str(site_id))
+                    #
                     site_address = site['physical_address']
                     site_city = site['region']['name']
                     tenant_id = site['tenant']['id']
 
+                    # need FIX - get inside loop, inside loop - bad!!!
                     tenant = self.get_nb_api('tenancy', str(tenant_id))
+                    #
                     flag = tenant['name']
                     businessunit = tenant['group']['name']
 
@@ -132,21 +135,81 @@ class NetboxAPI(object):
                         parsed['vlan_id'] = prefix['vlan']['vid']
                         parsed['vlan_name'] = prefix['vlan']['name']
                     
-                    if country['country'] == site_country:
-                        network_valid.append(parsed)
-                    else:
-                        network_invalid.append(parsed)
+                    #if country['country'] == site_country:
+                    #    network_valid.append(parsed)
+                    #else:
+                    #    network_invalid.append(parsed)
+                    network.append(parsed)                    
                 except:
                     pass
 
-        print(json.dumps(network_valid, indent=4, sort_keys=True))
-        print('===============================')            
-        print(json.dumps(network_invalid, indent=4, sort_keys=True))
+        return(network)
+        print(json.dumps(network, indent=4, sort_keys=True))
+        #print(json.dumps(network_valid, indent=4, sort_keys=True))
+        #print('===============================')            
+        #print(json.dumps(network_invalid, indent=4, sort_keys=True))
 
+    def base_scan(self, prefix, sites):
+        print(len(prefix))
+        print(len(sites))        
+        #print(prefix)
+        #for x in prefix:
+        #    if x['site'] is not None:
+        #        print(x['site'])
+        #        print('looping 1')
+        #        for k in sites:
+        #            if x['site']['name'] == k['name']:
+        #                print(k['id'])
+        #                print(x['site']['id'])
+           #print(sites['id'][x['sites']['id']])
+        #pass
+        
+# /home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
 
-#/home/msantago/Documents/blacktourmaline/github/hostfootprint-netbox
-
-test = NetboxAPI()
-
+#test = NetboxAPI()
+#test.parse_prefixes()
 # print(test.get_nb_api('prefix'))
-test.parse_prefixes()
+
+parser = argparse.ArgumentParser(
+    description='Netbox API -> pynmap -> elasticsearch',
+    epilog='hostfootprint with netbox, elasticsearch and nmap integration.'
+)
+parser.add_argument(
+    '--country',
+    dest='country',
+    nargs='*',
+    required=True,
+    help='''Country or Countries with spaces:\
+    --country Chile China
+    '''
+)
+#
+parser.add_argument(
+    '--tenentgroup',
+    dest='tenentgroup',
+    nargs='*',
+    required=True,
+    help='''Tenent group o tenents groups with spaces:\
+    --tenentgroup super-marketing
+    '''
+)
+
+args = parser.parse_args()
+print(args.country)
+print(args.tenentgroup)
+
+#test = NetboxAPI()
+#test.parse_prefixes()
+# print(test.get_nb_api('prefix'))
+
+netbox = NetboxAPI()
+netbox.parse_prefixes()
+print(json.dumps(netbox.get_nb_api('prefix', 'all'), indent=4, sort_keys=True))
+#prefix = netbox.get_nb_api('prefix', 'all')
+#print(json.dumps(prefix, indent=4, sort_keys=True))
+#prefix = prefix['results']
+#sites = netbox.get_nb_api('site', 'all')
+#sites = sites['results']
+##print(json.dumps(sites, indent=4, sort_keys=True))
+
+#base_scan = netbox.base_scan(prefix, sites)
