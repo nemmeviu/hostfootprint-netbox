@@ -6,3 +6,8 @@
 
 #### la vida es buena mientras es rica
 
+
+```
+ls -la
+```
+
