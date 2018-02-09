@@ -25,7 +25,7 @@ class NetboxAPI(object):
 
     '''
     def __init__(self):
-        pass
+        self.version = "v0.1"
 
     def conn(self, boxurl):
         '''
@@ -43,23 +43,38 @@ class NetboxAPI(object):
         
         # path API URLs
         self.nb_api = {
-            # RIR Aggregates            
-            'rir': self.netbox_api_url + 'ipam/rirs/',
-            #'rir': self.netbox_api_url + 'ipam/aggregates/',            
-            'prefix': self.netbox_api_url + 'ipam/prefixes/',
-            'site': self.netbox_api_url + 'dcim/sites/',
-            'tenancy': self.netbox_api_url + 'tenancy/tenants/',
-            'regions': self.netbox_api_url + 'dcim/regions/'
+            'prefix': {
+                'rir': self.netbox_api_url + 'ipam/rirs/',
+                'agregates': self.netbox_api_url + 'ipam/agregates/',
+                'prefix': self.netbox_api_url + 'ipam/prefixes/',
+            },
+            'tenant': {
+                'site': self.netbox_api_url + 'dcim/sites/',
+                'tenancy': self.netbox_api_url + 'tenancy/tenants/',
+                'regions': self.netbox_api_url + 'dcim/regions/'
+            }
         }
 
-    def boxprint(self, boxprint):
+    def boxprint(self, boxprint, parent, limit=4000):
         '''
         find and print objects on netbox api.
         '''
         boxprint_result = {}
-        
-        for box in self.nb_api.keys():
-            nb_target = self.nb_api[box] + boxprint + '?limit=4000'
+
+        try:
+            apiurls = self.nb_api[parent]
+            print(apiurls)
+        except:
+            print(json.dumps(self.nb_api, indent=4, sort_keys=True))
+            print('maybe the parent not exist.')
+            sys.exit(2)
+            
+        for box in apiurls.keys():
+            print(box)
+            print(parent)
+            print(boxprint)
+            print(limit)
+            nb_target = '%s%s=%s?limit=%s' % (apiurls[box], parent, boxprint, limit)
             print('trying to find ' + boxprint + ' with:')
             print(nb_target)
             try:
@@ -75,7 +90,10 @@ class NetboxAPI(object):
         turn all thinks real!
         '''
         if 'boxprint' in kwargs.keys():
-            self.boxprint(kwargs['boxprint'])
+            self.boxprint(
+                kwargs['boxprint'],
+                kwargs['parent'],
+            )
             
         if 'country' is kwargs.keys():
             sefl.country = country[0]

@@ -8,6 +8,13 @@ parser = argparse.ArgumentParser(
     epilog='hostfootprint with netbox, elasticsearch and nmap integration.'
 )
 parser.add_argument(
+    '--parent',
+    dest='parent',
+    required=True,
+    help='''Parent: --parent tenent'''
+)
+#
+parser.add_argument(
     '--country',
     dest='country',
     nargs='*',
@@ -52,6 +59,7 @@ parser.add_argument(
 # process argparse
 args = parser.parse_args()
 #
+parent = args.parent
 boxurl = args.url
 boxprint = args.boxprint
 country = args.country
@@ -62,7 +70,7 @@ output = args.output
 
 netbox = NetboxAPI()
 netbox.conn(boxurl)
-netbox.in_action(boxprint=boxprint)
+netbox.in_action(boxprint=boxprint, parent=parent)
 #netbox.in_action()
 
 #test = NetboxAPI()
