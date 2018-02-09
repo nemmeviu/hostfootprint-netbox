@@ -49,62 +49,51 @@ class NetboxAPI(object):
                 'prefix': self.netbox_api_url + 'ipam/prefixes/',
             },
             'tenant': {
-                'site': self.netbox_api_url + 'dcim/sites/',
+                'sites': self.netbox_api_url + 'dcim/sites/',
                 'tenancy': self.netbox_api_url + 'tenancy/tenants/',
                 'regions': self.netbox_api_url + 'dcim/regions/'
             }
         }
 
-    def boxprint(self, boxprint, parent, limit=4000):
+    def match(self, match, parent, search, limit=400):
         '''
         find and print objects on netbox api.
         '''
-        boxprint_result = {}
+        match_result = {}
 
         try:
-            apiurls = self.nb_api[parent]
+            apiurls = self.nb_api[parent][search]
             print(apiurls)
         except:
             print(json.dumps(self.nb_api, indent=4, sort_keys=True))
-            print('maybe the parent not exist.')
+            print('maybe the parent or search does not exist.')
             sys.exit(2)
-            
-        for box in apiurls.keys():
-            print(box)
-            print(parent)
-            print(boxprint)
-            print(limit)
-            nb_target = '%s%s=%s?limit=%s' % (apiurls[box], parent, boxprint, limit)
-            print('trying to find ' + boxprint + ' with:')
-            print(nb_target)
-            try:
-                nb_result = http.request('GET', nb_target)
-                boxprint_result[box] = self.json_import(nb_result)
-            except:
-                print('Fail to connect on: ' + nb_target)
 
-        print(json.dumps(boxprint_result, indent=4, sort_keys=True))
+        nb_target = '%s?%s=%s&limit=%s' % (apiurls, parent, match, limit)
+        print('trying to find ' + match + ' with:')
+        print(nb_target)
+        
+        #for box in apiurls.keys():
+
+        try:
+            nb_result = http.request('GET', nb_target)
+            match_result = self.json_import(nb_result)
+        except:
+            print('Fail to connect on: ' + nb_target)
+
+        print(json.dumps(match_result, indent=4, sort_keys=True))
             
     def in_action(self, **kwargs):
         '''
         turn all thinks real!
         '''
-        if 'boxprint' in kwargs.keys():
-            self.boxprint(
-                kwargs['boxprint'],
+        if 'match' in kwargs.keys():
+            self.match(
+                kwargs['match'],
                 kwargs['parent'],
+                kwargs['search'],
             )
             
-        if 'country' is kwargs.keys():
-            sefl.country = country[0]
-            
-        if 'tenant' is kwargs.keys():
-            self.tenant = tenant[0]
-            
-        if 'tenantgroup' in kwargs.keys():
-            self.tenantgroup = tenantgroup[0]
-
-
     def json_import(self, nb_obj):
         '''
         Return json
@@ -141,7 +130,7 @@ class NetboxAPI(object):
     def get_countries(self):
 
         try:
-            rirs = self.get_nb_api('rir', '?name=' + self.country[0])
+            rirs = self.get_nb_api('rir', '?name=' + self.country)
         except:
             rirs = self.get_nb_api('rir', '')            
 

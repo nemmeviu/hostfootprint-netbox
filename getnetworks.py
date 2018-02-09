@@ -11,20 +11,25 @@ parser.add_argument(
     '--parent',
     dest='parent',
     required=True,
-    help='''Parent: --parent tenent'''
+    help='Parent: --parent tenent'
+)
+#
+parser.add_argument(
+    '--search',
+    dest='search',
+    required=True,
+    help='search: --search sites|tenacy|regions'
 )
 #
 parser.add_argument(
     '--country',
     dest='country',
-    nargs='*',
-    help='''Country: --country China'''
+    help='Country: --country China'
 )
 #
 parser.add_argument(
     '--tenantgroup',
     dest='tenantgroup',
-    nargs='*',
     help='''Tenant group: --tenantgroup super-marketing'''
 )
 #
@@ -44,8 +49,8 @@ parser.add_argument(
 )
 #
 parser.add_argument(
-    '--print',
-    dest='boxprint',
+    '--match',
+    dest='match',
     help='Find and Print'
 )
 #
@@ -60,8 +65,9 @@ parser.add_argument(
 args = parser.parse_args()
 #
 parent = args.parent
+search = args.search
 boxurl = args.url
-boxprint = args.boxprint
+match = args.match
 country = args.country
 tenantgroup = args.tenantgroup
 tenant = args.tenant
@@ -70,7 +76,7 @@ output = args.output
 
 netbox = NetboxAPI()
 netbox.conn(boxurl)
-netbox.in_action(boxprint=boxprint, parent=parent)
+netbox.in_action(match=match, parent=parent, search=search)
 #netbox.in_action()
 
 #test = NetboxAPI()
