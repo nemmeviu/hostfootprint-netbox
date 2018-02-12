@@ -2,7 +2,7 @@
 
 ---
 
-##### creators and comunity
+##### Where is Netbox?
 
 [NetBox](https://netbox.readthedocs.io/en/latest/) is an open source web application initially conceived by the network engineering team at [DigitalOcean](https://www.digitalocean.com/). Designed to help network management:
 
