@@ -1,11 +1,17 @@
+ 
 
 
+# NETBOX
 
-# la sinceridad esta sobrevalorada
+---
 
+* creators and comunity
+* why or why not
+* integrations
+* automation
+* benefits
 
-#### la vida es buena mientras es rica
-
++++
 
 ```
 ls -la
