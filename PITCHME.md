@@ -9,10 +9,10 @@
 * IP addr management (IPAM) - IPs, VRFs, and VLANs
 * Equipment racks - Organized by group and site
 * Devices - Devices and where they are installed
-* Connections - Network, console, and power connections among devices
+* Connections - Network, console, power conns
 * Virtualization - Virtual machines and clusters
-* Data circuits - Long-haul communications circuits and providers
-* Secrets - Encrypted storage of sensitive credentials
+* Data circuits - Long-haul circuits and providers
+* Secrets - Encrypted storage of credentials
 
 ---
 
