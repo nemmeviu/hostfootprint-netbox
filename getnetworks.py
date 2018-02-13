@@ -43,9 +43,8 @@ parser.add_argument(
 parser.add_argument(
     '--output',
     dest='output',
-    nargs='*',
     required=True,
-    help='''Get all Countries'''
+    help='''output: screen or db'''
 )
 #
 parser.add_argument(
@@ -77,7 +76,7 @@ output = args.output
 netbox = NetboxAPI()
 netbox.conn(boxurl)
 netbox.in_action(match=match, parent=parent, search=search)
-#netbox.in_action()
+netbox.output(output)
 
 #test = NetboxAPI()
 #test.parse_prefixes()

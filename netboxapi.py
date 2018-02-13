@@ -81,7 +81,10 @@ class NetboxAPI(object):
         except:
             print('Fail to connect on: ' + nb_target)
 
-        print(json.dumps(match_result, indent=4, sort_keys=True))
+        try:
+            self.match_result = match_result
+        except:
+            self.match_result = {}
             
     def in_action(self, **kwargs):
         '''
@@ -93,6 +96,17 @@ class NetboxAPI(object):
                 kwargs['parent'],
                 kwargs['search'],
             )
+            
+    def output(self, output):
+        '''
+        make the output:
+        screen or db
+        '''
+        if output == 'screen':
+            print(json.dumps(self.match_result, indent=4, sort_keys=True))
+        if output == 'db':
+            print('elasticsearch save :)')
+            print(self.match_result)
             
     def json_import(self, nb_obj):
         '''
