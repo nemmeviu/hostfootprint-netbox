@@ -6,7 +6,8 @@ Usage:
 ```
 > pip3 install -r requirements.txt
 > export NETBOX_API_URL="http://netboxurl.domain.corp/api/"
-> ./getnetworks.py --parent tenant --output screen --url http://netbox.cencosud.corp/api/ --search sites --match ti
+> ./getnetworks.py --parent tenant --output screen \
+ --url http://netbox.cencosud.corp/api/ --search sites --match ti
 ```
 * ti (tenent)
 * sites (type of search)
