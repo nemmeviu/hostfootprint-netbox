@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import urllib3, json, os, sys
-http = urllib3.PoolManager()
+
 
 # attribute = {
 #     'map_type': '',
@@ -34,7 +34,13 @@ class NetboxAPI(object):
         self.netbox_api_url = boxurl
 
         try:
-            http.request('GET', self.netbox_api_url)
+            self.http = urllib3.HTTPConnectionPool(
+                host='netbox.domain.com',
+                port=80,
+                #self.netbox_api_url,
+                maxsize=100
+            )            
+            self.http.request('GET', self.netbox_api_url)
         except:
             print('Fail to connect on: ' + self.netbox_api_url)
             sys.exit(2)
@@ -76,7 +82,7 @@ class NetboxAPI(object):
         #for box in apiurls.keys():
 
         try:
-            nb_result = http.request('GET', nb_target)
+            nb_result = self.http.request('GET', nb_target)
             match_result = self.json_import(nb_result)
         except:
             print('Fail to connect on: ' + nb_target)
@@ -120,10 +126,13 @@ class NetboxAPI(object):
         Make the api request
         '''
 
-        nb_target = self.nb_api[nb_target] + identify + '?limit=4000'
+        nb_target = self.nb_api['prefix'][nb_target] + identify + '?limit=4000'
+
+        print(nb_target)
 
         try:
-            nb_result = http.request('GET', nb_target)
+            nb_result = self.http.request('GET', nb_target)
+            print(nb_result.data)
         except:
             print('Fail to connect on: ' + nb_target)
             sys.exit(2)
@@ -131,16 +140,6 @@ class NetboxAPI(object):
         if nb_result.status == 200:
             return(self.json_import(nb_result))
 
-        #if tenant_list == None:
-        #    print('nao tem nada naoo')
-        #    nb_target = self.nb_api[nb_target] + identify + '?limit=4000'
-        #else:
-        #    if nb_target == 'prefix':
-        #        nb_target = self.nb_api[nb_target] + '?parent=' + identity + '&limit=4000'
-        #
-        #    if nb_target in ('site', 'tenancy','regions'):
-        #        nb_target = self.nb_api[nb_target] + identity + '&limit=4000'
-        
     def get_countries(self):
 
         try:
@@ -162,7 +161,8 @@ class NetboxAPI(object):
         #return list_country
 
     def parse_prefixes(self):
-        countries = self.get_countries()
+        
+        #countries = self.get_countries()
         networks = []
         #network_valid = []
         #network_invalid = []

@@ -72,11 +72,11 @@ tenantgroup = args.tenantgroup
 tenant = args.tenant
 output = args.output
 
-
 netbox = NetboxAPI()
 netbox.conn(boxurl)
 netbox.in_action(match=match, parent=parent, search=search)
 netbox.output(output)
+#netbox.parse_prefixes()
 
 #test = NetboxAPI()
 #test.parse_prefixes()
