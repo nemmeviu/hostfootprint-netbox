@@ -54,9 +54,16 @@ parser.add_argument(
 )
 #
 parser.add_argument(
-    '--url',
+    '--host',
     required=True,
-     help='ex: http://netbox.domain.com/api/'
+    help='ex: netbox.domain.com'
+)
+#
+parser.add_argument(
+    '--port',
+    default=80,
+    type=int,
+    help='ex: 80'
 )
 
 ###
@@ -65,15 +72,16 @@ args = parser.parse_args()
 #
 parent = args.parent
 search = args.search
-boxurl = args.url
 match = args.match
 country = args.country
 tenantgroup = args.tenantgroup
 tenant = args.tenant
 output = args.output
+host = args.host
+port = args.port
 
 netbox = NetboxAPI()
-netbox.conn(boxurl)
+netbox.conn(host, port)
 netbox.in_action(match=match, parent=parent, search=search)
 netbox.output(output)
 #netbox.parse_prefixes()

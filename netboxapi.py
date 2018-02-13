@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import urllib3, json, os, sys
 
-
 # attribute = {
 #     'map_type': '',
 #     'ip': '',
@@ -27,19 +26,26 @@ class NetboxAPI(object):
     def __init__(self):
         self.version = "v0.1"
 
-    def conn(self, boxurl):
+    def conn(self, host, port):
         '''
         create initial connection with netbox
         '''
-        self.netbox_api_url = boxurl
+        if port == 443:
+            self.netbox_api_url = 'https://%s' % host
+            self.http = urllib3.HTTPSConnectionPool(
+                host=host,
+                port=port,
+                maxsize=100
+            )
+        if port == 80:
+            self.netbox_api_url = 'http://%s' % host
+            self.http = urllib3.HTTPConnectionPool(
+                host=host,
+                port=port,
+                maxsize=100
+            )
 
         try:
-            self.http = urllib3.HTTPConnectionPool(
-                host='netbox.domain.com',
-                port=80,
-                #self.netbox_api_url,
-                maxsize=100
-            )            
             self.http.request('GET', self.netbox_api_url)
         except:
             print('Fail to connect on: ' + self.netbox_api_url)
@@ -50,16 +56,31 @@ class NetboxAPI(object):
         # path API URLs
         self.nb_api = {
             'prefix': {
-                'rir': self.netbox_api_url + 'ipam/rirs/',
-                'agregates': self.netbox_api_url + 'ipam/agregates/',
-                'prefix': self.netbox_api_url + 'ipam/prefixes/',
+                'rir': self.netbox_api_url + '/api/ipam/rirs/',
+                'agregates': self.netbox_api_url + '/api/ipam/agregates/',
+                'prefix': self.netbox_api_url + '/api/ipam/prefixes/',
             },
             'tenant': {
-                'sites': self.netbox_api_url + 'dcim/sites/',
-                'tenancy': self.netbox_api_url + 'tenancy/tenants/',
-                'regions': self.netbox_api_url + 'dcim/regions/'
+                'sites': self.netbox_api_url + '/api/dcim/sites/',
+                'tenancy': self.netbox_api_url + '/api/tenancy/tenants/',
+                'regions': self.netbox_api_url + '/api/dcim/regions/'
             }
         }
+
+
+    def make_nb_url(self, parent, search):
+        '''
+        make netbox url and generate self.url
+        '''
+        try:
+            apiurl = self.nb_api[parent][search]
+            print(apiurl)
+        except:
+            print(json.dumps(self.nb_api, indent=4, sort_keys=True))
+            print('maybe the parent or search does not exist.')
+            sys.exit(2)
+
+        return(apiurl)
 
     def match(self, match, parent, search, limit=400):
         '''
@@ -67,30 +88,32 @@ class NetboxAPI(object):
         '''
         match_result = {}
 
-        try:
-            apiurls = self.nb_api[parent][search]
-            print(apiurls)
-        except:
-            print(json.dumps(self.nb_api, indent=4, sort_keys=True))
-            print('maybe the parent or search does not exist.')
-            sys.exit(2)
+        apiurl = self.make_nb_url(parent, search)
 
-        nb_target = '%s?%s=%s&limit=%s' % (apiurls, parent, match, limit)
+        nb_target = '%s?%s=%s&limit=%s' % (apiurl, parent, match, limit)
         print('trying to find ' + match + ' with:')
         print(nb_target)
         
-        #for box in apiurls.keys():
-
         try:
             nb_result = self.http.request('GET', nb_target)
-            match_result = self.json_import(nb_result)
+            self.match_result = self.json_import(nb_result)
         except:
             print('Fail to connect on: ' + nb_target)
-
-        try:
-            self.match_result = match_result
-        except:
             self.match_result = {}
+
+    def get_prefix_from_sites(self, limit=400):
+        '''
+        get list of prefixes inside object
+        '''
+        apiurl = self.make_nb_url('prefix', 'prefix')
+        if 'results' in self.match_result.keys():
+            results = self.match_result['results']
+            for slug in results:
+                nb_prefix = '%s?%s=%s&limit=%s' % (apiurl, 'site', slug['slug'], limit)
+                nb_result = self.http.request('GET', nb_prefix)
+                prefix = self.json_import(nb_result)
+                slug['prefix'] = prefix
+
             
     def in_action(self, **kwargs):
         '''
@@ -102,6 +125,9 @@ class NetboxAPI(object):
                 kwargs['parent'],
                 kwargs['search'],
             )
+
+            self.get_prefix_from_sites()
+
             
     def output(self, output):
         '''
@@ -109,6 +135,7 @@ class NetboxAPI(object):
         screen or db
         '''
         if output == 'screen':
+            pass
             print(json.dumps(self.match_result, indent=4, sort_keys=True))
         if output == 'db':
             print('elasticsearch save :)')
@@ -125,9 +152,7 @@ class NetboxAPI(object):
         '''
         Make the api request
         '''
-
         nb_target = self.nb_api['prefix'][nb_target] + identify + '?limit=4000'
-
         print(nb_target)
 
         try:
