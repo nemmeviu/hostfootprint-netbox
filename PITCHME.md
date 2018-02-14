@@ -24,7 +24,7 @@
 
 ---
 
-mira que cosa linda
+mira que oi
 
 ### mirando
 
@@ -35,4 +35,3 @@ mira que cosa linda
 ```
 ls -la
 ```
-
