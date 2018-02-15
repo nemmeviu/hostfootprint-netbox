@@ -39,8 +39,9 @@ Sin la información principal, y ademas de esto, sin tener como obtener la misma
 
 ## NO >
 
-## SI
-## \ /
+## SI @fa[angle-right]
+## NO
+## @fa[angle-down]
 
 ++
 
