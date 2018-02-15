@@ -18,6 +18,79 @@ import urllib3, json, os, sys
 #     }
 # }
 
+
+
+# {
+#      "asn": null,
+#      "comments": "",
+#      "contact_email": "",
+       #      "contact_name": "",
+       #      "contact_phone": "",
+       #      "count_circuits": 0,
+       #      "count_devices": 0,
+       #      "count_prefixes": 1,
+       #      "count_racks": 0,
+       #      "count_vlans": 0,
+       #      "custom_fields": {},
+       #      "facility": "Cencosud",
+       #      "id": 965,
+       #      "name": "x968",
+       #      "physical_address": "BERNARDO O'HIGGINS 176QUILLOTA Valparaiso",
+       #      "prefix": {
+       #          "count": 1,
+       #          "next": null,
+       #          "previous": null,
+       #          "results": [
+       #              {
+       #                  "custom_fields": {},
+       #                  "description": "",
+       #                  "family": 4,
+       #                  "id": 90,
+       #                  "is_pool": false,
+       #                  "prefix": "10.110.80.0/23",
+       #                  "role": {
+       #                      "id": 1,
+       #                      "name": "Locales",
+       #                      "slug": "locales",
+       #                      "url": "http://localhost/api/ipam/roles/1/"
+       #                  },
+       #                  "site": {
+       #                      "id": 965,
+       #                      "name": "x968",
+       #                      "slug": "x968",
+       #                      "url": "http://localhost/api/dcim/sites/965/"
+       #                  },
+       #                  "status": {
+       #                      "label": "Active",
+       #                      "value": 1
+       #                  },
+       #                  "tenant": {
+       #                      "id": 6,
+       #                      "name": "Johnson",
+       #                      "slug": "johnson",
+       #                      "url": "http://localhost/api/tenancy/tenants/6/"
+       #                  },
+       #                  "vlan": null,
+       #                  "vrf": null
+       #              }
+       #          ]
+       #      },
+       #      "region": {
+       #          "id": 24,
+       #          "name": "Valparaiso",
+       #          "slug": "VALPARAISO",
+       #          "url": "http://localhost/api/dcim/regions/24/"
+       #      },
+       #      "shipping_address": "",
+       #      "slug": "x968",
+       #      "tenant": {
+       #          "id": 6,
+       #          "name": "Johnson",
+       #          "slug": "johnson",
+       #          "url": "http://localhost/api/tenancy/tenants/6/"
+       #      }
+       #  },
+ 
 class NetboxAPI(object):
     '''
     NetboxAPI 
@@ -25,6 +98,11 @@ class NetboxAPI(object):
     '''
     def __init__(self):
         self.version = "v0.1"
+
+        self.g_nb = {
+            'tenant': False,
+            'country': {}
+        }
 
     def conn(self, host, port):
         '''
@@ -37,8 +115,9 @@ class NetboxAPI(object):
                 port=port,
                 maxsize=100
             )
-        if port == 80:
-            self.netbox_api_url = 'http://%s' % host
+        else:
+            self.netbox_api_url = 'http://%s:%s' % (host, port)
+            print(self.netbox_api_url)
             self.http = urllib3.HTTPConnectionPool(
                 host=host,
                 port=port,
@@ -58,12 +137,15 @@ class NetboxAPI(object):
             'prefix': {
                 'rir': self.netbox_api_url + '/api/ipam/rirs/',
                 'agregates': self.netbox_api_url + '/api/ipam/agregates/',
-                'prefix': self.netbox_api_url + '/api/ipam/prefixes/',
+                'prefix': self.netbox_api_url + '/api/ipam/prefixes/?site=',
             },
             'tenant': {
-                'sites': self.netbox_api_url + '/api/dcim/sites/',
-                'tenancy': self.netbox_api_url + '/api/tenancy/tenants/',
-                'regions': self.netbox_api_url + '/api/dcim/regions/'
+                'sites': self.netbox_api_url + '/api/dcim/sites/?tenant=',
+                'tenant': self.netbox_api_url + '/api/tenancy/tenants/?name=',
+                'regions': self.netbox_api_url + '/api/dcim/regions/?slug='
+            },
+            'site': {
+                'sites': self.netbox_api_url + '/api/dcim/sites/?slug=',
             }
         }
 
@@ -74,12 +156,10 @@ class NetboxAPI(object):
         '''
         try:
             apiurl = self.nb_api[parent][search]
-            print(apiurl)
         except:
             print(json.dumps(self.nb_api, indent=4, sort_keys=True))
             print('maybe the parent or search does not exist.')
             sys.exit(2)
-
         return(apiurl)
 
     def match(self, match, parent, search, limit=400):
@@ -90,7 +170,9 @@ class NetboxAPI(object):
 
         apiurl = self.make_nb_url(parent, search)
 
-        nb_target = '%s?%s=%s&limit=%s' % (apiurl, parent, match, limit)
+        apiurl = self.make_nb_url(parent, search)
+
+        nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
         print('trying to find ' + match + ' with:')
         print(nb_target)
         
@@ -109,12 +191,12 @@ class NetboxAPI(object):
         if 'results' in self.match_result.keys():
             results = self.match_result['results']
             for slug in results:
-                nb_prefix = '%s?%s=%s&limit=%s' % (apiurl, 'site', slug['slug'], limit)
+                nb_prefix = '%s%s&limit=%s' % (apiurl, slug['slug'], limit)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['prefix'] = prefix
 
-            
+                
     def in_action(self, **kwargs):
         '''
         turn all thinks real!
@@ -128,18 +210,45 @@ class NetboxAPI(object):
 
             self.get_prefix_from_sites()
 
-            
+            # tenant if tenant
+            if kwargs['parent'] in [ 'tenant', 'site' ]:
+                self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
+                self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['tenant']['name'], 1)
+                self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
+                self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
+                self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
+
     def output(self, output):
         '''
         make the output:
         screen or db
         '''
         if output == 'screen':
-            pass
             print(json.dumps(self.match_result, indent=4, sort_keys=True))
         if output == 'db':
+            "prepair object to nmap process"
+            nmap_object = {}
+            for nb_obj in self.match_result['results']:
+                nmap_object['g_flag'] = nb_obj['tenant']['name']
+                nmap_object['location'] = nb_obj['name']
+                nmap_object['local_address'] = nb_obj['physical_address']
+                nmap_object['city'] = nb_obj['region']['name']
+                nmap_object['g_businessunit'] = self.g_nb['tenant']
+
+                # get country ...
+                # inside loop because the country can change
+                if nmap_object['city'] not in self.g_nb['country'].keys():
+                    country = self.make_nb_url('tenant', 'regions')
+                    country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
+                    country = self.http.request('GET', country)
+                    country = self.json_import(country)
+                    country = country['results'][0]['parent']['name']
+                    self.g_nb['country'][nmap_object['city']] = country
+                    nmap_object['g_country'] = country
+
+                print(json.dumps(nmap_object, indent=4, sort_keys=True))
             print('elasticsearch save :)')
-            print(self.match_result)
+            #print(self.match_result)
             
     def json_import(self, nb_obj):
         '''
@@ -212,7 +321,7 @@ class NetboxAPI(object):
                     tenant_id = site['tenant']['id']
 
                     # need FIX - get inside loop, inside loop - bad!!!
-                    tenant = self.get_nb_api('tenancy', str(tenant_id))
+                    tenant = self.get_nb_api('tenant', str(tenant_id))
                     #
                     flag = tenant['name']
                     businessunit = tenant['group']['name']
