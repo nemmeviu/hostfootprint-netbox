@@ -6,12 +6,13 @@
 --
 
 Una compañia busca implementar las metodologias de desarrollo afín de automatizar procesos hasta lograr en realizar una gran tranformaciòn digital.
-Para apoyar estos procesos la compañia adquiriu un de los mejores softwares creadospor engeneros con grandes éxitos.
+
+Para apoyar estos procesos la compañia adquiriu uno de los mejores softwares ya creados.
 
 --
 
-Con aquellos elecciones la compañia busca: (el software adquirido mas las nuevas metodologias)
-* Obtener información en tiempo real de sus locales físicos, mismo frente a uno cambio
+Con la nueva metodologia y el nuevo software la compañia busca:
+* Mismo frente a cambios diários, obtener información en tiempo real de sus locales físicos
 * Mejorar el monitoreo de los locales, logrando mapear muchos puntos que hoy no tienen ninguna visibilidad
 * Ordenar la infraestrutura de TI
 * Centralizar la información de sus locales
@@ -21,19 +22,19 @@ Con aquellos elecciones la compañia busca: (el software adquirido mas las nueva
 
 ##### Por Fim
 
-* Mejorando los tiempos de respuesta y la disponibilid de los servicios
-* Lograr tomar desiciones con mejor informaciòn
+* Mejorar los tiempos de respuesta y la disponibilid de los servicios
+* Lograr tomar desiciones con mejor información
 
 --
 
-* La compañia responsable por implementar el software verifica que las informaciones necessarias acordadas en momento de la venta están faltando, desordenadas, en diversas estructuras. (informacion esta que es clave principal para el exito de la solución)
-* Los archivos, siempre offline, no estan disponible en ningun lado y no existe ningun plano para ordenar esto. (lo que deberia tener sido hecho antes de la contratación)
+* La compañia responsable por implementar el software verifica que las informaciones claves necesarias para el éxito de la solución, ya acordadas antes de la venta, no están faltando, o si están, están desordenadas.
+* Los archivos, siempre offline, no estan disponible en ningun lado y no existe ningun plano para ordenar esto.
 
 --
 
+El software que tiene que garantizar el flujo automatizado, y que debe ser implementado en 2 meses es rico en detalles en su implementación.
 ##### Pregunta:
-El software que tiene que garantizar el flujo automatizado y que debe ser implementado en 2 meses, contiene muchos detalles.
-Sin la información principal, y ademas de esto, sin tener como obtener la misma, será implementado con éxito?
+Sín la información principal, y ademas de esto, sin tener como obtener la misma, el software tiene como ser implementado con éxito?
  
 --
 
@@ -41,11 +42,11 @@ Sin la información principal, y ademas de esto, sin tener como obtener la misma
 
 ++
 
-Fin de la apresentación.
+FIN
 
 --
 
-organizations
+Apertura de tiendas
 
 ++
 
