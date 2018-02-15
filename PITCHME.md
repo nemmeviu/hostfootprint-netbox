@@ -33,7 +33,7 @@ Con la nueva metodologia y el nuevo software la compañia busca:
 --
 
 El software que tiene que garantizar el flujo automatizado, y que debe ser implementado en 2 meses es rico en detalles en su implementación.
-##### Sín la información principal, y ademas de esto, sin tener como obtener la misma, el software tiene como ser implementado con éxito?
+#### Sín la información principal, y ademas de esto, sin tener como obtener la misma, el software tiene como ser implementado con éxito?
  
 --
 
