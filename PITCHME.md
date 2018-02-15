@@ -29,7 +29,7 @@ Con la nueva metodologia y el nuevo software la compañia busca:
 
 * La compañia responsable por implementar el software verifica que las informaciones claves necesarias para el éxito de la solución, ya acordadas antes de la venta, no están faltando, o si están, están desordenadas.
 * Los archivos, siempre offline, no estan disponible en ningun lado y no existe ningun plano para ordenar esto.
-El software que tiene que garantizar el flujo automatizado, y que debe ser implementado en 2 meses es rico en detalles en su implementación.
+* El software que tiene que garantizar el flujo automatizado, y que debe ser implementado en 2 meses es rico en detalles en su implementación.
 
 --
 
