@@ -17,13 +17,37 @@ Con essas dos escojas (el software adquirido, ademas las metodologias nuevas) la
 
 --
 
-Por fim:
+##### Por fim:
 * Entregar a sus clientes uma mejor experiencia, mejorando los tiempos de resposta y la disponibilid de los servicios
 * Lograr tomar desiciones con mejor informaciòn
 
 --
 
-Es posible que la cosa va bien?
+##### Todo avanza bien, la compra del software, los treinamientos lean, hasta que llega la implementacion.
+* La compañia responsable por implementar el software verifica que la origen de la informaciones necessarias, e acordada antes de la venta. (informacion esta que es clave principal para el exito de la solución) estan en mas de 20 archivos.
+
+--
+
+##### Ademas
+* Estos archivos no estan disponibles en ningun lado, y tienen dististas estructuras
+* Las informaciones de los archivos no es completa y no existe ningun plan de ordenar estos archivos.
+
+--
+
+##### La empresa, que tiene que garantizar el flujo automatizado, y que tiene el tiempo de 2 meses para implementar toda una solucíón con muchos detalles,
+sin la información principal, y ademas de esto, sin tener como obtener la misma, va lograr implementar lo que vendió?
+ 
+--
+
+## NO -->
+
+## SI
+   |
+  \ /
+
+++
+
+Fin de la apresentación
 
 --
 
