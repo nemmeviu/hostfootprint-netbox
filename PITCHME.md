@@ -5,8 +5,8 @@
 
 --
 
-Una compañia busca implementar las metodologias de desarrollo afín de automatizar processos hasta lograr en realizar una gran tranformaciòn digital.
-Para apoyar esto processo adquiriu un software creado por los engeneros de una compañia llena de grandes éxitos.
+Una compañia busca implementar las metodologias de desarrollo afín de automatizar procesos hasta lograr en realizar una gran tranformaciòn digital.
+Para apoyar estos procesos la compañia adquiriu un de los mejores softwares creadospor engeneros con grandes éxitos.
 
 --
 
