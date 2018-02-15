@@ -5,7 +5,7 @@
 
 --
 
-Una compañia busca implementar las metodologias de desarrollo afín de automatizar processos hasta llegar a ser reconocida por su tranformaciòn digital.
+Una compañia busca implementar las metodologias de desarrollo afín de automatizar processos hasta lograr en realizar una gran tranformaciòn digital.
 Para apoyar esto processo adquiriu un software creado por los engeneros de una compañia llena de grandes éxitos.
 
 --
