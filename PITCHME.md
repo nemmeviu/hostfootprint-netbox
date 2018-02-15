@@ -14,7 +14,7 @@
 * Data circuits - Long-haul circuits and providers
 * Secrets - Encrypted storage of credentials
 
-+++
+++
 
 * creators and comunity
 * why or why not
@@ -22,17 +22,17 @@
 * automation
 * benefits
 
----
+--
 
 organizations
 
----
+--
 
 ### mirando
 
 # mirado!
 
-+++
+++
 
 ```
 ls -la
