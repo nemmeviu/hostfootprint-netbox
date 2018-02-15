@@ -1,6 +1,7 @@
-![Logo](https://www.cencosud.com/cencosud/site/artic/20160119/imag/foto_0000000320160119163856.png)
 
 # INTRODUCCIÓN
+
+![Logo](https://www.cencosud.com/cencosud/site/artic/20160119/imag/foto_0000000320160119163856.png)
 
 --
 
