@@ -1,4 +1,33 @@
+
+# INTRODUCCIÒN
+Una empresa busca implementar las metodologias de desarrollo agil en busca de automatizar processos hasta llegar en uno nivel donde sea reconocida por lograr aplicar una tranformaciòn digital.
+Ella tambien adquiriu un software creado por los engeneros de una compañia que tiene grandes exitos en todos sus produtos.
+Con essas dos escojas (el software adquirido, ademas las metodologias nuevas) la compañia busca:
+* obtener informacion en tiempo real de sus locales fisicos, mismo frente a uno cambio
+* mejorar el monitoreo de los locales, logrando mapear muchos puntos que hoy no tienen ninguna visibilidad
+* ordenar la infraestrutura de TI
+* Centralizar la informacion de sus locales
+* reportes de buena calidad, e con alcance regional, actualizados
+
+--
+
+Por fim:
+* Entregar a sus clientes uma mejor experiencia, mejorando los tiempos de resposta y la disponibilid de los servicios
+* Lograr tomar desiciones con mejor informaciòn
+
+--
+
+Es posible que la cosa va bien?
+
+--
+
 # NETBOX
+
+--
+
+
+- ¿
+Es posible que una 
 
 --
 
