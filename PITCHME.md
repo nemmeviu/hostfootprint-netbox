@@ -24,7 +24,7 @@ Con aquellos elecciones la compañia busca: (el software adquirido mas las nueva
 * Mejorando los tiempos de respuesta y la disponibilid de los servicios
 * Lograr tomar desiciones con mejor informaciòn
 
----
+--
 
 * La compañia responsable por implementar el software verifica que las informaciones necessarias acordadas en momento de la venta están faltando, desordenadas, en diversas estructuras. (informacion esta que es clave principal para el exito de la solución)
 * Los archivos, siempre offline, no estan disponible en ningun lado y no existe ningun plano para ordenar esto. (lo que deberia tener sido hecho antes de la contratación)
@@ -44,33 +44,7 @@ Sin la información principal, y ademas de esto, sin tener como obtener la misma
 
 ++
 
-Fin de la apresentación
-
---
-
-# NETBOX
-
---
-
-##### Where is Netbox?
-
-[NetBox](https://netbox.readthedocs.io/en/latest/) is an open source web application initially conceived by the network engineering team at [DigitalOcean](https://www.digitalocean.com/). Designed to help network management:
-
-* IP addr management (IPAM) - IPs, VRFs, and VLANs
-* Equipment racks - Organized by group and site
-* Devices - Devices and where they are installed
-* Connections - Network, console, power conns
-* Virtualization - Virtual machines and clusters
-* Data circuits - Long-haul circuits and providers
-* Secrets - Encrypted storage of credentials
-
---
-
-* creators and comunity
-* why or why not
-* integrations
-* automation
-* benefits
+Fin de la apresentación.
 
 --
 
@@ -106,12 +80,30 @@ benefits
 
 --
 
-### mirando
+# NETBOX
 
-# mirado!
+![Logo](https://www.cencosud.com/cencosud/site/artic/20160119/imag/foto_0000000320160119163856.png)
 
-++
+--
 
-```
-ls -la
-```
+##### Where is Netbox?
+
+[NetBox](https://netbox.readthedocs.io/en/latest/) is an open source web application initially conceived by the network engineering team at [DigitalOcean](https://www.digitalocean.com/). Designed to help network management:
+
+* IP addr management (IPAM) - IPs, VRFs, and VLANs
+* Equipment racks - Organized by group and site
+* Devices - Devices and where they are installed
+* Connections - Network, console, power conns
+* Virtualization - Virtual machines and clusters
+* Data circuits - Long-haul circuits and providers
+* Secrets - Encrypted storage of credentials
+
+--
+
+* creators and comunity
+* why or why not
+* integrations
+* automation
+* benefits
+
+--
