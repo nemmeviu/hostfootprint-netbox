@@ -19,8 +19,13 @@ Con aquellos elecciones la compañia busca: (el software adquirido mas las nueva
 
 --
 
+##### Por Fim
+
 * Mejorando los tiempos de respuesta y la disponibilid de los servicios
 * Lograr tomar desiciones con mejor informaciòn
+
+---
+
 * La compañia responsable por implementar el software verifica que las informaciones necessarias acordadas en momento de la venta están faltando, desordenadas, en diversas estructuras. (informacion esta que es clave principal para el exito de la solución)
 * Los archivos, siempre offline, no estan disponible en ningun lado y no existe ningun plano para ordenar esto. (lo que deberia tener sido hecho antes de la contratación)
 
