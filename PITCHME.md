@@ -37,7 +37,7 @@ Sin la información principal, y ademas de esto, sin tener como obtener la misma
  
 --
 
-## @fa[angle-down] SI || NO @fa[angle-right]
+## @fa[angle-down] SI    |    NO @fa[angle-right]
 
 ++
 
