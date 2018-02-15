@@ -3,17 +3,17 @@
 
 --
 
-Una empresa busca implementar las metodologias de desarrollo agil en busca de automatizar processos hasta llegar en uno nivel donde sea reconocida por lograr aplicar una tranformaciòn digital.
-Ella tambien adquiriu un software creado por los engeneros de una compañia que tiene grandes exitos en todos sus produtos.
+Una compañia busca implementar las metodologias de desarrollo afín de automatizar processos hasta llegar a ser reconocida por su tranformaciòn digital.
+Para apoyar esto processo adquiriu un software creado por los engeneros de una compañia llena de grandes éxitos.
 
 --
 
-Con essas dos escojas (el software adquirido, ademas las metodologias nuevas) la compañia busca:
-* obtener informacion en tiempo real de sus locales fisicos, mismo frente a uno cambio
-* mejorar el monitoreo de los locales, logrando mapear muchos puntos que hoy no tienen ninguna visibilidad
-* ordenar la infraestrutura de TI
-* Centralizar la informacion de sus locales
-* reportes de buena calidad, e con alcance regional, actualizados
+Con aquellos elecciones la compañia busca: (el software adquirido mas las nuevas metodologias) 
+* Obtener información en tiempo real de sus locales físicos, mismo frente a uno cambio
+* Mejorar el monitoreo de los locales, logrando mapear muchos puntos que hoy no tienen ninguna visibilidad
+* Ordenar la infraestrutura de TI
+* Centralizar la información de sus locales
+* Reportes de buena calidad, e con alcance regional, actualizados
 
 --
 
@@ -23,20 +23,15 @@ Con essas dos escojas (el software adquirido, ademas las metodologias nuevas) la
 
 --
 
-Todo avanza bien, la compra del software, los treinamientos lean, hasta que llega la implementacion.
-La compañia responsable por implementar el software verifica que la origen de la informaciones necessarias, e acordada antes de la venta estan en diversos archivos, que contienen diversas estructuras distintas, y ademas no tienen toda la información.
-(informacion esta que es clave principal para el exito de la solución)
+Todo avanza bien, la compra del software, los treinamientos lean, hasta que llega la implementación.
+La compañia responsable por implementar el software verifica que las informaciones necessarias acordadas en momento de la venta están faltando, desordenadas, en diversas estructuras. (informacion esta que es clave principal para el exito de la solución)
+Ademas los archivos, siempre offline, no estan disponible en ningun lado y no existe ningun plano para ordenar esto. (lo que deberia tener sido hecho antes de la contratación)
 
 --
 
-##### Ademas
-* Estos archivos no estan disponibles en ningun lado, y tienen dististas estructuras
-* Las informaciones de los archivos no es completa y no existe ningun plan de ordenar estos archivos.
-
---
 ##### Pregunta:
- La empresa, que tiene que garantizar el flujo automatizado, y que tiene el tiempo de 2 meses para implementar toda una solucíón con muchos detalles,
-sin la información principal, y ademas de esto, sin tener como obtener la misma, va lograr implementar lo que vendió?
+El software que tiene que garantizar el flujo automatizado y que debe ser implementado en 2 meses, contiene muchos detalles.
+Sin la información principal, y ademas de esto, sin tener como obtener la misma, será implementado con éxito?
  
 --
 
@@ -44,7 +39,7 @@ sin la información principal, y ademas de esto, sin tener como obtener la misma
 
 ## SI
 ## \ /
-##  .
+
 ++
 
 Fin de la apresentación
@@ -52,12 +47,6 @@ Fin de la apresentación
 --
 
 # NETBOX
-
---
-
-
-- ¿
-Es posible que una 
 
 --
 
