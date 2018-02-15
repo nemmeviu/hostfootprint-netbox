@@ -34,18 +34,17 @@ La compañia responsable por implementar el software verifica que la origen de l
 * Las informaciones de los archivos no es completa y no existe ningun plan de ordenar estos archivos.
 
 --
-# Pregunta:
+##### Pregunta:
  La empresa, que tiene que garantizar el flujo automatizado, y que tiene el tiempo de 2 meses para implementar toda una solucíón con muchos detalles,
 sin la información principal, y ademas de esto, sin tener como obtener la misma, va lograr implementar lo que vendió?
  
 --
 
-## NO -->
+## NO >
 
 ## SI
-   |
-  \ /
-
+## \ /
+##  .
 ++
 
 Fin de la apresentación
