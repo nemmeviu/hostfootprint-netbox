@@ -85,6 +85,16 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
+#### Riesgo
+
+* No sea para toda la region
+* Apertura de tienda
+* Soporte de campo
+* DC
+* Redes
+
+++
+
 # Responsabilidades
 
 --
