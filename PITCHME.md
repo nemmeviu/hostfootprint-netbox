@@ -46,7 +46,7 @@ FIN
 
 ++
 
-##### Escenario Actual - Equipos
+#### Escenario Actual - Equipos
 
 El encenario actual es un extracto de las conversaciones con las areas:
 * Apertura de Tiendas
@@ -59,7 +59,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-##### Escenario Actual - Día a día
+#### Escenario Actual - Día a día
 
 * Información descentralizada hasta entre equipos del mismo Pais.
 * No se tiene monitoreo de todos los puntos de falla de uno local.
@@ -67,7 +67,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 --
 
-# Escenario Futuro
+#### Escenario Futuro
 
 * Centralizar la informacion, con esto se logra disminuir el tiempo en los procesos de busqueda de informacion de locales, redes y contactos.}
 * Alertas activas, con esto logramos un mejor control de los equipos que se agregan
