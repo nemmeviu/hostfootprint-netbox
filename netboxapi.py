@@ -210,13 +210,18 @@ class NetboxAPI(object):
 
             self.get_prefix_from_sites()
 
-            # tenant if tenant
-            if kwargs['parent'] in [ 'tenant', 'site' ]:
-                self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
-                self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['tenant']['name'], 1)
-                self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
-                self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
-                self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
+            try:
+                # tenant if tenant
+                if kwargs['parent'] in [ 'tenant', 'site' ]:
+                    self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
+                    self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['tenant']['name'], 1)
+                    self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
+                    self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
+                    self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
+            except:
+                print('review your search:')                
+                print(self.g_nb['tenant'])
+                print(sys.exit(2))
 
     def output(self, output):
         '''

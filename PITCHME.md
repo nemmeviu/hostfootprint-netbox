@@ -43,11 +43,10 @@ FIN
 
 --
 
-Apertura de tiendas
+# Escenario Actual
 
-++
-
-problems
+* Alto tiempo em buscar bla bla bal
+* 
 
 ++
 
