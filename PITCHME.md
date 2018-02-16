@@ -85,7 +85,6 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-#### Escenario Futuro
 #### Riesgo
 
 * Nueva metodologia/herramienta sín alcance Regional.
@@ -96,7 +95,6 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-#### Escenario Futuro
 # Responsabilidades
 
 --
