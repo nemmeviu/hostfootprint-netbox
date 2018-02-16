@@ -82,7 +82,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ![Logo](https://www.cencosud.com/cencosud/site/artic/20160119/imag/foto_0000000320160119163856.png)
 
---
+++
 
 ##### Where is Netbox?
 
@@ -96,7 +96,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 * Data circuits - Long-haul circuits and providers
 * Secrets - Encrypted storage of credentials
 
---
+++
 
 * creators and comunity
 * why or why not
