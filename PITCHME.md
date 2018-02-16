@@ -87,8 +87,8 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 #### Riesgo
 
-* Que la nueva metodologia/herramienta no tenga un alcance para la Operación de toda la Región.
-* Que no cree un procedimiento de ingreso de datos a la herramienta frete a uno camibo/cierre/apertura de un local.
+* Nueva metodologia/herramienta sín alcance Regional.
+* Procedimiento de ingreso de datos a la herramienta frete a uno camibo/cierre/apertura de un local.
 * Que la orden no llegue con claridad hasta el area de soporte.
 * Que los lideres de DC no ingresen los datos de servidores, los contactos y direciónes.
 * Sin la redes bien documentadas, no hay camiño para lograr obtener información.
