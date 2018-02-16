@@ -76,7 +76,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 * Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos.
 * Alertas activas: con esto logramos que uno tecnico de suporte pueda agregar o sacar activos en monitoreo, incluso balanzas, impresoras y consulta precio.
-* Inventario graficos de los rack: con esto se facilita la entrega de datos ante un problema.
+* Inventario grafico de los racks: con esto se facilita la entrega de datos ante un problema.
 * Integración con herramienta de Monitoreo.
 
 ++
