@@ -61,8 +61,9 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ##### Escenario Actual - Día a día
 
-* Información descentralizada hasta entre equipos del mismo Pais
-* No se tiene monitoreo de todos los puntos de falla de uno local
+* Información descentralizada hasta entre equipos del mismo Pais.
+* No se tiene monitoreo de todos los puntos de falla de uno local.
+* Los inventários de los Racks están en planillas, lo que dificulta la busqueda y la actualización.
 
 --
 
