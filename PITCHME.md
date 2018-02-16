@@ -56,12 +56,14 @@ El encenario actual es un apañado de las conversaciones con las areas:
 * NOC
 * Redes y Comunicaciónes (nível 2 y 3)
 
+++
+
 ##### Escenario Actual - Día a día
 
 * Información descentralizada hasta entre equipos del mismo Pais
 * No se tiene monitoreo de todos los puntos de falla de uno local
 
-++
+--
 
 ground support technician
 
