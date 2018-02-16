@@ -5,7 +5,7 @@
 
 --
 
-Una compañia busca implementar las metodologias de desarrollo con el fin de automatizar procesos hasta lograr en realizar una gran tranformaciòn digital.
+Una compañia busca implementar las metodologias de desarrollo con el fin de automatizar procesos hasta lograr en realizar una gran tranformación digital.
 
 Para apoyar estos procesos la compañia adquirio uno de los mejores softwares ya creados.
 
