@@ -55,6 +55,7 @@ El encenario actual es un apañado de las conversaciones con las areas:
 * Mesa Especializada
 * NOC
 * Redes y Comunicaciónes (nível 2 y 3)
+* Monitoreo
 
 ++
 
