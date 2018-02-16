@@ -64,16 +64,20 @@ El encenario actual es un extracto de las conversaciones con las areas:
 * Información descentralizada hasta entre equipos del mismo Pais.
 * No se tiene monitoreo de todos los puntos de falla de uno local.
 * Los inventários de los Racks están en planillas, lo que dificulta la busqueda y la actualización.
+* No hay información completa y de buena calidad acerca de las características de cada local.
+
+--
+
+# Escenario Futuro
 
 --
 
 #### Escenario Futuro
 
 * Centralizar la informacion, con esto se logra disminuir el tiempo en los procesos de busqueda de informacion de locales, redes y contactos.
-* Alertas activas, con esto logramos un mejor control de los equipos que se agregan
+* Alertas activas, con esto logramos que uno tecnico de suporte pueda agregar o sacar activos em monitoreo, incluso balanzas, impresoras y consulta precio.
 * Inventario graficos de los rack, con esto se facilita la entrega de datos ante un problema.
-
-
+* Integración con herramienta de Monitoreo.
 
 ++
 
