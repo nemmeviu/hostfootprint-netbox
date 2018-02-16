@@ -66,6 +66,18 @@ El encenario actual es un apañado de las conversaciones con las areas:
 
 --
 
+# Escenario Futuro
+
+++
+
+# Riesgo
+
+++
+
+# Responsabilidades
+
+#
+
 ground support technician
 
 ++
