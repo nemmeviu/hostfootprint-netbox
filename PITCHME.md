@@ -48,7 +48,7 @@ FIN
 
 ##### Escenario Actual - Equipos
 
-El encenario actual es un apañado de las conversaciones con las areas:
+El encenario actual es un extracto de las conversaciones con las areas:
 * Apertura de Tiendas
 * Soporte Técnico
 * Data Center
