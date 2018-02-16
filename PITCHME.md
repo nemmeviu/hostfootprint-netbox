@@ -76,22 +76,6 @@ El encenario actual es un apañado de las conversaciones con las areas:
 
 # Responsabilidades
 
-#
-
-ground support technician
-
-++
-
-problems
-
-++
-
-challenge
-
-++
-
-benefits
-
 --
 
 # NETBOX
