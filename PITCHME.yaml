@@ -1,4 +1,2 @@
 horz-delim : --
 vert-delim : ++
-vert-delim-regexp : \+\+
-
