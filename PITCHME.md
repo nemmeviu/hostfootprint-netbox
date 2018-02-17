@@ -119,14 +119,10 @@ El encenario actual es un extracto de las conversaciones con las areas:
 ?Como logramos aletar esta necesidad desde una silla ta lejos? 
 
 ++
-#### Escenario Futuro
-# SOLUCIÓN
 
-++
+#### Escenario Futuro - ilustración
 
-#### Escenario Futuro
-
-![Logo](imgs/netbox.png)
+![topologia](imgs/netbox.png)
 
 --
 
@@ -155,5 +151,19 @@ El encenario actual es un extracto de las conversaciones con las areas:
 * integrations
 * automation
 * benefits
+
+++
+
+#### netbox - ventajas
+
+* posibilidad de integración con otras herramientas
+ * API
+ * Webhook
+* docker
+ * LDAP/AD y kubernetes |
+* python Django (lenguaje que ya trabajamos) |
+* base de datos impecable |
+* buena interface web |
+* open source
 
 --
