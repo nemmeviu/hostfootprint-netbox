@@ -107,6 +107,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 #### Escenario Futuro
 # Responsabilidades 
 > "- Por fin, el motivo de  la cita!"
+
 ··· William Shakespeare, poco antes de construir el edificio mas grande de la America Latina - 12 de junio de 2012
 
 --
