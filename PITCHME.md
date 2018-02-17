@@ -3,13 +3,13 @@
 
 ![Logo](https://www.cencosud.com/cencosud/site/artic/20160119/imag/foto_0000000320160119163856.png)
 
---
+++
 
 Una compañia busca implementar las metodologias de desarrollo con el fin de automatizar procesos hasta lograr en realizar una gran tranformación digital.
 
 Para apoyar estos procesos la compañia adquirio uno de los mejores softwares ya creados.
 
---
+++
 
 Con la nueva metodologia y el nuevo software la compañia busca:
 * Mismo frente a cambios diários, obtener información en tiempo real de sus locales físicos. |
@@ -17,14 +17,14 @@ Con la nueva metodologia y el nuevo software la compañia busca:
 * Ordenamiento centralizado de la infraestrutura de TI. |
 * Reportes de buena calidad, con alcance regional y actualizados. |
 
---
+++
 
 #### Introducción - Por Fin
 
 * Mejorar los tiempos de respuesta y la disponibilid de los servicios.
 * Lograr tomar desiciones con mejor claridad de la información.
 
---
+++
 
 #### Introducción - Por Fin
 
@@ -32,7 +32,7 @@ La compañia que es responsable por implementar el software verifica que las inf
 * Los archivos, siempre offline, no estan disponible en ningun lado y no existe ningun plano para ordenar esto. |
 * El software que tiene que garantizar el flujo automatizado, y que debe ser implementado en 2 meses tiene gran cantidad de detalles, y el tiempo deberia ser convertido en su configuración. |
 
---
+++
 
 #### Introducción - Pregunta final
 
