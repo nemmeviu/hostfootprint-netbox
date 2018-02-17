@@ -88,7 +88,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-#### Escenario Futuro
+#### Escenario Futuro: objetivos macros
 
 * Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos.
 * Alertas activas: con esto logramos que uno tecnico de suporte pueda agregar o sacar activos en monitoreo, incluso balanzas, impresoras y consulta precio.
@@ -97,12 +97,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-#### Escenario Futuro
-# Riesgo
-
-++
-
-#### Riesgo
+#### Escenario Futuro - Riesgo!!!!!!
 
 * Nueva metodologia/herramienta sín alcance Regional.
 * Procedimiento de ingreso de datos a la herramienta falla frente a uno camibo/cierre/apertura de un local.
@@ -112,20 +107,14 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-#### Escenario Futuro
-# CUSTO 
+#### Escenario Futuro - custo
 
 * custo de software = $0,00.
 * custo de mantener la orden = trabajo con responsabilidad.
 
 ++
 
-#### Escenario Futuro
-# Responsabilidades 
-
-++
-
-#### Responsabilidades
+#### Escenario Futuro: Responsabilidades
 
 ?Como logramos aletar esta necesidad desde una silla ta lejos? 
 
