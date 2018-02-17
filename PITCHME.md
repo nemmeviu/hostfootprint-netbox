@@ -126,7 +126,6 @@ El encenario actual es un extracto de las conversaciones con las areas:
 #### Escenario Futuro
 
 ![Logo](imgs/netbox.png)
----?image=imgs/netbox.png&size=auto 90%
 
 --
 
