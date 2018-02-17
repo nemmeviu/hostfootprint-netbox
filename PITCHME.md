@@ -108,7 +108,6 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-
 #### Escenario Futuro
 # Responsabilidades 
 
@@ -118,7 +117,15 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ?Como logramos aletar esta necesidad desde una silla ta lejos? 
 
+++
+#### Escenario Futuro
+# SOLUCIÓN
 
+++
+
+#### Escenario Futuro
+
+--?image=imgs/netbox.png&size=auto 90%
 
 --
 
