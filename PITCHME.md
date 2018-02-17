@@ -157,13 +157,12 @@ El encenario actual es un extracto de las conversaciones con las areas:
 #### netbox - ventajas
 
 * posibilidad de integración con otras herramientas
- * API
- * Webhook
+ * API y Webhook
 * docker
  * LDAP/AD y kubernetes |
 * python Django (lenguaje que ya trabajamos) |
-* base de datos impecable |
+ * postgresql - base de datos impecable y sín custo |
 * buena interface web |
-* open source
+* open source y con gran cantidad de seguidores/desarrolladores
 
 --
