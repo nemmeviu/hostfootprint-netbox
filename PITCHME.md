@@ -38,7 +38,7 @@ La compañia que es responsable por implementar el software verifica que las inf
 
 Sín la información principal, y ademas de esto, sin tener como obtener la misma, el software tiene como ser implementado con éxito?
 
-## @fa[angle-down] SI    |    NO @fa[angle-right] |
+## @fa[angle-down] SI    |    NO @fa[angle-right]
 
 ++
 
@@ -125,7 +125,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 #### Escenario Futuro
 
---?image=imgs/netbox.png&size=auto 90%
+---?image=imgs/netbox.png&size=auto 90%
 
 --
 
