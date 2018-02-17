@@ -53,6 +53,7 @@ FIN
 --
 
 # Escenario Actual
+![Logo](imgs/actual.png)
 
 ++
 
