@@ -89,15 +89,24 @@ El encenario actual es un extracto de las conversaciones con las areas:
 #### Riesgo
 
 * Nueva metodologia/herramienta sín alcance Regional.
-* Procedimiento de ingreso de datos a la herramienta frete a uno camibo/cierre/apertura de un local.
-* Que la orden no llegue con claridad hasta el area de soporte.
-* Que los lideres de DC no ingresen los datos de servidores, los contactos y direciónes.
-* Sin la redes bien documentadas, no hay camiño para lograr obtener información.
+* Procedimiento de ingreso de datos a la herramienta falla frente a uno camibo/cierre/apertura de un local.
+* Orden no llegue con claridad hasta el area de soporte.
+* Lideres de DC no ingresen los datos de servidores, los contactos o las direciónes.
+* RyC no documentan la redes y vlans , no hay camiño para lograr obtener información.
 
 ++
 
 #### Escenario Futuro
-# Responsabilidades
+# CUSTO 
+
+* custo de software = $0,00.
+* custo de mantener la orden = trabajo con responsabilidad.
+
+++
+
+#### Escenario Futuro
+# Responsabilidades 
+*por fin, el motivo de la cita!*
 
 --
 
