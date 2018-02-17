@@ -53,7 +53,6 @@ FIN
 --
 
 # Escenario Actual
-![Logo](imgs/actual.png)
 
 ++
 
@@ -76,6 +75,11 @@ El encenario actual es un extracto de las conversaciones con las areas:
 * No se tiene monitoreo de todos los puntos de falla de uno local.
 * Los inventários de los Racks están en planillas, lo que dificulta la busqueda y la actualización.
 * No hay información completa y de buena calidad acerca de las características de cada local.
+
+++
+
+#### Escenario Actual - ilustración
+![actual](imgs/actual.png)
 
 --
 
