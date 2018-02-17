@@ -80,6 +80,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 #### Escenario Actual - ilustración
 ![actual](imgs/actual.png)
+* lo mismo para RyC y DC ( 20 puntos offlines )
 
 --
 
