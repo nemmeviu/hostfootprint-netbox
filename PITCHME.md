@@ -5,11 +5,15 @@
 
 ++
 
+#### Introducción - contexto
+
 Una compañia busca implementar las metodologias de desarrollo con el fin de automatizar procesos hasta lograr en realizar una gran tranformación digital.
 
 Para apoyar estos procesos la compañia adquirio uno de los mejores softwares ya creados.
 
 ++
+
+#### Introducción - contexto
 
 Con la nueva metodologia y el nuevo software la compañia busca:
 * Mismo frente a cambios diários, obtener información en tiempo real de sus locales físicos. |
