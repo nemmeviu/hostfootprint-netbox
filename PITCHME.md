@@ -154,7 +154,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 ++
 
-#### netbox - ventajas
+#### netbox - ventajas técnicas
 
 * posibilidad de integración con otras herramientas
  * API y Webhook
@@ -163,6 +163,6 @@ El encenario actual es un extracto de las conversaciones con las areas:
 * python Django (lenguaje que ya trabajamos) |
  * postgresql - base de datos impecable y sín custo |
 * buena interface web |
-* open source y con gran cantidad de seguidores/desarrolladores
+* open source y con gran cantidad de seguidores/desarrolladores |
 
 --
