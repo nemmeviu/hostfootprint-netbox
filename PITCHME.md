@@ -118,7 +118,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 Una vez que las equipos tengan claro cuanto tiempo y información se pierde
 tenendo una estructura offline y fuera de estandar, van buscar mejorar
-la calidad de lo que están haciendo.
+la calidad de lo que ven haciendo.
 
 La responsabilidad de organizar la información es una tarea que no esta bien
 definida y mientras esto no empieze, el esforzo sin inteligencia y el
