@@ -92,7 +92,7 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 * Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos. |
 * Integración con Monitoreo: con esto logramos tener un punto central de información que se replica a reportes, monitoreos, y equipos. |
-* Accesibilidad: con esto logramos que uno técnico de suporte pueda agregar o sacar una balanza por ejemplo. |
+* Accesibilidad: con esto logramos que uno técnico en campo pueda agregar una balanza, por ejemplo. |
 * Inventario detallado de los racks: con esto es posible saber la cantidad de hardware que tenemos y obtener informácion frente a una urgencia. |
 
 
