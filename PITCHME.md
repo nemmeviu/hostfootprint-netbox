@@ -90,10 +90,11 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 #### Escenario Futuro: objetivos macros
 
-* Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos.
-* Alertas activas: con esto logramos que uno tecnico de suporte pueda agregar o sacar activos en monitoreo, incluso balanzas, impresoras y consulta precio.
-* Inventario grafico de los racks: con esto se facilita la entrega de datos ante un problema.
-* Integración con herramienta de Monitoreo.
+* Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos. |
+* Integración con herramienta de Monitoreo: con esto logramos tener un punto central de información que se replica a reportes, monitoreos, y equipos. |
+* Monitoreo disponible en todas las capas: con esto logramos que hasta uno técnico de suporte pueda agregar o sacar una balanza o uno consulta precio. |
+* Inventario detallado de los racks: con esto es posible saber la cantidad de hardware que tenemos y obtener informácion frente a una urgencia. |
+
 
 ++
 
