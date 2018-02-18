@@ -164,4 +164,4 @@ dolor de cabeza seran aliados de nuestro día a día.
 * buena interface web |
 * open source y con gran cantidad de seguidores/desarrolladores |
 
-(netbox.cencosud.corp/)[http://netbox.cencosud.corp]
+netbox.cencosud.corp/(http://netbox.cencosud.corp)
