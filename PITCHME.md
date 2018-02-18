@@ -116,10 +116,6 @@ El encenario actual es un extracto de las conversaciones con las areas:
 
 #### Escenario Futuro: Responsabilidades
 
-https://duckduckgo.com/?q=webhooks&t=ffab&atb=v65-7_d&ia=web
-
-
-
 Una vez que las equipos tengan claro cuanto tiempo y información se pierde
 tenendo una estructura offline y fuera de estandar, van buscar mejorar
 la calidad do que hacen.
