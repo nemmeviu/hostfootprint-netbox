@@ -16,17 +16,17 @@ Para apoyar estos procesos la compañia adquirio uno de los mejores softwares ya
 #### Introducción - contexto
 
 Con la nueva metodologia y el nuevo software la compañia busca:
-* Mismo frente a cambios diários, obtener información en tiempo real de sus locales físicos. |
-* Reforzar el monitoreo de los locales, logrando mapear muchos puntos que hoy no tienen visibilidad. |
-* Ordenamiento centralizado de la infraestrutura de TI. |
-* Reportes de buena calidad, con alcance regional y actualizados. |
+* Mismo frente a cambios diários, obtener información en tiempo real de sus locales físicos |
+* Reforzar el monitoreo de los locales, logrando mapear muchos puntos que hoy no tienen visibilidad |
+* Ordenamiento centralizado de la infraestrutura de TI |
+* Reportes de buena calidad, con alcance regional y actualizados |
 
 ++
 
 #### Introducción - Por Fin
 
-* Mejorar los tiempos de respuesta y la disponibilid de los servicios.
-* Lograr tomar desiciones con mejor claridad de la información.
+* Mejorar los tiempos de respuesta y la disponibilid de los servicios |
+* Lograr tomar desiciones con mejor claridad de la información |
 
 ++
 
@@ -59,22 +59,22 @@ FIN
 #### Escenario Actual - Equipos
 
 Un extracto de las conversaciones con las areas:
-* Apertura de Tiendas
-* Soporte Técnico
-* Data Center
-* Mesa Especializada
-* NOC
-* Redes y Comunicaciónes (nível 2 y 3)
-* Monitoreo
+* Apertura de Tiendas |
+* Soporte Técnico |
+* Data Center |
+* Mesa Especializada |
+* NOC |
+* Redes y Comunicaciónes (nível 2 y 3) |
+* Monitoreo |
 
 ++
 
 #### Escenario Actual - Día a día
 
-* Información descentralizada hasta entre equipos del mismo Pais
-* No se tiene monitoreo de todos los puntos de falla de uno local
-* Los inventários de los Racks están en planillas, lo que dificulta la busqueda y la actualización
-* No hay información completa y de buena calidad acerca de las características de cada local
+* Información descentralizada hasta entre equipos del mismo Pais |
+* No se tiene monitoreo de todos los puntos de falla de uno local |
+* Los inventários de los Racks están en planillas, lo que dificulta la busqueda y la actualización |
+* No hay información completa y de buena calidad acerca de las características de cada local |
 
 ++
 
