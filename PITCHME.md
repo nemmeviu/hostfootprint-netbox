@@ -90,10 +90,10 @@ Un extracto de las conversaciones con las areas:
 
 #### Escenario Futuro: objetivos macros
 
-* Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos |
-* Integracioenes: con esto logramos tener un punto central de información que se replica a reportes, monitoreos, y equipos |
-* Accesibilidad: con esto logramos que uno técnico en campo pueda agregar una balanza, por ejemplo |
-* Inventario detallado: con esto es posible saber los hardwares que tenemos y obtener informácion frente a una urgencia |
+* Centralizar la información: Disminuir el tiempo en los procesos de busqueda de locales, redes y contactos |
+* Integracioenes: Tener un punto central de información que se replica a reportes, monitoreos, y equipos |
+* Accesibilidad: Técnicos en campo puedan agregar una balanza al monitoreo, por ejemplo |
+* Inventario detallado: Ordenar los hardwares en sus locales y obtener informácion frente a una urgencia |
 * IPAM: Documentacíon de toda los escopos de Red
 
 ++
