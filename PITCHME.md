@@ -32,9 +32,9 @@ Con la nueva metodologia y el nuevo software la compañia busca:
 
 #### Introducción - Por Fin
 
-Las informaciones claves y necesarias para el éxito de la solución, ya acordadas antes de la venta, no están disponible en ningun lado y no existe ningun plano para ordenar esto.
+Las informaciones claves y necesarias para el éxito de la solución, no están disponible en ningun lado y no existe ningun plano para ordenar esto.
 
-El software que tiene que garantizar el flujo automatizado, y que debe ser implementado en 2 meses tiene gran cantidad de detalles, y el tiempo deberia ser convertido en su configuración. |
+El software que tiene que garantizar el flujo automatizado, y que debe ser implementado en 2 meses tiene gran cantidad de detalles.
 
 ++
 
