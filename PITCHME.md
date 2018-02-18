@@ -139,7 +139,7 @@ dolor de cabeza seran aliados de nuestro día a día.
 
 ++
 
-##### Where is Netbox?
+##### netbox: Where is Netbox?
 
 [NetBox](https://netbox.readthedocs.io/en/latest/) is an open source web application initially conceived by the network engineering team at [DigitalOcean](https://www.digitalocean.com/). Designed to help network management:
 
@@ -150,14 +150,6 @@ dolor de cabeza seran aliados de nuestro día a día.
 * Virtualization - Virtual machines and clusters
 * Data circuits - Long-haul circuits and providers
 * Secrets - Encrypted storage of credentials
-
-++
-
-* creators and comunity
-* why or why not
-* integrations
-* automation
-* benefits
 
 ++
 
@@ -172,4 +164,4 @@ dolor de cabeza seran aliados de nuestro día a día.
 * buena interface web |
 * open source y con gran cantidad de seguidores/desarrolladores |
 
---
+(netbox.cencosud.corp/)[http://netbox.cencosud.corp]
