@@ -88,6 +88,12 @@ Un extracto de las conversaciones con las areas:
 
 ++
 
+#### Escenario Futuro - ilustración
+
+![topologia](imgs/netbox.png)
+
+++
+
 #### Escenario Futuro: objetivos macros
 
 * Centralizar la información: Disminuir el tiempo en los procesos de busqueda de locales, redes y contactos |
@@ -101,10 +107,10 @@ Un extracto de las conversaciones con las areas:
 #### Escenario Futuro - Riesgo!!!!!!
 
 * Nueva metodologia/herramienta sín alcance Regional |
-* Procedimiento de ingreso de datos a la herramienta falla frente a uno camibo/cierre/apertura de un local |
+* Ingreso de datos a la herramienta falla frente a uno camibo/cierre/apertura de un local |
 * Orden no llegue con claridad hasta el area de soporte |
-* Lideres de DC no ingresen los datos de servidores, los contactos o las direciónes |
-* RyC no documentan la redes y vlans , no hay camiño para lograr obtener información |
+* DC no ingresen los detalles de los servidores, los contactos o las direciónes |
+* RyC no documentan la redes y vlans |
 
 ++
 
@@ -124,12 +130,6 @@ la calidad de lo que ven haciendo.
 La responsabilidad de organizar la información es una tarea que no esta bien
 definida y mientras esto no empieze, el esforzo sin inteligencia y el
 dolor de cabeza seran aliados de nuestro día a día.
-
-++
-
-#### Escenario Futuro - ilustración
-
-![topologia](imgs/netbox.png)
 
 --
 
