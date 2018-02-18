@@ -123,12 +123,12 @@ Un extracto de las conversaciones con las areas:
 
 #### Escenario Futuro: Responsabilidades
 
-Una vez que las equipos tengan claro cuanto tiempo y información se pierde
+Cuando las equipos tengan claro cuanto tiempo y información se pierde
 tenendo una estructura offline y fuera de estandar, van buscar mejorar
-la calidad de lo que ven haciendo.
+la calidad de sus trabajos.
 
-La responsabilidad de organizar la información es una tarea que no esta bien
-definida y mientras esto no empieze, el esforzo sin inteligencia y el
+La organización de la información es una tarea que no esta bien
+definida, y mientras esto no empieze, el esforzo sin inteligencia y el
 dolor de cabeza seran aliados de nuestro día a día.
 
 --
