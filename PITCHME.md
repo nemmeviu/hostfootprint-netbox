@@ -94,7 +94,7 @@ Un extracto de las conversaciones con las areas:
 * Integracioenes: Tener un punto central de información que se replica a reportes, monitoreos, y equipos |
 * Accesibilidad: Técnicos en campo puedan agregar una balanza al monitoreo, por ejemplo |
 * Inventario detallado: Ordenar los hardwares en sus locales y obtener informácion frente a una urgencia |
-* IPAM: Documentacíon de toda los escopos de Red
+* IPAM: Documentacíon de toda los escopos de Red |
 
 ++
 
