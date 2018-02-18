@@ -71,10 +71,10 @@ Un extracto de las conversaciones con las areas:
 
 #### Escenario Actual - Día a día
 
-* Información descentralizada hasta entre equipos del mismo Pais.
-* No se tiene monitoreo de todos los puntos de falla de uno local.
-* Los inventários de los Racks están en planillas, lo que dificulta la busqueda y la actualización.
-* No hay información completa y de buena calidad acerca de las características de cada local.
+* Información descentralizada hasta entre equipos del mismo Pais
+* No se tiene monitoreo de todos los puntos de falla de uno local
+* Los inventários de los Racks están en planillas, lo que dificulta la busqueda y la actualización
+* No hay información completa y de buena calidad acerca de las características de cada local
 
 ++
 
@@ -90,11 +90,11 @@ Un extracto de las conversaciones con las areas:
 
 #### Escenario Futuro: objetivos macros
 
-* Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos. |
-* Integracioenes: con esto logramos tener un punto central de información que se replica a reportes, monitoreos, y equipos. |
-* Accesibilidad: con esto logramos que uno técnico en campo pueda agregar una balanza, por ejemplo. |
-* Inventario detallado: con esto es posible saber los hardwares que tenemos y obtener informácion frente a una urgencia. |
-
+* Centralizar la información: con esto se logra disminuir el tiempo en los procesos de busqueda de locales, redes y contactos |
+* Integracioenes: con esto logramos tener un punto central de información que se replica a reportes, monitoreos, y equipos |
+* Accesibilidad: con esto logramos que uno técnico en campo pueda agregar una balanza, por ejemplo |
+* Inventario detallado: con esto es posible saber los hardwares que tenemos y obtener informácion frente a una urgencia |
+* IPAM: Documentacíon de toda los escopos de Red
 
 ++
 
