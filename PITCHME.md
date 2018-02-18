@@ -40,7 +40,7 @@ El software que tiene que garantizar el flujo automatizado, y que debe ser imple
 
 #### Introducción - Pregunta final
 
-Sín la información principal y sín tener como obtener la misma, el software tiene como ser implementado con éxito?
+Sín la información principal el software tiene como ser implementado con éxito?
 
 ## @fa[angle-down] SI    |    NO @fa[angle-right]
 
