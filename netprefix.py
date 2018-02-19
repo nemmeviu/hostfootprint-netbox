@@ -9,7 +9,6 @@ return:
 '''
 import json, os, sys
 
-
 class NbPrefix(object):
     '''
     receive one netbox prefix object

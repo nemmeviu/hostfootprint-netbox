@@ -107,7 +107,7 @@ Un extracto de las conversaciones con las areas:
 #### Escenario Futuro - Riesgo!!!!!!
 
 * Nueva metodologia/herramienta sín alcance Regional |
-* Ingreso de datos a la herramienta falla frente a uno camibo/cierre/apertura de un local |
+* Ingreso de datos a la herramienta falla frente a uno cambio/cierre/apertura de un local |
 * Orden no llegue con claridad hasta el area de soporte |
 * DC no ingresen los detalles de los servidores, los contactos o las direciónes |
 * RyC no documentan la redes y vlans |
