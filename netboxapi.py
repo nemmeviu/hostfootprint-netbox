@@ -209,6 +209,8 @@ class NetboxAPI(object):
             print('match')
             print(kwargs['match'])
 
+            # adentrar else aqui !!!
+
             self.get_prefix_from_sites()
 
             #print('get principal')
