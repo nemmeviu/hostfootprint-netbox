@@ -210,23 +210,26 @@ class NetboxAPI(object):
 
             self.get_prefix_from_sites()
 
-            print('coisa linda')
-            print(self.match_result)
-            print(self.match_result['results'][0])
+            #print('get principal')
+            #print(self.match_result)
+            #print(self.match_result['results'][0])
 
-            try:
-                # tenant if tenant
-                if kwargs['parent'] in [ 'tenant', 'site' ]:
-                    self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
-                    print(self.g_nb['tenant'])
-                    self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['name'], 1)
-                    self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
-                    self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
-                    self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
-            except:
-                print('review your search:')                
+            #try:
+            #    # tenant if tenant
+            #if kwargs['parent'] in [ 'tenant', 'site' ]:
+            if kwargs['parent'] in [ 'site' ]:                
+                self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
+                self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['name'], 1)
                 print(self.g_nb['tenant'])
-                print(sys.exit(2))
+                self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
+                print('oovvoo')
+                print(self.g_nb['tenant'])
+                self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
+                self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
+            #except:
+            #    print('review your search:')                
+            #    print(self.g_nb['tenant'])
+            #    print(sys.exit(2))
 
     def output(self, output):
         '''
@@ -273,8 +276,13 @@ class NetboxAPI(object):
         '''
         Return json
         '''
-        json_nb = json.loads(nb_obj.data)
-        return(json_nb)
+        try: 
+            json_nb = json.loads(nb_obj.data)
+            return(json_nb)
+        except:
+            print('fail to get data from this object')
+            print(nb_obj)
+            sys.exit(2)
 
     # def get_nb_api(self, nb_target, identify):
     #     '''

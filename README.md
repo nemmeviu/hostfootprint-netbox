@@ -30,3 +30,12 @@ Generate bashboard of day by day evolution
 Objective
 
 Difference
+
+
+##### usage
+
+Get list of sites by tenant
+```
+./getnetworks.py --parent tenant --search sites --output screen \n
+  --host netbox.localhost.corp --port 80 --match tenant-slug
+```
