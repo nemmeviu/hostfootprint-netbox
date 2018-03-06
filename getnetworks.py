@@ -49,6 +49,7 @@ parser.add_argument(
 parser.add_argument(
     '--match',
     dest='match',
+    default=False,
     help='Find and Print'
 )
 #
@@ -81,7 +82,10 @@ port = args.port
 
 netbox = NetboxAPI()
 netbox.conn(host, port)
-netbox.in_action(match=match, parent=parent, search=search)
+if match:
+    netbox.in_action(match=match, parent=parent, search=search)
+else:
+    netbox.in_action(parent=parent, search=search)
 netbox.output(output)
 #netbox.parse_prefixes()
 
