@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-
 from netboxapi import NetboxAPI
 import argparse
-        
+
 parser = argparse.ArgumentParser(
     description='Netbox API -> pynmap -> elasticsearch',
     epilog='hostfootprint with netbox, elasticsearch and nmap integration.'

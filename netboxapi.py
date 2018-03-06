@@ -210,11 +210,16 @@ class NetboxAPI(object):
 
             self.get_prefix_from_sites()
 
+            print('coisa linda')
+            print(self.match_result)
+            print(self.match_result['results'][0])
+
             try:
                 # tenant if tenant
                 if kwargs['parent'] in [ 'tenant', 'site' ]:
                     self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
-                    self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['tenant']['name'], 1)
+                    print(self.g_nb['tenant'])
+                    self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['name'], 1)
                     self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
                     self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
                     self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
@@ -234,22 +239,31 @@ class NetboxAPI(object):
             "prepair object to nmap process"
             nmap_object = {}
             for nb_obj in self.match_result['results']:
-                nmap_object['g_flag'] = nb_obj['tenant']['name']
+                nmap_object['g_flag'] = nb_obj['name']
                 nmap_object['location'] = nb_obj['name']
-                nmap_object['local_address'] = nb_obj['physical_address']
-                nmap_object['city'] = nb_obj['region']['name']
+                try:
+                    nmap_object['local_address'] = nb_obj['physical_address']
+                except:
+                    pass
+                try:
+                    nmap_object['city'] = nb_obj['region']['name']
+                except:
+                    pass
                 nmap_object['g_businessunit'] = self.g_nb['tenant']
 
-                # get country ...
-                # inside loop because the country can change
-                if nmap_object['city'] not in self.g_nb['country'].keys():
-                    country = self.make_nb_url('tenant', 'regions')
-                    country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
-                    country = self.http.request('GET', country)
-                    country = self.json_import(country)
-                    country = country['results'][0]['parent']['name']
-                    self.g_nb['country'][nmap_object['city']] = country
-                    nmap_object['g_country'] = country
+                try:
+                    # get country ...
+                    # inside loop because the country can change
+                    if nmap_object['city'] not in self.g_nb['country'].keys():
+                        country = self.make_nb_url('tenant', 'regions')
+                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
+                        country = self.http.request('GET', country)
+                        country = self.json_import(country)
+                        country = country['results'][0]['parent']['name']
+                        self.g_nb['country'][nmap_object['city']] = country
+                        nmap_object['g_country'] = country
+                except:
+                    pass
 
                 print(json.dumps(nmap_object, indent=4, sort_keys=True))
             print('elasticsearch save :)')
@@ -262,121 +276,121 @@ class NetboxAPI(object):
         json_nb = json.loads(nb_obj.data)
         return(json_nb)
 
-    def get_nb_api(self, nb_target, identify):
-        '''
-        Make the api request
-        '''
-        nb_target = self.nb_api['prefix'][nb_target] + identify + '?limit=4000'
-        print(nb_target)
+    # def get_nb_api(self, nb_target, identify):
+    #     '''
+    #     Make the api request
+    #     '''
+    #     nb_target = self.nb_api['prefix'][nb_target] + identify + '?limit=4000'
+    #     print(nb_target)
 
-        try:
-            nb_result = self.http.request('GET', nb_target)
-            print(nb_result.data)
-        except:
-            print('Fail to connect on: ' + nb_target)
-            sys.exit(2)
+    #     try:
+    #         nb_result = self.http.request('GET', nb_target)
+    #         print(nb_result.data)
+    #     except:
+    #         print('Fail to connect on: ' + nb_target)
+    #         sys.exit(2)
 
-        if nb_result.status == 200:
-            return(self.json_import(nb_result))
+    #     if nb_result.status == 200:
+    #         return(self.json_import(nb_result))
 
-    def get_countries(self):
+    # def get_countries(self):
 
-        try:
-            rirs = self.get_nb_api('rir', '?name=' + self.country)
-        except:
-            rirs = self.get_nb_api('rir', '')            
+    #     try:
+    #         rirs = self.get_nb_api('rir', '?name=' + self.country)
+    #     except:
+    #         rirs = self.get_nb_api('rir', '')            
 
-        self.netbox_obj = rirs
-        #return(rirs)
+    #     self.netbox_obj = rirs
+    #     #return(rirs)
 
-        #all_agreggates = self.get_nb_api('rir')
+    #     #all_agreggates = self.get_nb_api('rir')
 
-        #for agreggate in all_agreggates['results']:
-        #    country = {
-        #        'network': agreggate['prefix'],
-        #        'country': agreggate['rir']['name']
-        #    }
-        #    list_country.append(country)
-        #return list_country
+    #     #for agreggate in all_agreggates['results']:
+    #     #    country = {
+    #     #        'network': agreggate['prefix'],
+    #     #        'country': agreggate['rir']['name']
+    #     #    }
+    #     #    list_country.append(country)
+    #     #return list_country
 
-    def parse_prefixes(self):
+    # def parse_prefixes(self):
         
-        #countries = self.get_countries()
-        networks = []
-        #network_valid = []
-        #network_invalid = []
+    #     #countries = self.get_countries()
+    #     networks = []
+    #     #network_valid = []
+    #     #network_invalid = []
 
-        for country in countries:
-            network = country['network']
-            network = network.replace('/','%2F')
+    #     for country in countries:
+    #         network = country['network']
+    #         network = network.replace('/','%2F')
 
-            # need FIX - no get inside loop
-            prefixes_by_country = self.get_nb_api('prefix', network)
+    #         # need FIX - no get inside loop
+    #         prefixes_by_country = self.get_nb_api('prefix', network)
 
-            for prefix in prefixes_by_country['results']:
-                # print(json.dumps(prefix, indent=4, sort_keys=True))
-                try:
-                    site_id = prefix['site']['id']
+    #         for prefix in prefixes_by_country['results']:
+    #             # print(json.dumps(prefix, indent=4, sort_keys=True))
+    #             try:
+    #                 site_id = prefix['site']['id']
 
-                    # need FIX - get inside loop, inside loop - bad!!!
-                    site = self.get_nb_api('site', str(site_id))
-                    #
-                    site_address = site['physical_address']
-                    site_city = site['region']['name']
-                    tenant_id = site['tenant']['id']
+    #                 # need FIX - get inside loop, inside loop - bad!!!
+    #                 site = self.get_nb_api('site', str(site_id))
+    #                 #
+    #                 site_address = site['physical_address']
+    #                 site_city = site['region']['name']
+    #                 tenant_id = site['tenant']['id']
 
-                    # need FIX - get inside loop, inside loop - bad!!!
-                    tenant = self.get_nb_api('tenant', str(tenant_id))
-                    #
-                    flag = tenant['name']
-                    businessunit = tenant['group']['name']
+    #                 # need FIX - get inside loop, inside loop - bad!!!
+    #                 tenant = self.get_nb_api('tenant', str(tenant_id))
+    #                 #
+    #                 flag = tenant['name']
+    #                 businessunit = tenant['group']['name']
 
-                    # validate region
-                    region_id = site['region']['id']
-                    region = self.get_nb_api('regions', str(region_id))
-                    site_country = region['parent']['name']
+    #                 # validate region
+    #                 region_id = site['region']['id']
+    #                 region = self.get_nb_api('regions', str(region_id))
+    #                 site_country = region['parent']['name']
 
-                    parsed = {
-                        'country' : country['country'],
-                        'network' : prefix['prefix'],
-                        'site_name' : prefix['site']['name'],
-                        'site_id' : site_id,
-                        'site_address': site_address,
-                        'site_city': site_city,
-                        'flag': flag,
-                        'businessunit':businessunit,
-                    }
+    #                 parsed = {
+    #                     'country' : country['country'],
+    #                     'network' : prefix['prefix'],
+    #                     'site_name' : prefix['site']['name'],
+    #                     'site_id' : site_id,
+    #                     'site_address': site_address,
+    #                     'site_city': site_city,
+    #                     'flag': flag,
+    #                     'businessunit':businessunit,
+    #                 }
 
-                    if prefix['vlan'] is not None:
-                        parsed['vlan_id'] = prefix['vlan']['vid']
-                        parsed['vlan_name'] = prefix['vlan']['name']
+    #                 if prefix['vlan'] is not None:
+    #                     parsed['vlan_id'] = prefix['vlan']['vid']
+    #                     parsed['vlan_name'] = prefix['vlan']['name']
                     
-                    #if country['country'] == site_country:
-                    #    network_valid.append(parsed)
-                    #else:
-                    #    network_invalid.append(parsed)
-                    network.append(parsed)                    
-                except:
-                    pass
+    #                 #if country['country'] == site_country:
+    #                 #    network_valid.append(parsed)
+    #                 #else:
+    #                 #    network_invalid.append(parsed)
+    #                 network.append(parsed)                    
+    #             except:
+    #                 pass
 
-        return(network)
-        print(json.dumps(network, indent=4, sort_keys=True))
-        #print(json.dumps(network_valid, indent=4, sort_keys=True))
-        #print('===============================')            
-        #print(json.dumps(network_invalid, indent=4, sort_keys=True))
+    #     return(network)
+    #     print(json.dumps(network, indent=4, sort_keys=True))
+    #     #print(json.dumps(network_valid, indent=4, sort_keys=True))
+    #     #print('===============================')            
+    #     #print(json.dumps(network_invalid, indent=4, sort_keys=True))
 
-    def base_scan(self, prefix, sites):
-        print(len(prefix))
-        print(len(sites))        
-        #print(prefix)
-        #for x in prefix:
-        #    if x['site'] is not None:
-        #        print(x['site'])
-        #        print('looping 1')
-        #        for k in sites:
-        #            if x['site']['name'] == k['name']:
-        #                print(k['id'])
-        #                print(x['site']['id'])
-           #print(sites['id'][x['sites']['id']])
-        #pass
+    # def base_scan(self, prefix, sites):
+    #     print(len(prefix))
+    #     print(len(sites))        
+    #     #print(prefix)
+    #     #for x in prefix:
+    #     #    if x['site'] is not None:
+    #     #        print(x['site'])
+    #     #        print('looping 1')
+    #     #        for k in sites:
+    #     #            if x['site']['name'] == k['name']:
+    #     #                print(k['id'])
+    #     #                print(x['site']['id'])
+    #        #print(sites['id'][x['sites']['id']])
+    #     #pass
 
