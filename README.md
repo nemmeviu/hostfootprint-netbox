@@ -11,8 +11,6 @@ $ python3
 >>> nb.version
 'v0.1'
 >>> exit()
-$ ./getnetworks.py --parent tenant --output screen \
- --url http://netbox.domain.com/api/ --search sites --match ti
 ```
 * ti (tenent)
 * sites (type of search)

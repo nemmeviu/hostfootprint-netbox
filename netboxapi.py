@@ -121,7 +121,7 @@ class NetboxAPI(object):
             self.http = urllib3.HTTPConnectionPool(
                 host=host,
                 port=port,
-                maxsize=100
+                maxsize=2000
             )
 
         try:
@@ -162,7 +162,7 @@ class NetboxAPI(object):
             sys.exit(2)
         return(apiurl)
 
-    def match(self, match, parent, search, limit=400):
+    def match(self, match, parent, search, limit=1000):
         '''
         find and print objects on netbox api.
         '''
@@ -173,8 +173,7 @@ class NetboxAPI(object):
         apiurl = self.make_nb_url(parent, search)
 
         nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
-        print('trying to find ' + match + ' with:')
-        print(nb_target)
+        print('Trying to find %s with: %s' % (match, nb_target))
         
         try:
             nb_result = self.http.request('GET', nb_target)
@@ -207,6 +206,8 @@ class NetboxAPI(object):
                 kwargs['parent'],
                 kwargs['search'],
             )
+            print('match')
+            print(kwargs['match'])
 
             self.get_prefix_from_sites()
 
@@ -214,22 +215,24 @@ class NetboxAPI(object):
             #print(self.match_result)
             #print(self.match_result['results'][0])
 
-            #try:
-            #    # tenant if tenant
-            #if kwargs['parent'] in [ 'tenant', 'site' ]:
-            if kwargs['parent'] in [ 'site' ]:                
-                self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
-                self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['name'], 1)
+            try:
+                # tenant if tenant
+                #if kwargs['parent'] in [ 'tenant', 'site' ]:
+                if kwargs['parent'] in [ 'site' ]:                
+                    self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
+                    self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['name'], 1)
+                    self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
+                    #print('url:')
+                    #print(self.g_nb['tenant'])
+                    self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
+                    self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
+            except:
+                print('review your search:')                
                 print(self.g_nb['tenant'])
-                self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
-                print('oovvoo')
-                print(self.g_nb['tenant'])
-                self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
-                self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
-            #except:
-            #    print('review your search:')                
-            #    print(self.g_nb['tenant'])
-            #    print(sys.exit(2))
+                print(sys.exit(2))
+        else:
+            print('match not found ...')
+                
 
     def output(self, output):
         '''
@@ -260,7 +263,7 @@ class NetboxAPI(object):
                     if nmap_object['city'] not in self.g_nb['country'].keys():
                         country = self.make_nb_url('tenant', 'regions')
                         country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
-                        country = self.http.request('GET', country)
+                        country = self.http.request('GET', countryg)
                         country = self.json_import(country)
                         country = country['results'][0]['parent']['name']
                         self.g_nb['country'][nmap_object['city']] = country
