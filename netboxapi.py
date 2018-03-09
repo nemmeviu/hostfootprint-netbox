@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import urllib3, json, os, sys
 
+from elasticsearch import Elasticsearch
+
+
 # attribute = {
 #     'map_type': '',
 #     'ip': '',
@@ -138,7 +141,7 @@ class NetboxAPI(object):
                 'match': {
                     'rir': self.netbox_api_url + '/api/ipam/rirs/',
                     'agregates': self.netbox_api_url + '/api/ipam/agregates/',
-                    'prefix': self.netbox_api_url + '/api/ipam/prefixes/?site=',
+                    'prefix': self.netbox_api_url + '/api/ipam/prefixes/?',
                 },
                 'all': {
                     'rir': self.netbox_api_url + '/api/ipam/rirs/',
@@ -182,17 +185,17 @@ class NetboxAPI(object):
             sys.exit(2)
         return(apiurl)
 
-    def match(self, match_type, match, parent, search, limit=1000):
+    def match(self, match, parent, search, limit=1000):
         '''
         find and print objects on netbox api.
         '''
         match_result = {}
 
         print('match_type: %s, match: %s, parent: %s, search: %s' %
-              (match_type, match, parent, search)
+              (self.match_type, match, parent, search)
         )
         
-        apiurl = self.make_nb_url(parent, match_type, search)
+        apiurl = self.make_nb_url(parent, self.match_type, search)
 
         if match is False:
             nb_target = '%s?limit=%s' % (apiurl, limit)
@@ -208,7 +211,7 @@ class NetboxAPI(object):
             print('Fail to connect on: ' + nb_target)
             self.match_result = {}
 
-    def get_prefix_from_sites(self, limit=400):
+    def get_prefix_from_search(self, limit=400):
         '''
         get list of prefixes inside object
         '''
@@ -216,10 +219,25 @@ class NetboxAPI(object):
         if 'results' in self.match_result.keys():
             results = self.match_result['results']
             for slug in results:
-                nb_prefix = '%s%s&limit=%s' % (apiurl, slug['slug'], limit)
+                nb_prefix = '%s%s=%s&limit=%s' % (apiurl, self.search_string, slug['slug'], limit)
+                print(nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['prefix'] = prefix
+                
+    def get_sites_from_search(self, limit=1000):
+        '''
+        get list of prefixes inside object
+        '''
+        apiurl = self.make_nb_url('tenant', 'match', 'sites')
+        if 'results' in self.match_result.keys():
+            results = self.match_result['results']
+            for slug in results:
+                nb_prefix = '%s%s&limit=%s' % (apiurl, slug['slug'], limit)
+                print(nb_prefix)
+                nb_result = self.http.request('GET', nb_prefix)
+                prefix = self.json_import(nb_result)
+                slug['sites'] = prefix
                 
     def search(self, **kwargs):
         '''
@@ -228,16 +246,20 @@ class NetboxAPI(object):
         '''
         print('search: %s' % kwargs['search'])
 
+
+        self.match_type = kwargs['match_type']
+        self.search_string = kwargs['search']
+
         # create self.match_result with results
         self.match(
-            kwargs['match_type'],
             kwargs['match'],
             kwargs['parent'],
             kwargs['search'],
         )
 
         # add prefix inside sites objects
-        self.get_prefix_from_sites()
+        self.get_prefix_from_search()
+        self.get_sites_from_search()
         
         try:
             # tenant if tenant
@@ -254,6 +276,33 @@ class NetboxAPI(object):
             print('review your search:')                
             print(self.g_nb['tenant'])
             print(sys.exit(2))
+
+
+    def save_dashboard(self, output, es_server=False, es_port=False):
+        '''
+        make the output:
+        screen or db
+        '''
+        
+        if output == 'screen':
+            print(json.dumps(self.match_result, indent=4, sort_keys=True))
+        if output == 'db':
+            
+            try:
+                es = Elasticsearch(es_server)
+                es.info()
+            except:
+                print('fail to connect')
+                sys.exit(2)
+            
+            INDEX='netbox-dashboard'
+
+            es_obj = {}
+            for i in self.match_result['results']:
+                es_obj['g_flag'] = i['name']
+                es_obj['prefix'] = i['prefix']['count']
+                es_obj['sites'] = i['sites']['count']
+                print(es_obj)
 
     def output(self, output):
         '''
@@ -294,7 +343,7 @@ class NetboxAPI(object):
 
                 print(json.dumps(nmap_object, indent=4, sort_keys=True))
             print('elasticsearch save :)')
-            #print(self.match_result)
+
             
     def json_import(self, nb_obj):
         '''
