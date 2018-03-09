@@ -299,10 +299,12 @@ class NetboxAPI(object):
 
             es_obj = {}
             for i in self.match_result['results']:
+
+                _id = self.search_string 
                 es_obj['g_flag'] = i['name']
                 es_obj['prefix'] = i['prefix']['count']
                 es_obj['sites'] = i['sites']['count']
-                print(es_obj)
+                es.index(index=INDEX, doc_type='infra', id=_id, body=es_obj)
 
     def output(self, output):
         '''

@@ -30,7 +30,16 @@ Objective
 Difference
 
 
-##### usage
+#### usage
+
+##### dashboard
+
+Save all tenants totals counts
+```
+./dashboard.py --parent tenant --search tenant --output db --host netbox.corp --port 8008
+```
+
+##### hostfootprint
 
 Get all tenants
 ```
