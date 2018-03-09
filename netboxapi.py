@@ -135,45 +135,71 @@ class NetboxAPI(object):
         # path API URLs
         self.nb_api = {
             'prefix': {
-                'rir': self.netbox_api_url + '/api/ipam/rirs/',
-                'agregates': self.netbox_api_url + '/api/ipam/agregates/',
-                'prefix': self.netbox_api_url + '/api/ipam/prefixes/?site=',
+                'match': {
+                    'rir': self.netbox_api_url + '/api/ipam/rirs/',
+                    'agregates': self.netbox_api_url + '/api/ipam/agregates/',
+                    'prefix': self.netbox_api_url + '/api/ipam/prefixes/?site=',
+                },
+                'all': {
+                    'rir': self.netbox_api_url + '/api/ipam/rirs/',
+                    'agregates': self.netbox_api_url + '/api/ipam/agregates/',
+                    'prefix': self.netbox_api_url + '/api/ipam/prefixes/',
+                }
             },
             'tenant': {
-                'sites': self.netbox_api_url + '/api/dcim/sites/?tenant=',
-                'tenant': self.netbox_api_url + '/api/tenancy/tenants/?name=',
-                'regions': self.netbox_api_url + '/api/dcim/regions/?slug='
+                'match': {
+                    'sites': self.netbox_api_url + '/api/dcim/sites/?tenant=',
+                    'tenant': self.netbox_api_url + '/api/tenancy/tenants/?name=',
+                    'regions': self.netbox_api_url + '/api/dcim/regions/?slug='
+                },
+                'all': {
+                    'sites': self.netbox_api_url + '/api/dcim/sites/',
+                    'tenant': self.netbox_api_url + '/api/tenancy/tenants/',
+                    'regions': self.netbox_api_url + '/api/dcim/regions/'
+                }
             },
             'site': {
-                'sites': self.netbox_api_url + '/api/dcim/sites/?slug=',
+                'match': {
+                    'sites': self.netbox_api_url + '/api/dcim/sites/?slug=',
+                },
+                'all': {
+                    'sites': self.netbox_api_url + '/api/dcim/sites/',
+                }
             }
         }
 
 
-    def make_nb_url(self, parent, search):
+    def make_nb_url(self, parent, match, search):
         '''
         make netbox url and generate self.url
         '''
         try:
-            apiurl = self.nb_api[parent][search]
+            apiurl = self.nb_api[parent][match][search]
         except:
             print(json.dumps(self.nb_api, indent=4, sort_keys=True))
             print('maybe the parent or search does not exist.')
+            print(self.nb_api[parent][match][search])
             sys.exit(2)
         return(apiurl)
 
-    def match(self, match, parent, search, limit=1000):
+    def match(self, match_type, match, parent, search, limit=1000):
         '''
         find and print objects on netbox api.
         '''
         match_result = {}
 
-        apiurl = self.make_nb_url(parent, search)
+        print('match_type: %s, match: %s, parent: %s, search: %s' %
+              (match_type, match, parent, search)
+        )
+        
+        apiurl = self.make_nb_url(parent, match_type, search)
 
-        apiurl = self.make_nb_url(parent, search)
-
-        nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
-        print('Trying to find %s with: %s' % (match, nb_target))
+        if match is False:
+            nb_target = '%s?limit=%s' % (apiurl, limit)
+        else:
+            nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
+            
+        print('Trying to find %s' %  nb_target)
         
         try:
             nb_result = self.http.request('GET', nb_target)
@@ -186,7 +212,7 @@ class NetboxAPI(object):
         '''
         get list of prefixes inside object
         '''
-        apiurl = self.make_nb_url('prefix', 'prefix')
+        apiurl = self.make_nb_url('prefix', 'match', 'prefix')
         if 'results' in self.match_result.keys():
             results = self.match_result['results']
             for slug in results:
@@ -194,47 +220,40 @@ class NetboxAPI(object):
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['prefix'] = prefix
-
                 
-    def in_action(self, **kwargs):
+    def search(self, **kwargs):
         '''
         turn all thinks real!
+
         '''
-        if 'match' in kwargs.keys():
-            self.match(
-                kwargs['match'],
-                kwargs['parent'],
-                kwargs['search'],
-            )
-            print('match')
-            print(kwargs['match'])
+        print('search: %s' % kwargs['search'])
 
-            # adentrar else aqui !!!
+        # create self.match_result with results
+        self.match(
+            kwargs['match_type'],
+            kwargs['match'],
+            kwargs['parent'],
+            kwargs['search'],
+        )
 
-            self.get_prefix_from_sites()
-
-            #print('get principal')
-            #print(self.match_result)
-            #print(self.match_result['results'][0])
-
-            try:
-                # tenant if tenant
-                #if kwargs['parent'] in [ 'tenant', 'site' ]:
-                if kwargs['parent'] in [ 'site' ]:                
-                    self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
-                    self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['name'], 1)
-                    self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
-                    #print('url:')
-                    #print(self.g_nb['tenant'])
-                    self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
-                    self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
-            except:
-                print('review your search:')                
-                print(self.g_nb['tenant'])
-                print(sys.exit(2))
-        else:
-            print('match not found ...')
-                
+        # add prefix inside sites objects
+        self.get_prefix_from_sites()
+        
+        try:
+            # tenant if tenant
+            #if kwargs['parent'] in [ 'tenant', 'site' ]:
+            if kwargs['parent'] in [ 'site' ]:                
+                self.g_nb['tenant'] = self.make_nb_url('tenant', 'tenant')
+                self.g_nb['tenant'] = '%s%s&limit=%s' % (self.g_nb['tenant'], self.match_result['results'][0]['name'], 1)
+                self.g_nb['tenant'] = self.http.request('GET', self.g_nb['tenant'])
+                #print('url:')
+                #print(self.g_nb['tenant'])
+                self.g_nb['tenant'] = self.json_import(self.g_nb['tenant'])
+                self.g_nb['tenant'] = self.g_nb['tenant']['results'][0]['group']['name']
+        except:
+            print('review your search:')                
+            print(self.g_nb['tenant'])
+            print(sys.exit(2))
 
     def output(self, output):
         '''
