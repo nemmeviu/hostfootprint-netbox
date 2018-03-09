@@ -32,6 +32,12 @@ Difference
 
 ##### usage
 
+Get all tenants
+```
+./getnetworks.py --parent tenant --search tenant --output screen \n
+  --host netbox.localhost.corp --port 80 
+```
+
 Get list of sites by tenant
 ```
 ./getnetworks.py --parent tenant --search sites --output screen \n
