@@ -300,7 +300,7 @@ class NetboxAPI(object):
             es_obj = {}
             for i in self.match_result['results']:
 
-                _id = self.search_string 
+                _id = es_obj['g_flag']
                 es_obj['g_flag'] = i['name']
                 es_obj['prefix'] = i['prefix']['count']
                 es_obj['sites'] = i['sites']['count']
