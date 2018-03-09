@@ -300,10 +300,11 @@ class NetboxAPI(object):
             es_obj = {}
             for i in self.match_result['results']:
 
-                _id = es_obj['g_flag']
+
                 es_obj['g_flag'] = i['name']
                 es_obj['prefix'] = i['prefix']['count']
                 es_obj['sites'] = i['sites']['count']
+                _id = es_obj['g_flag']                
                 es.index(index=INDEX, doc_type='infra', id=_id, body=es_obj)
 
     def output(self, output):
