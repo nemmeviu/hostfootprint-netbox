@@ -12,13 +12,13 @@ import ipaddress, nmap
 index='nmap_v3'
 
 es_lock = Lock()
-es = ElsSaveMap(index, index)
+#es = ElsSaveMap(index, index)
 
 ## ELASTICSEARCH index
-NMAPPROCS=int(os.getenv('NMAPPROCS'))
-HOSTSPROCS=int(os.getenv('HOSTSPROCS'))
-# windows = 'windows'
-# linux = 'linux'
+#NMAPPROCS=int(os.getenv('NMAPPROCS'))
+#HOSTSPROCS=int(os.getenv('HOSTSPROCS'))
+## windows = 'windows'
+## linux = 'linux'
 
 def syncronic():
     return shared_info['sync']
