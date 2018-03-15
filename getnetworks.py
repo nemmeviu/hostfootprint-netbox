@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# 
+#
 # get networks prefix from Netbox API
 # execute nmap on this networks
 # save the result on elasticsearch DB
@@ -57,7 +57,24 @@ def do_print():
                 pool.map(print_host, hosts_args )
             time.sleep(1)
 
-class ElsSaveMap(object):                                                                                                                                                                                                       
+class CreateSubNetworks(object):
+    def __init__(self):
+        pass
+
+    def make_subnetworks(self, network_object):
+        print('loading network: %s' % network_object['prefix'])
+        try:
+            ip_net = ipaddress.ip_network(network_object['prefix'])
+        except:
+            ip_net = network_object['prefix']
+        try:
+            sub_net = ip_net.subnets(new_prefix=24)
+            sub_net = list(sub_net)
+        except:
+            sub_net = [ ip_net ]
+        return( [ ip_net ])
+
+class ElsSaveMap(object):
     def __init__(self, object_type, doc_type):
         '''
         init global variables
@@ -75,10 +92,10 @@ class ElsSaveMap(object):
         import datetimeist(sub_net)
         20:00 - 06:00 = ip-20-06
         06:00 - 20:00 = ip-06-20
-        return( [ ip_net ]) 
+        return( [ ip_net ])
         return('xx-xx')
         '''
-        
+
         datenow = datetime.now()
         timenow = datenow.time()
 
@@ -94,7 +111,7 @@ class ElsSaveMap(object):
 
     def es_save(self, map_type, host, n_object):
 
-        #"g_businessunit": 
+        #"g_businessunit":
         #"g_flag": "goncalves-house",
         #"local_address": "Pasaje Los Guindos 9227 - La Florida",
         #"location": "goncalves-house",
@@ -113,7 +130,7 @@ class ElsSaveMap(object):
             'local_address': networklist['prefix'],
             'local_desc': networklist['prefix'],
             'geo_point': {
-                'lat': netobject.local.lat,'_source']['ip']
+                'lat': netobject.local.lat,
                 'lon': netobject.local.lon
             }
         }
@@ -125,7 +142,7 @@ class ElsSaveMap(object):
         date_els = int( data.timestamp() * 1000 )
 
         attribute['created_at'] = date_els
-    
+
         # old 1['finalizar'] = False
         #_id=(normalize + '-' + today)
         # old 2o['force'] = options['force']
@@ -143,13 +160,23 @@ class ElsSaveMap(object):
 
 
 
+def pipeline(n_list):
 
+    shared_info['finalizar'] = False
+    shared_info['sync'] = sync
+    #shared_info['force'] = options['force']
 
+    sub_net = CreateSubNetworks()
+    for i in n_list:
+        list_sub_net = sub_net.make_subnetworks(i)
+        for net in list_sub_net:
+            nets_shared_lists.append(
+                {
+                    'net': str(net),
+                    'netobject': i
+                }
+            )
 
-
-
-
-        
     if syncronic():
         for net in nets_shared_lists:
             scan_net( net )
@@ -165,11 +192,11 @@ class ElsSaveMap(object):
             time.sleep(1)
             #pool.close()
             #pool.join()
-            
+
         shared_info['finalizar'] = True
         t.join()
         db.connections.close_all()
-    
+
 #########
 # argparse
 parser = argparse.ArgumentParser(
@@ -278,15 +305,15 @@ netbox_options = {
 
 if match:
     netbox_options['match_type'] = 'match'
-    netbox_options['match'] = match    
+    netbox_options['match'] = match
 else:
     netbox_options['match_type'] = 'all'
 
 if role:
     netbox_options['role'] = role
 
-    
-sync = True    
+
+sync = True
 netbox.search(**netbox_options)
-networlist = netbox.output(output)
-pipeline(networlist)
+n_list = netbox.output(output)
+pipeline(n_list)
