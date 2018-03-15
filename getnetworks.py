@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
+# 
+# get networks prefix from Netbox API
+# execute nmap on this networks
+# save the result on elasticsearch DB
+#
 from netboxapi import NetboxAPI
-import argparse, sys, time, os
+
+from elasticsearch import Elasticsearch
 
 from multiprocessing import Manager
-#from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from threading import Thread, Lock
 
-import ipaddress, nmap
+import argparse, sys, time, os, ipaddress, nmap, datetime
 
-index='nmap_v3'
-
+d = datetime.date.today()
+index= 'nmap-' + d.strftime('%m%Y')
 es_lock = Lock()
+
 #es = ElsSaveMap(index, index)
 
 ## ELASTICSEARCH index
@@ -51,48 +57,121 @@ def do_print():
                 pool.map(print_host, hosts_args )
             time.sleep(1)
 
-# nmap
-def scan_net( subnet_object ):
-    nm = nmap.PortScanner()
-    nm.scan(
-        hosts=subnet_object['net'],
-        ports="445,22",
-        arguments="-P0 -n --open"
-    )
+class ElsSaveMap(object):                                                                                                                                                                                                       
+    def __init__(self, object_type, doc_type):
+        '''
+        init global variables
+        pass host to elasticsearch connect
+        '''
+        self.client = Elasticsearch(
+            hosts=[ settings.ELASTICSEARCH ]
+        )
 
-    for host in nm.all_hosts():
-        # check if hosts exists:
-        with es_lock:
-            # ipaddress id on elasticsearch
-            ipid = "%s-%s" % (host, es.check_time())
-            body = {
-                "query": {
-                    "bool": {
-                        "must":{ "term": { "_id": ipid } }
-                    }
-                }
+        self.object_type = object_type
+        self.doc_type = doc_type
+
+    def check_time(self):
+        ''' sub_net = ip_net.subnets(new_prefix=24)
+        import datetimeist(sub_net)
+        20:00 - 06:00 = ip-20-06
+        06:00 - 20:00 = ip-06-20
+        return( [ ip_net ]) 
+        return('xx-xx')
+        '''
+        
+        datenow = datetime.now()
+        timenow = datenow.time()
+
+        start = time(6, 0, 0)
+        end = time(20, 0, 0)
+
+        timestr = datenow.strftime("%y%m%d")
+
+        if timenow >= start and timenow < end:
+            return(timestr + '-06-20')
+        else:
+            return(timestr + '-20-06')
+
+    def es_save(self, map_type, host, n_object):
+
+        #"g_businessunit": 
+        #"g_flag": "goncalves-house",
+        #"local_address": "Pasaje Los Guindos 9227 - La Florida",
+        #"location": "goncalves-house",
+        #"prefix": "192.168.1.0/24",
+        #"status": 0
+
+        attribute = {
+            'map_type': map_type,
+            'ip': host,
+            'network': networklist['prefix'],
+            'country': networklist['prefix'],
+            'city': networklist['prefix'],
+            'businessunit': networklist['prefix'],
+            'flag': networklist['prefix'],
+            'local_id': networklist['prefix'],
+            'local_address': networklist['prefix'],
+            'local_desc': networklist['prefix'],
+            'geo_point': {
+                'lat': netobject.local.lat,'_source']['ip']
+                'lon': netobject.local.lon
             }
-                 
-            exist = es.client.search(
-                index=index,
-                doc_type=index,
-                body=body
-            )
+        }
 
-        try:
-            old = exist['hits']['hits'][0]['_source']['ip']
-        except:
-            if nm[host].has_tcp(445) is True:
-                hosts_shared_lists.append(
-                    ('windows', host, subnet_object['netobject'])
-                )
-            if nm[host].has_tcp(22) is True:
-                hosts_shared_lists.append(
-                   ('linux', host, subnet_object['netobject'])
-                )
+        normalize = ''.join(c.lower() for c in host if not c.isspace())
+        today = datetime.today().strftime("%m%d%Y")
+
+        data = datetime.now()
+        date_els = int( data.timestamp() * 1000 )
+
+        attribute['created_at'] = date_els
+    
+        # old 1['finalizar'] = False
+        #_id=(normalize + '-' + today)
+        # old 2o['force'] = options['force']
+        #_id=(normalize + '-' + str(date_els))
+
+        _id=(normalize + '-' + self.check_time())
+
+        response = self.client.index(
+            index=self.object_type,
+            id=_id,
+            doc_type=self.doc_type,
+            body=attribute
+        )
 
 
 
+
+
+
+
+
+
+
+        
+    if syncronic():
+        for net in nets_shared_lists:
+            scan_net( net )
+    else:
+        t = Thread(target=do_print)
+        t.start()
+
+        pool = ThreadPool(processes=NMAPPROCS)
+        while len(nets_shared_lists) > 0:
+            nets = get_nets_and_clear()
+            if len(nets) > 0:
+                pool.map(scan_net, nets)
+            time.sleep(1)
+            #pool.close()
+            #pool.join()
+            
+        shared_info['finalizar'] = True
+        t.join()
+        db.connections.close_all()
+    
+#########
+# argparse
 parser = argparse.ArgumentParser(
     description='Netbox API -> pynmap -> elasticsearch',
     epilog='hostfootprint with netbox, elasticsearch and nmap integration.'
@@ -179,6 +258,16 @@ host = args.host
 port = args.port
 role = args.role
 
+###
+
+manager = Manager()
+hosts_shared_lists = manager.list([])
+hosts_error_list = manager.list([])
+nets_shared_lists = manager.list([])
+shared_info = manager.dict()
+
+###
+
 netbox = NetboxAPI()
 netbox.conn(host, port)
 
@@ -196,23 +285,8 @@ else:
 if role:
     netbox_options['role'] = role
 
+    
+sync = True    
 netbox.search(**netbox_options)
-netbox.output(output)
-
-#netbox.save_dashboard(output, es_server, es_port)
-#netbox.parse_prefixes()
-
-#test = NetboxAPI()
-#test.parse_prefixes()
-# print(test.get_nb_api('prefix'))
-
-#netbox.parse_prefixes()
-#print(json.dumps(netbox.get_nb_api('prefix', args.tenantgroup), indent=4, sort_keys=True))
-#prefix = netbox.get_nb_api('prefix', 'all')
-#print(json.dumps(prefix, indent=4, sort_keys=True))
-#prefix = prefix['results']
-#sites = netbox.get_nb_api('site', 'all')
-#sites = sites['results']
-##print(json.dumps(sites, indent=4, sort_keys=True))
-
-#base_scan = netbox.base_scan(prefix, sites)
+networlist = netbox.output(output)
+pipeline(networlist)
