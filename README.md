@@ -52,3 +52,8 @@ Get list of sites by tenant
 ./getnetworks.py --parent tenant --search sites --output screen \n
   --host netbox.localhost.corp --port 80 --match tenant-slug
 ```
+
+Get all prefixes with site-summarized role
+```
+./getnetworks.py  --parent tenant --search site --output db  --host xxx.xxx.xxx.xxx --port 8008 --match ti --role site-summarized
+```
