@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import urllib3, json, os, sys
-
 from elasticsearch import Elasticsearch
-
 
 # attribute = {
 #     'map_type': '',
@@ -21,79 +19,6 @@ from elasticsearch import Elasticsearch
 #     }
 # }
 
-
-
-# {
-#      "asn": null,
-#      "comments": "",
-#      "contact_email": "",
-       #      "contact_name": "",
-       #      "contact_phone": "",
-       #      "count_circuits": 0,
-       #      "count_devices": 0,
-       #      "count_prefixes": 1,
-       #      "count_racks": 0,
-       #      "count_vlans": 0,
-       #      "custom_fields": {},
-       #      "facility": "Cencosud",
-       #      "id": 965,
-       #      "name": "x968",
-       #      "physical_address": "BERNARDO O'HIGGINS 176QUILLOTA Valparaiso",
-       #      "prefix": {
-       #          "count": 1,
-       #          "next": null,
-       #          "previous": null,
-       #          "results": [
-       #              {
-       #                  "custom_fields": {},
-       #                  "description": "",
-       #                  "family": 4,
-       #                  "id": 90,
-       #                  "is_pool": false,
-       #                  "prefix": "10.110.80.0/23",
-       #                  "role": {
-       #                      "id": 1,
-       #                      "name": "Locales",
-       #                      "slug": "locales",
-       #                      "url": "http://localhost/api/ipam/roles/1/"
-       #                  },
-       #                  "site": {
-       #                      "id": 965,
-       #                      "name": "x968",
-       #                      "slug": "x968",
-       #                      "url": "http://localhost/api/dcim/sites/965/"
-       #                  },
-       #                  "status": {
-       #                      "label": "Active",
-       #                      "value": 1
-       #                  },
-       #                  "tenant": {
-       #                      "id": 6,
-       #                      "name": "Johnson",
-       #                      "slug": "johnson",
-       #                      "url": "http://localhost/api/tenancy/tenants/6/"
-       #                  },
-       #                  "vlan": null,
-       #                  "vrf": null
-       #              }
-       #          ]
-       #      },
-       #      "region": {
-       #          "id": 24,
-       #          "name": "Valparaiso",
-       #          "slug": "VALPARAISO",
-       #          "url": "http://localhost/api/dcim/regions/24/"
-       #      },
-       #      "shipping_address": "",
-       #      "slug": "x968",
-       #      "tenant": {
-       #          "id": 6,
-       #          "name": "Johnson",
-       #          "slug": "johnson",
-       #          "url": "http://localhost/api/tenancy/tenants/6/"
-       #      }
-       #  },
- 
 class NetboxAPI(object):
     '''
     NetboxAPI 
@@ -151,22 +76,22 @@ class NetboxAPI(object):
             },
             'tenant': {
                 'match': {
-                    'sites': self.netbox_api_url + '/api/dcim/sites/?tenant=',
+                    'site': self.netbox_api_url + '/api/dcim/sites/?tenant=',
                     'tenant': self.netbox_api_url + '/api/tenancy/tenants/?name=',
                     'regions': self.netbox_api_url + '/api/dcim/regions/?slug='
                 },
                 'all': {
-                    'sites': self.netbox_api_url + '/api/dcim/sites/',
+                    'site': self.netbox_api_url + '/api/dcim/sites/',
                     'tenant': self.netbox_api_url + '/api/tenancy/tenants/',
                     'regions': self.netbox_api_url + '/api/dcim/regions/'
                 }
             },
             'site': {
                 'match': {
-                    'sites': self.netbox_api_url + '/api/dcim/sites/?slug=',
+                    'site': self.netbox_api_url + '/api/dcim/sites/?slug=',
                 },
                 'all': {
-                    'sites': self.netbox_api_url + '/api/dcim/sites/',
+                    'site': self.netbox_api_url + '/api/dcim/sites/',
                 }
             }
         }
@@ -211,7 +136,7 @@ class NetboxAPI(object):
             print('Fail to connect on: ' + nb_target)
             self.match_result = {}
 
-    def get_prefix_from_search(self, limit=400):
+    def get_prefix_from_search(self, limit=400,role=False):
         '''
         get list of prefixes inside object
         '''
@@ -219,7 +144,10 @@ class NetboxAPI(object):
         if 'results' in self.match_result.keys():
             results = self.match_result['results']
             for slug in results:
-                nb_prefix = '%s%s=%s&limit=%s' % (apiurl, self.search_string, slug['slug'], limit)
+                if role:
+                    nb_prefix = '%s%s=%s&limit=%s&role=%s' % (apiurl, self.search_string, slug['slug'], limit, role)
+                else:
+                    nb_prefix = '%s%s=%s&limit=%s' % (apiurl, self.search_string, slug['slug'], limit)
                 print(nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
@@ -229,7 +157,7 @@ class NetboxAPI(object):
         '''
         get list of prefixes inside object
         '''
-        apiurl = self.make_nb_url('tenant', 'match', 'sites')
+        apiurl = self.make_nb_url('tenant', 'match', 'site')
         if 'results' in self.match_result.keys():
             results = self.match_result['results']
             for slug in results:
@@ -258,7 +186,11 @@ class NetboxAPI(object):
         )
 
         # add prefix inside sites objects
-        self.get_prefix_from_search()
+        if 'role' in kwargs.keys():
+            self.get_prefix_from_search(role=kwargs['role'])
+        else:
+            self.get_prefix_from_search()
+            
         self.get_sites_from_search()
         
         try:
@@ -299,8 +231,6 @@ class NetboxAPI(object):
 
             es_obj = {}
             for i in self.match_result['results']:
-
-
                 es_obj['g_flag'] = i['name']
                 es_obj['prefix'] = i['prefix']['count']
                 es_obj['sites'] = i['sites']['count']
@@ -316,8 +246,61 @@ class NetboxAPI(object):
             print(json.dumps(self.match_result, indent=4, sort_keys=True))
         if output == 'db':
             "prepair object to nmap process"
+            nmap_list = []
+            for nb_obj in self.match_result['results']:
+                nmap_object = {}                
+
+                nmap_object['g_flag'] = nb_obj['name']
+                nmap_object['location'] = nb_obj['name']
+                try:
+                    nmap_object['local_address'] = nb_obj['physical_address']
+                except:
+                    pass
+                try:
+                    nmap_object['city'] = nb_obj['region']['name']
+                except:
+                    pass
+                
+                nmap_object['g_businessunit'] = self.g_nb['tenant']
+
+                try:
+                    # get country ...
+                    # inside loop because the country can change
+                    if nmap_object['city'] not in self.g_nb['country'].keys():
+                        country = self.make_nb_url('tenant', 'regions')
+                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
+                        country = self.http.request('GET', countryg)
+                        country = self.json_import(country)
+                        country = country['results'][0]['parent']['name']
+                        self.g_nb['country'][nmap_object['city']] = country
+                        nmap_object['g_country'] = country
+                except:
+                    pass
+
+                try:
+                    nmap_object['prefix'] = nb_obj['prefix']['results'][0]['prefix']
+                    nmap_object['status'] = 0
+                except:
+                    nmap_object['status'] = 1
+
+                nmap_list.append(nmap_object)
+                print(json.dumps(nmap_object, indent=4, sort_keys=True))
+            return(nmap_object)
+            #print('elasticsearch save :)')
+
+    def output_prefix(self, output):
+        '''
+        make the output:
+        screen or db
+        '''
+        if output == 'screen':
+            print(json.dumps(self.match_result, indent=4, sort_keys=True))
+        if output == 'db':
+            ''' prepair object to nmap process '''
             nmap_object = {}
             for nb_obj in self.match_result['results']:
+
+                
                 nmap_object['g_flag'] = nb_obj['name']
                 nmap_object['location'] = nb_obj['name']
                 try:
@@ -347,7 +330,6 @@ class NetboxAPI(object):
                 print(json.dumps(nmap_object, indent=4, sort_keys=True))
             print('elasticsearch save :)')
 
-            
     def json_import(self, nb_obj):
         '''
         Return json
