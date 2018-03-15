@@ -17,16 +17,15 @@ import argparse, sys, os, ipaddress, nmap, datetime
 from datetime import time
 
 d = datetime.date.today()
-index= 'nmap-' + d.strftime('%m%Y')
+index = os.getenv('ES_INDEX', 'nmap')
+index = index + '-' + d.strftime('%m%Y')
 es_lock = Lock()
 
-
-
 ## ELASTICSEARCH index
-#NMAPPROCS=int(os.getenv('NMAPPROCS'))
-#HOSTSPROCS=int(os.getenv('HOSTSPROCS'))
-## windows = 'windows'
-## linux = 'linux'
+NMAPPROCS=int(os.getenv('NMAPPROCS'))
+HOSTSPROCS=int(os.getenv('HOSTSPROCS'))
+# windows = 'windows'
+# linux = 'linux'
 
 def syncronic():
     return shared_info['sync']
@@ -355,7 +354,15 @@ else:
 if role:
     netbox_options['role'] = role
 
-sync = True
+try:
+    os.getenv('SYNC')
+    if sync != 0:
+        sync = True
+    else:
+        sync = False
+except
+    sync = True
+    
 es = ElsSaveMap(index, index)
 netbox.search(**netbox_options)
 n_list = netbox.output(output)
