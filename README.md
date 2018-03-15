@@ -29,7 +29,7 @@ Objective
 
 Difference
 
-#### docker variables for hostfootprint
+#### Variables for hostfootprint
 
 | ENV Vars     | value default  | description                           |
 |--------------|:--------------:|:-------------------------------------:|
