@@ -12,13 +12,15 @@ from multiprocessing import Manager
 from multiprocessing.pool import ThreadPool
 from threading import Thread, Lock
 
-import argparse, sys, time, os, ipaddress, nmap, datetime
+import argparse, sys, os, ipaddress, nmap, datetime
+
+from datetime import time
 
 d = datetime.date.today()
 index= 'nmap-' + d.strftime('%m%Y')
 es_lock = Lock()
 
-#es = ElsSaveMap(index, index)
+
 
 ## ELASTICSEARCH index
 #NMAPPROCS=int(os.getenv('NMAPPROCS'))
@@ -81,7 +83,7 @@ class ElsSaveMap(object):
         pass host to elasticsearch connect
         '''
         self.client = Elasticsearch(
-            hosts=[ settings.ELASTICSEARCH ]
+            hosts=[ os.getenv('ELASTICSEARCH') ]
         )
 
         self.object_type = object_type
@@ -96,7 +98,7 @@ class ElsSaveMap(object):
         return('xx-xx')
         '''
 
-        datenow = datetime.now()
+        datenow = datetime.datetime.now()
         timenow = datenow.time()
 
         start = time(6, 0, 0)
@@ -156,9 +158,49 @@ class ElsSaveMap(object):
             doc_type=self.doc_type,
             body=attribute
         )
+        print(response)
 
+# nmap
+def scan_net( subnet_object ):
+    nm = nmap.PortScanner()
+    nm.scan(
+        hosts=subnet_object['net'],
+        ports="445,22",
+        arguments="-P0 -n --open"
+    )
 
+    for host in nm.all_hosts():
+        # check if hosts exists:
+        with es_lock:
+            # ipaddress id on elasticsearch
+            ipid = "%s-%s" % (host, es.check_time())
+            body = {
+                "query": {
+                    "bool": {
+                        "must":{ "term": { "_id": ipid } }
+                    }
+                }
+            }
+            try:
+                exist = es.client.search(
+                    index=index,
+                    doc_type=index,
+                    body=body
+                )
+            except:
+                pass
 
+        try:
+            old = exist['hits']['hits'][0]['_source']['ip']
+        except:
+            if nm[host].has_tcp(445) is True:
+                hosts_shared_lists.append(
+                    ('windows', host, subnet_object['netobject'])
+                )
+            if nm[host].has_tcp(22) is True:
+                hosts_shared_lists.append(
+                   ('linux', host, subnet_object['netobject'])
+                )
 
 def pipeline(n_list):
 
@@ -312,8 +354,8 @@ else:
 if role:
     netbox_options['role'] = role
 
-
 sync = True
+es = ElsSaveMap(index, index)
 netbox.search(**netbox_options)
 n_list = netbox.output(output)
 pipeline(n_list)
