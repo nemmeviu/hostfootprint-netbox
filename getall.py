@@ -54,13 +54,6 @@ parser.add_argument(
 )
 #
 parser.add_argument(
-    '--role',
-    dest='role',
-    default=False,
-    help='VLAN/Prefix Roles'
-)
-#
-parser.add_argument(
     '--host',
     required=True,
     help='ex: netbox.domain.com'
@@ -86,29 +79,17 @@ tenant = args.tenant
 output = args.output
 host = args.host
 port = args.port
-role = args.role
 
 netbox = NetboxAPI()
 netbox.conn(host, port)
 
-netbox_options = {
-    'parent': parent,
-    'search': search
-}
-
 if match:
-    netbox_options['match_type'] = 'match'
-    netbox_options['match'] = match    
+    netbox.search(match_type='match', match=match, parent=parent, search=search)
 else:
-    netbox_options['match_type'] = 'all'
-
-if role:
-    netbox_options['role'] = role
-
-netbox.search(**netbox_options)
-netbox.output(output)
-
+    netbox.search(match_type='all', match=match, parent=parent, search=search)
+netbox.output(output)    
 #netbox.save_dashboard(output, es_server, es_port)
+
 #netbox.parse_prefixes()
 
 #test = NetboxAPI()
