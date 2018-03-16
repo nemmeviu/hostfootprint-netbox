@@ -112,8 +112,6 @@ class ElsSaveMap(object):
             return(timestr + '-20-06')
 
     def es_save(self, map_type, host, n_object):
-        print('rock...')
-
         #"g_businessunit":
         #"g_flag": "goncalves-house",
         #"local_address": "Pasaje Los Guindos 9227 - La Florida",
@@ -161,7 +159,6 @@ class ElsSaveMap(object):
             doc_type=self.doc_type,
             body=attribute
         )
-        print(response)
 
 # nmap
 def scan_net( subnet_object ):
@@ -172,7 +169,6 @@ def scan_net( subnet_object ):
         arguments="-P0 -n --open"
     )
 
-    print(nm.all_hosts())
     for host in nm.all_hosts():
         # check if hosts exists:
         with es_lock:
@@ -190,7 +186,6 @@ def scan_net( subnet_object ):
                 doc_type=index,
                 body=body
             )
-            print(exist)
             
         try:
             old = exist['hits']['hits'][0]['_source']['ip']

@@ -148,7 +148,6 @@ class NetboxAPI(object):
                     nb_prefix = '%s%s=%s&limit=%s&role=%s' % (apiurl, self.search_string, slug['slug'], limit, role)
                 else:
                     nb_prefix = '%s%s=%s&limit=%s' % (apiurl, self.search_string, slug['slug'], limit)
-                print(nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['prefix'] = prefix
@@ -162,7 +161,6 @@ class NetboxAPI(object):
             results = self.match_result['results']
             for slug in results:
                 nb_prefix = '%s%s&limit=%s' % (apiurl, slug['slug'], limit)
-                print(nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['sites'] = prefix
