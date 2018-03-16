@@ -85,7 +85,7 @@ class ElsSaveMap(object):
         pass host to elasticsearch connect
         '''
         self.client = Elasticsearch(
-            hosts=[ os.getenv('ELASTICSEARCH', '127.0.0.1') ]
+            hosts=[ os.getenv('ES_SERVER', '127.0.0.1') ]
         )
 
         self.object_type = object_type
