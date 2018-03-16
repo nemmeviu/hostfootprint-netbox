@@ -10,7 +10,8 @@ COPY index /opt/hostfootprint-netbox/index
 
 RUN set -ex; \
     apt-get update; \
-    apt-get install curl
+    apt-get upgrade -y; \    
+    apt-get install -y curl
 
 RUN pip install -r /opt/hostfootprint-netbox/requirements.txt
 
