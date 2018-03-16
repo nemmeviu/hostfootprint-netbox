@@ -66,3 +66,8 @@ Get all prefixes with site-summarized role
 ```
 ./getnetworks.py  --parent tenant --search site --output db  --host xxx.xxx.xxx.xxx --port 8008 --match ti --role site-summarized
 ```
+
+Save prefixes in elasticsearch
+```
+./getnetworks.py  --parent tenant --search site --output db  --host netbox.company.corp --port 80 --match flag_name --role site-summarized
+```

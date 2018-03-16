@@ -271,22 +271,20 @@ class NetboxAPI(object):
                 
                 nmap_object['g_businessunit'] = self.g_nb['tenant']
 
-                print(nb_obj)
-                print(nmap_object)
-                #try:
                 # get country ...
                 # inside loop because the country can change
-                if nmap_object['city'] not in self.g_nb['country'].keys():
-                    country = self.make_nb_url('tenant', 'match', 'regions')
-                    country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 100)
-                    country = self.http.request('GET', country)
-                    country = self.json_import(country)
-                    print(country)
-                    country = country['results'][0]['parent']['name']
-                    #self.g_nb['country'][nmap_object['city']] = country
-                    nmap_object['g_country'] = country
-                  #except:
-                  #  pass
+                try:
+                    if nmap_object['city'] not in self.g_nb['country'].keys():
+                        country = self.make_nb_url('tenant', 'match', 'regions')
+                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 100)
+                        country = self.http.request('GET', country)
+                        country = self.json_import(country)
+                        print(country)
+                        country = country['results'][0]['parent']['name']
+                        #self.g_nb['country'][nmap_object['city']] = country
+                        nmap_object['g_country'] = country
+                except:
+                    pass
 
                 try:
                     nmap_object['prefix'] = nb_obj['prefix']['results'][0]['prefix']
@@ -314,7 +312,6 @@ class NetboxAPI(object):
                 
                 nmap_object['g_flag'] = nb_obj['name']
                 nmap_object['location'] = nb_obj['name']
-                #nmap_object['comments'] = nb_obj['comments']
 
                 try:
                     nmap_object['geo_location'] 
