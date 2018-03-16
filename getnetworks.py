@@ -13,8 +13,8 @@ from multiprocessing.pool import ThreadPool
 from threading import Thread, Lock
 
 import argparse, sys, os, ipaddress, nmap, datetime
-
-from datetime import time
+from datetime import time as timeee
+import time
 
 d = datetime.date.today()
 index = os.getenv('ES_INDEX', 'nmap')
@@ -22,8 +22,8 @@ index = index + '-' + d.strftime('%m%Y')
 es_lock = Lock()
 
 ## ELASTICSEARCH index
-NMAPPROCS=int(os.getenv('NMAPPROCS'))
-HOSTSPROCS=int(os.getenv('HOSTSPROCS'))
+NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
+HOSTSPROCS=int(os.getenv('HOSTSPROCS', '2'))
 # windows = 'windows'
 # linux = 'linux'
 
@@ -34,6 +34,8 @@ def get_hosts_and_clear():
     result = []
     while len(hosts_shared_lists) > 0:
         result.append(hosts_shared_lists.pop())
+    print('get host and clear')
+    print(result)
     return(result)
 
 def get_nets_and_clear():
@@ -48,6 +50,7 @@ def print_host(host_args):
 
 def do_print():
     if syncronic():
+        print('estou aqui...')
         hosts_args = get_hosts_and_clear()
         for host_args in hosts_args:
             es.es_save( *host_args )
@@ -62,9 +65,8 @@ def do_print():
 class CreateSubNetworks(object):
     def __init__(self):
         pass
-
     def make_subnetworks(self, network_object):
-        print('loading network: %s' % network_object['prefix'])
+        print('loading network: %s' % network_object['prefix'])                        
         try:
             ip_net = ipaddress.ip_network(network_object['prefix'])
         except:
@@ -83,7 +85,7 @@ class ElsSaveMap(object):
         pass host to elasticsearch connect
         '''
         self.client = Elasticsearch(
-            hosts=[ os.getenv('ELASTICSEARCH') ]
+            hosts=[ os.getenv('ELASTICSEARCH', '127.0.0.1') ]
         )
 
         self.object_type = object_type
@@ -101,8 +103,8 @@ class ElsSaveMap(object):
         datenow = datetime.datetime.now()
         timenow = datenow.time()
 
-        start = time(6, 0, 0)
-        end = time(20, 0, 0)
+        start = timeee(6, 0, 0)
+        end = timeee(20, 0, 0)
 
         timestr = datenow.strftime("%y%m%d")
 
@@ -112,6 +114,7 @@ class ElsSaveMap(object):
             return(timestr + '-20-06')
 
     def es_save(self, map_type, host, n_object):
+        print('rock...')
 
         #"g_businessunit":
         #"g_flag": "goncalves-house",
@@ -121,29 +124,31 @@ class ElsSaveMap(object):
         #"status": 0
 
         attribute = {
+            'g_kpi': False,
+            'g_critical': False,
+            'g_application': 'oooo',
             'map_type': map_type,
             'ip': host,
-            'network': networklist['prefix'],
-            'country': networklist['prefix'],
-            'city': networklist['prefix'],
-            'businessunit': networklist['prefix'],
-            'flag': networklist['prefix'],
-            'local_id': networklist['prefix'],
-            'local_address': networklist['prefix'],
-            'local_desc': networklist['prefix'],
-            'geo_point': {
-                'lat': netobject.local.lat,
-                'lon': netobject.local.lon
-            }
+            'network': n_object['prefix'],
+            'g_country': n_object['g_country'],
+            'g_flag': n_object['g_flag'],
+            'g_businessunit': n_object['g_businessunit'],
+            'local_id': n_object['local_id'],
+            'physical_address': n_object['physical_address'],
+            #'local_desc': n_object['comments'],
+            #'geo_point': {
+            #    'lat': netobject.local.lat,
+            #    'lon': netobject.local.lon
+            #}
         }
 
         normalize = ''.join(c.lower() for c in host if not c.isspace())
-        today = datetime.today().strftime("%m%d%Y")
+        today = datetime.date.today().strftime("%m%d%Y")
 
-        data = datetime.now()
+        data = datetime.datetime.now()
         date_els = int( data.timestamp() * 1000 )
 
-        attribute['created_at'] = date_els
+        attribute['g_last_mod_date'] = date_els
 
         # old 1['finalizar'] = False
         #_id=(normalize + '-' + today)
@@ -169,6 +174,7 @@ def scan_net( subnet_object ):
         arguments="-P0 -n --open"
     )
 
+    print(nm.all_hosts())
     for host in nm.all_hosts():
         # check if hosts exists:
         with es_lock:
@@ -181,15 +187,13 @@ def scan_net( subnet_object ):
                     }
                 }
             }
-            try:
-                exist = es.client.search(
-                    index=index,
-                    doc_type=index,
-                    body=body
-                )
-            except:
-                pass
-
+            exist = es.client.search(
+                index=index,
+                doc_type=index,
+                body=body
+            )
+            print(exist)
+            
         try:
             old = exist['hits']['hits'][0]['_source']['ip']
         except:
@@ -210,14 +214,15 @@ def pipeline(n_list):
 
     sub_net = CreateSubNetworks()
     for i in n_list:
-        list_sub_net = sub_net.make_subnetworks(i)
-        for net in list_sub_net:
-            nets_shared_lists.append(
-                {
-                    'net': str(net),
-                    'netobject': i
-                }
-            )
+        if 'prefix' in i.keys():
+            list_sub_net = sub_net.make_subnetworks(i)
+            for net in list_sub_net:
+                nets_shared_lists.append(
+                    {
+                        'net': str(net),
+                        'netobject': i
+                    }
+                )
 
     if syncronic():
         for net in nets_shared_lists:
@@ -237,7 +242,6 @@ def pipeline(n_list):
 
         shared_info['finalizar'] = True
         t.join()
-        db.connections.close_all()
 
 #########
 # argparse
@@ -355,13 +359,14 @@ if role:
     netbox_options['role'] = role
 
 try:
-    os.getenv('SYNC')
-    if sync != 0:
+    sync = os.getenv('SYNC')
+    if sync == 0:
+        print('sync off!')    
         sync = True
     else:
         sync = False
-except
-    sync = True
+except:
+    sync = False
     
 es = ElsSaveMap(index, index)
 netbox.search(**netbox_options)

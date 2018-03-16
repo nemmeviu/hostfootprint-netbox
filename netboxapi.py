@@ -220,12 +220,13 @@ class NetboxAPI(object):
             print(json.dumps(self.match_result, indent=4, sort_keys=True))
         if output == 'db':
             
-            try:
-                es = Elasticsearch(es_server)
-                es.info()
-            except:
-                print('fail to connect')
-                sys.exit(2)
+            #try:
+            es = Elasticsearch('127.0.0.1')
+                #es = Elasticsearch(es_server)
+                #es.info()
+            #except:
+            #    print('fail to connect')
+            #    sys.exit(2)
             
             INDEX='netbox-dashboard'
 
@@ -250,10 +251,17 @@ class NetboxAPI(object):
             for nb_obj in self.match_result['results']:
                 nmap_object = {}                
 
-                nmap_object['g_flag'] = nb_obj['name']
-                nmap_object['location'] = nb_obj['name']
+                # only for sites search =( .. mvp
+                nmap_object['g_flag'] = nb_obj['tenant']['name']
+                nmap_object['local_id'] = nb_obj['name']
+
                 try:
-                    nmap_object['local_address'] = nb_obj['physical_address']
+                    nmap_object['situation'] = nb_obj['custon_fields']['situation']
+                except:
+                    pass
+                
+                try:
+                    nmap_object['physical_address'] = nb_obj['physical_address']
                 except:
                     pass
                 try:
@@ -263,19 +271,22 @@ class NetboxAPI(object):
                 
                 nmap_object['g_businessunit'] = self.g_nb['tenant']
 
-                try:
-                    # get country ...
-                    # inside loop because the country can change
-                    if nmap_object['city'] not in self.g_nb['country'].keys():
-                        country = self.make_nb_url('tenant', 'regions')
-                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
-                        country = self.http.request('GET', countryg)
-                        country = self.json_import(country)
-                        country = country['results'][0]['parent']['name']
-                        self.g_nb['country'][nmap_object['city']] = country
-                        nmap_object['g_country'] = country
-                except:
-                    pass
+                print(nb_obj)
+                print(nmap_object)
+                #try:
+                # get country ...
+                # inside loop because the country can change
+                if nmap_object['city'] not in self.g_nb['country'].keys():
+                    country = self.make_nb_url('tenant', 'match', 'regions')
+                    country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 100)
+                    country = self.http.request('GET', country)
+                    country = self.json_import(country)
+                    print(country)
+                    country = country['results'][0]['parent']['name']
+                    #self.g_nb['country'][nmap_object['city']] = country
+                    nmap_object['g_country'] = country
+                  #except:
+                  #  pass
 
                 try:
                     nmap_object['prefix'] = nb_obj['prefix']['results'][0]['prefix']
@@ -300,10 +311,24 @@ class NetboxAPI(object):
             ''' prepair object to nmap process '''
             nmap_object = {}
             for nb_obj in self.match_result['results']:
-
                 
                 nmap_object['g_flag'] = nb_obj['name']
                 nmap_object['location'] = nb_obj['name']
+                #nmap_object['comments'] = nb_obj['comments']
+
+                try:
+                    nmap_object['geo_location'] 
+                    nmap_object['geo_location'] = {
+                        'lat': nb_obj['custom_fields']['latitud'],
+                        'lon': nb_obj['custom_fields']['longitud']
+                    }
+                except:
+                    pass
+                
+                try:
+                    nmap_object['location'] = nb_obj['custom_fields']
+                except:
+                    pass
                 try:
                     nmap_object['local_address'] = nb_obj['physical_address']
                 except:
@@ -320,7 +345,7 @@ class NetboxAPI(object):
                     if nmap_object['city'] not in self.g_nb['country'].keys():
                         country = self.make_nb_url('tenant', 'regions')
                         country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
-                        country = self.http.request('GET', countryg)
+                        country = self.http.request('GET', country)
                         country = self.json_import(country)
                         country = country['results'][0]['parent']['name']
                         self.g_nb['country'][nmap_object['city']] = country

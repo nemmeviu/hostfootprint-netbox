@@ -1,0 +1,63 @@
+{
+    "properties": {
+        "g_last_mod_date": {
+	    "type": "date",
+	    "format": "epoch_millis"
+        },
+        "g_country": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "g_flag": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "g_businessunit": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "g_application": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "g_kpi": {
+	    "type": "boolean"
+        },
+        "g_critical": {
+	    "type": "boolean"	    
+        },
+        "situation": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "physical_address": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "city": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "geo_location": {
+	    "type": "geo_point"
+        },
+        "map_type": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "local_id": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "sites": {
+	    "type": "integer"
+        },
+        "network": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "ip": {
+            "type": "ip"
+        }
+    }
+}
