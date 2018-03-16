@@ -45,12 +45,10 @@ def get_nets_and_clear():
     return(result)
 
 def print_host(host_args):
-    print('estoy en save')
     es.es_save( *host_args )
 
 def do_print():
     if syncronic():
-        print('estou aqui...')
         hosts_args = get_hosts_and_clear()
         for host_args in hosts_args:
             es.es_save( *host_args )
