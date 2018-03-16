@@ -1,7 +1,6 @@
 urllib3
-#pynmap
 argparse
 elasticsearch
-nmap
+python-nmap
 ipaddress
 
