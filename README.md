@@ -2,7 +2,7 @@
 
 Map networks based on Netbox IPAM Project.
 
-Usage:
+Installation:
 ```
 $ pip3 install -r requirements.txt
 $ python3
