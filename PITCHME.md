@@ -1,8 +1,6 @@
 
 # INTRODUCCIÓN
 
-![Logo](https://www.cencosud.com/cencosud/site/artic/20160119/imag/foto_0000000320160119163856.png)
-
 ++
 
 #### Introducción - contexto
@@ -150,8 +148,6 @@ dolor de cabeza seran aliados de nuestro día a día.
 --
 
 # NETBOX
-
-![Logo](https://www.cencosud.com/cencosud/site/artic/20160119/imag/foto_0000000320160119163856.png)
 
 ++
 
