@@ -36,7 +36,7 @@ El software que tiene que garantizar el flujo automatizado, y que debe ser imple
 
 ++
 
-#### Introducción - Pregunta final
+#### Introducción - Pregunta Final
 
 Sín la información principal el software tiene como ser implementado con éxito?
 
