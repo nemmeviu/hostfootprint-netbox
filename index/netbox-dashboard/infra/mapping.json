@@ -1,0 +1,14 @@
+{
+    "properties": {
+        "g_flag": {
+            "index": "true", 
+            "type": "keyword"
+        },
+        "sites": {
+	    "type": "integer"
+        },
+        "prefix": {
+            "type": "integer"
+        }
+    }
+}
