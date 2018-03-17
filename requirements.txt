@@ -1,1 +1,6 @@
 urllib3
+argparse
+elasticsearch
+python-nmap
+ipaddress
+
