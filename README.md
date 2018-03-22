@@ -31,13 +31,14 @@ Difference
 
 #### Variables for hostfootprint
 
-| ENV Vars     | value default  | description                           |
-|--------------|:--------------:|:-------------------------------------:|
-| ES_SERVER    | 127.0.0.1      | Elasticsearch Server IP/DNS name      |   
-| ES_INDEX     | nmap	        | Indice elasticsearch                  |
-| NMAPPROCS    | 20             | Number of simultaneos nmaps           |
-| HOSTSPROCS   | 2              | Number of simultaneos wmic procs      |
-| SYNC         | 1              | multiprocessing active or not: 1 or 0 |
+| ENV Vars      | value default  | description                            |
+|--------------:|:--------------:|:--------------------------------------:|
+| ES_SERVER     | 127.0.0.1      | Elasticsearch Server IP/DNS name       |   
+| ES_INDEX      | nmap	         | Indice elasticsearch                   |
+| ES_INDEX_TYPE | nmap	         | Type object inside index elasticsearch |
+| NMAPPROCS     | 20             | Number of simultaneos nmaps            |
+| HOSTSPROCS    | 2              | Number of simultaneos wmic procs       |
+| SYNC          | 1              | multiprocessing active or not: 1 or 0  |
 
 #### usage
 
