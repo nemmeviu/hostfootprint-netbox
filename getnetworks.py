@@ -23,7 +23,6 @@ index_type = os.getenv('ES_INDEX_TYPE', 'nmap')
 index = index + '-' + d.strftime('%m%Y')
 es_lock = Lock()
 
-
 mapping = {
     "mappings": {
         index_type:{
@@ -232,6 +231,22 @@ mapping = {
 	        },
 	        "HotFixID" : {
 	            "index": "true", 
+                    "type": "keyword"
+	        },
+                "DHCPServer": {
+                    "index": "true", 
+                    "type": "keyword"
+	        },
+                "IPAddress": {
+                    "index": "true", 
+                    "type": "keyword"
+	        },
+                "MACAddress": {
+                    "index": "true", 
+                    "type": "keyword"
+	        },
+                "ServiceName": {
+                    "index": "true", 
                     "type": "keyword"
 	        }
             }
