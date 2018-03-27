@@ -294,7 +294,7 @@ class NetboxAPI(object):
                             prefixcontrol.append(prefixtmp['prefix'])
                             prefix_obj = dict(nmap_object)
                             prefix_obj['prefix'] = prefixtmp['prefix']
-                            prefix_obj['status'] = 0
+                            prefix_obj['role'] = prefixtmp['role']['name']
                             nmap_list.append(prefix_obj)                        
                 except:
                             prefix_obj['status'] = 1

@@ -95,6 +95,10 @@ mapping = {
                     "index": "true", 
                     "type": "keyword"
                 },
+                "role": {
+                    "index": "true", 
+                    "type": "keyword"
+                },
                 "ip": {
                     "type": "ip"
                 },
@@ -373,6 +377,10 @@ class ElsSaveMap(object):
             pass
         try:
             attribute['ip'] = host
+        except:
+            pass
+        try:
+            attribute['role'] = n_object['role']
         except:
             pass
         try:
