@@ -142,14 +142,15 @@ class NetboxAPI(object):
         '''
         apiurl = self.make_nb_url('prefix', 'match', 'prefix')
         if 'results' in self.match_result.keys():
-            results = self.match_result['results']
-            for slug in results:
+            for slug in self.match_result['results']:
                 if role:
                     nb_prefix = '%s%s=%s&limit=%s&role=%s' % (apiurl, self.search_string, slug['slug'], limit, role)
+                    print(nb_prefix)
                 else:
                     nb_prefix = '%s%s=%s&limit=%s' % (apiurl, self.search_string, slug['slug'], limit)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
+
                 slug['prefix'] = prefix
                 
     def get_sites_from_search(self, limit=1000):
@@ -246,6 +247,7 @@ class NetboxAPI(object):
         if output == 'db':
             "prepair object to nmap process"
             nmap_list = []
+            prefixcontrol = []            
             for nb_obj in self.match_result['results']:
                 nmap_object = {}                
 
@@ -283,15 +285,25 @@ class NetboxAPI(object):
                         nmap_object['g_country'] = country
                 except:
                     pass
+                
 
                 try:
-                    nmap_object['prefix'] = nb_obj['prefix']['results'][0]['prefix']
-                    nmap_object['status'] = 0
+                    for prefixtmp in nb_obj['prefix']['results']:
+                        if prefixtmp['prefix'] not in prefixcontrol:
+                            #print('new prefix control: %s' % prefixtmp['prefix'])
+                            prefixcontrol.append(prefixtmp['prefix'])
+                            prefix_obj = dict(nmap_object)
+                            prefix_obj['prefix'] = prefixtmp['prefix']
+                            prefix_obj['status'] = 0
+                            nmap_list.append(prefix_obj)                        
                 except:
-                    nmap_object['status'] = 1
+                            prefix_obj['status'] = 1
+                            print('fora')
+                            # controle ... dashboard
 
-                nmap_list.append(nmap_object)
-                print(json.dumps(nmap_object, indent=4, sort_keys=True))
+
+                #print(nmap_list)
+                #print(json.dumps(prefix_obj, indent=4, sort_keys=True))
                 
             return(nmap_list)
             #print('elasticsearch save :)')
@@ -301,6 +313,7 @@ class NetboxAPI(object):
         make the output:
         screen or db
         '''
+
         if output == 'screen':
             print(json.dumps(self.match_result, indent=4, sort_keys=True))
         if output == 'db':
