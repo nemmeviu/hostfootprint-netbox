@@ -330,7 +330,8 @@ class ElsSaveMap(object):
 
         try:
             self.client.search(index=self.index)
-        except:            print('creating...')
+        except:
+            print('creating...')
             self.client.indices.create(index=self.index, ignore=400, body=mapping)
 
     def check_time(self):
@@ -379,7 +380,8 @@ class ElsSaveMap(object):
             attribute['network'] = n_object['prefix']
         except:
             pass
-        attribute['g_country'] = n_object['g_country']
+        try:
+            attribute['g_country'] = n_object['g_country']
         except:
             pass
         try:
@@ -405,7 +407,7 @@ class ElsSaveMap(object):
         
         try:
             attribute['geo_location'] = {
-                'lat': n_object['custom_fields']['latitud']
+                'lat': n_object['custom_fields']['latitud'],
                 'lon': n_object['custom_fields']['latitud']
             }
         except:
