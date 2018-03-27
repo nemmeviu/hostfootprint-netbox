@@ -274,7 +274,6 @@ def get_hosts_and_clear():
     while len(hosts_shared_lists) > 0:
         result.append(hosts_shared_lists.pop())
     print('get host and clear')
-    print(result)
     return(result)
 
 def get_nets_and_clear():
@@ -428,12 +427,16 @@ class ElsSaveMap(object):
 
         _id=(normalize + '-' + self.check_time())
 
-        response = self.client.index(
-            index=self.index,
-            id=_id,
-            doc_type=self.doc_type,
-            body=attribute
-        )
+        try:
+            response = self.client.index(
+                index=self.index,
+                id=_id,
+                doc_type=self.doc_type,
+                body=attribute
+            )
+            print(response)
+        except:
+            print('fail in _id: %s', % _id )
 
 # nmap
 def scan_net( subnet_object ):
