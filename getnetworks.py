@@ -24,6 +24,10 @@ index = index + '-' + d.strftime('%m%Y')
 es_lock = Lock()
 
 mapping = {
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1,
+    },
     "mappings": {
         index_type:{
             "properties": {
@@ -326,7 +330,7 @@ class ElsSaveMap(object):
 
         try:
             self.client.search(index=self.index)
-        except:
+        except:            print('creating...')
             self.client.indices.create(index=self.index, ignore=400, body=mapping)
 
     def check_time(self):
@@ -359,24 +363,53 @@ class ElsSaveMap(object):
         #"prefix": "192.168.1.0/24",
         #"status": 0
 
-        attribute = {
-            'g_kpi': False,
-            'g_critical': False,
-            'g_application': 'oooo',
-            'map_type': map_type,
-            'ip': host,
-            'network': n_object['prefix'],
-            'g_country': n_object['g_country'],
-            'g_flag': n_object['g_flag'],
-            'g_businessunit': n_object['g_businessunit'],
-            'local_id': n_object['local_id'],
-            'physical_address': n_object['physical_address'],
-            #'local_desc': n_object['comments'],
-            #'geo_point': {
-            #    'lat': netobject.local.lat,
-            #    'lon': netobject.local.lon
-            #}
-        }
+        attribute = {}
+
+        attribute['g_kpi'] = False
+        attribute['g_critical'] = False
+        try:
+            attribute['map_type'] = map_type
+        except:
+            pass
+        try:
+            attribute['ip'] = host
+        except:
+            pass
+        try:
+            attribute['network'] = n_object['prefix']
+        except:
+            pass
+        attribute['g_country'] = n_object['g_country']
+        except:
+            pass
+        try:
+            attribute['g_flag'] = n_object['g_flag']
+        except:
+            pass
+        try:            
+            attribute['g_businessunit'] = n_object['g_businessunit']
+        except:
+            pass
+        try:
+            attribute['local_id'] = n_object['local_id']
+        except:
+            pass
+        try:
+            attribute['physical_address'] = n_object['physical_address']
+        except:
+            pass
+        try:
+            attribute['local_desc'] = n_object['comments']
+        except:
+            pass
+        
+        try:
+            attribute['geo_location'] = {
+                'lat': n_object['custom_fields']['latitud']
+                'lon': n_object['custom_fields']['latitud']
+            }
+        except:
+            pass
 
         normalize = ''.join(c.lower() for c in host if not c.isspace())
         today = datetime.date.today().strftime("%m%d%Y")
