@@ -262,7 +262,7 @@ mapping = {
 
 ## ELASTICSEARCH index
 NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
-HOSTSPROCS=int(os.getenv('HOSTSPROCS', '2'))
+HOSTSPROCS=int(os.getenv('HOSTSPROCS', '20'))
 # windows = 'windows'
 # linux = 'linux'
 
@@ -436,7 +436,7 @@ class ElsSaveMap(object):
             )
             print(response)
         except:
-            print('fail in _id: %s', % _id )
+            print('fail in _id: %s' % _id )
 
 # nmap
 def scan_net( subnet_object ):
@@ -642,4 +642,5 @@ except:
 es = ElsSaveMap(index, index_type)
 netbox.search(**netbox_options)
 n_list = netbox.output(output)
-pipeline(n_list)
+if output != 'screen':
+    pipeline(n_list)
