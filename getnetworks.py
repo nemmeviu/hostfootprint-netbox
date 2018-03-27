@@ -23,8 +23,11 @@ index_type = os.getenv('ES_INDEX_TYPE', 'nmap')
 index = index + '-' + d.strftime('%m%Y')
 es_lock = Lock()
 
-
 mapping = {
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1,
+    },
     "mappings": {
         index_type:{
             "properties": {
@@ -89,6 +92,10 @@ mapping = {
 	            "type": "integer"
                 },
                 "network": {
+                    "index": "true", 
+                    "type": "keyword"
+                },
+                "role": {
                     "index": "true", 
                     "type": "keyword"
                 },
@@ -233,6 +240,22 @@ mapping = {
 	        "HotFixID" : {
 	            "index": "true", 
                     "type": "keyword"
+	        },
+                "DHCPServer": {
+                    "index": "true", 
+                    "type": "keyword"
+	        },
+                "IPAddress": {
+                    "index": "true", 
+                    "type": "keyword"
+	        },
+                "MACAddress": {
+                    "index": "true", 
+                    "type": "keyword"
+	        },
+                "ServiceName": {
+                    "index": "true", 
+                    "type": "keyword"
 	        }
             }
         }
@@ -243,7 +266,7 @@ mapping = {
 
 ## ELASTICSEARCH index
 NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
-HOSTSPROCS=int(os.getenv('HOSTSPROCS', '2'))
+HOSTSPROCS=int(os.getenv('HOSTSPROCS', '20'))
 # windows = 'windows'
 # linux = 'linux'
 
@@ -254,8 +277,7 @@ def get_hosts_and_clear():
     result = []
     while len(hosts_shared_lists) > 0:
         result.append(hosts_shared_lists.pop())
-    print('get host and clear')
-    print(result)
+    #print('get host and clear')
     return(result)
 
 def get_nets_and_clear():
@@ -312,6 +334,7 @@ class ElsSaveMap(object):
         try:
             self.client.search(index=self.index)
         except:
+            print('creating...')
             self.client.indices.create(index=self.index, ignore=400, body=mapping)
 
     def check_time(self):
@@ -344,24 +367,58 @@ class ElsSaveMap(object):
         #"prefix": "192.168.1.0/24",
         #"status": 0
 
-        attribute = {
-            'g_kpi': False,
-            'g_critical': False,
-            'g_application': 'oooo',
-            'map_type': map_type,
-            'ip': host,
-            'network': n_object['prefix'],
-            'g_country': n_object['g_country'],
-            'g_flag': n_object['g_flag'],
-            'g_businessunit': n_object['g_businessunit'],
-            'local_id': n_object['local_id'],
-            'physical_address': n_object['physical_address'],
-            #'local_desc': n_object['comments'],
-            #'geo_point': {
-            #    'lat': netobject.local.lat,
-            #    'lon': netobject.local.lon
-            #}
-        }
+        attribute = {}
+
+        attribute['g_kpi'] = False
+        attribute['g_critical'] = False
+        try:
+            attribute['map_type'] = map_type
+        except:
+            pass
+        try:
+            attribute['ip'] = host
+        except:
+            pass
+        try:
+            attribute['role'] = n_object['role']
+        except:
+            pass
+        try:
+            attribute['network'] = n_object['prefix']
+        except:
+            pass
+        try:
+            attribute['g_country'] = n_object['g_country']
+        except:
+            pass
+        try:
+            attribute['g_flag'] = n_object['g_flag']
+        except:
+            pass
+        try:            
+            attribute['g_businessunit'] = n_object['g_businessunit']
+        except:
+            pass
+        try:
+            attribute['local_id'] = n_object['local_id']
+        except:
+            pass
+        try:
+            attribute['physical_address'] = n_object['physical_address']
+        except:
+            pass
+        try:
+            attribute['local_desc'] = n_object['comments']
+        except:
+            pass
+        
+        try:
+            attribute['geo_location'] = {
+                'lat': n_object['custom_fields']['latitud'],
+                'lon': n_object['custom_fields']['latitud']
+            }
+        except:
+            pass
 
         normalize = ''.join(c.lower() for c in host if not c.isspace())
         today = datetime.date.today().strftime("%m%d%Y")
@@ -378,12 +435,15 @@ class ElsSaveMap(object):
 
         _id=(normalize + '-' + self.check_time())
 
-        response = self.client.index(
-            index=self.index,
-            id=_id,
-            doc_type=self.doc_type,
-            body=attribute
-        )
+        try:
+            response = self.client.index(
+                index=self.index,
+                id=_id,
+                doc_type=self.doc_type,
+                body=attribute
+            )
+        except:
+            print('fail in _id: %s' % _id )
 
 # nmap
 def scan_net( subnet_object ):
@@ -589,4 +649,5 @@ except:
 es = ElsSaveMap(index, index_type)
 netbox.search(**netbox_options)
 n_list = netbox.output(output)
-pipeline(n_list)
+if output != 'screen':
+    pipeline(n_list)
