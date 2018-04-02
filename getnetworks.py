@@ -25,7 +25,7 @@ es_lock = Lock()
 
 mapping = {
     "settings" : {
-        "max_result_windows": 20000,
+        "max_result_window": 20000,
         "number_of_shards" : 5,
         "number_of_replicas" : 1,
     },
@@ -335,8 +335,9 @@ class ElsSaveMap(object):
         try:
             self.client.search(index=self.index)
         except:
-            print('creating...')
-            self.client.indices.create(index=self.index, ignore=400, body=mapping)
+            print('creating... %s' % self.index)
+            new_index = self.client.indices.create(index=self.index, ignore=400, body=mapping)
+            print(new_index)
 
     def check_time(self):
         ''' sub_net = ip_net.subnets(new_prefix=24)
