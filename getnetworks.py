@@ -25,7 +25,16 @@ es_lock = Lock()
 
 mapping = {
     "settings" : {
-        "max_result_window": 20000,
+        "analysis": {
+            "normalizer": {
+                "my_normalizer": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase", "asciifolding"]
+                }
+            }
+        },
+        "max_result_window": 35000,
         "number_of_shards" : 5,
         "number_of_replicas" : 1,
     },
@@ -38,25 +47,29 @@ mapping = {
                 },
                 "g_country": {
                     "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
                 "g_flag": {
                     "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"                    
                 },
                 "g_businessunit": {
                     "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
                 "g_application": {
                     "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
                 "g_kpi": {
 	            "type": "boolean"
                 },
                 "g_critical": {
-	            "type": "boolean"	    
+	            "type": "boolean"
                 },
                 "situation": {
                     "index": "true", 
@@ -64,18 +77,21 @@ mapping = {
                 },
                 "physical_address": {
                     "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
                 "city": {
                     "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
                 "geo_location": {
 	            "type": "geo_point"
                 },
 	        "local_desc": {
 	            "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
                 "map_type": {
                     "index": "true", 
@@ -83,11 +99,13 @@ mapping = {
                 },
                 "local_id": {
                     "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
 	        "local_address": {
 	            "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
                 },
                 "sites": {
 	            "type": "integer"
@@ -152,11 +170,11 @@ mapping = {
 	            "type": "short"
 	        },
 	        "Vendor": {
-	            "index": "true", 
+	            "index": "true",
                     "type": "keyword"
 	        },
 	        "err": {
-	            "index": "true", 
+	            "index": "true",
                     "type": "keyword"
 	        },
 	        "ProcManufacturer": {
@@ -224,7 +242,8 @@ mapping = {
 	        },
 	        "UserName": {
 	            "index": "true", 
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "my_normalizer"
 	        },
 	        "Version" : {
 	            "index": "true", 
@@ -262,8 +281,6 @@ mapping = {
         }
     }
 }
-
-
 
 ## ELASTICSEARCH index
 NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
@@ -307,7 +324,7 @@ class CreateSubNetworks(object):
     def __init__(self):
         pass
     def make_subnetworks(self, network_object):
-        print('loading network: %s' % network_object['prefix'])                        
+        print('loading network: %s' % network_object['prefix'])
         try:
             ip_net = ipaddress.ip_network(network_object['prefix'])
         except:
