@@ -25,7 +25,7 @@ es_lock = Lock()
 
 mapping = {
     "settings" : {
-        "max_result_window": 20000,
+        "max_result_window": 35000,
         "number_of_shards" : 5,
         "number_of_replicas" : 1,
     },
