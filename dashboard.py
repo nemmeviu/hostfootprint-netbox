@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from netboxapi import NetboxAPI
+from netboxapi import NetboxAPI, ElsSaveMap
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -23,27 +23,27 @@ parser.add_argument(
 parser.add_argument(
     '--tenantgroup',
     dest='tenantgroup',
-    help='''Tenant group: --tenantgroup super-marketing'''
+    help='Tenant group: --tenantgroup super-marketing'
 )
 #
 parser.add_argument(
     '--tenant',
     dest='tenant',
     nargs='*',
-    help='''Tenant with spaces: --tenant jumbo'''
+    help='Tenant with spaces: --tenant jumbo'
 )
 #
 parser.add_argument(
     '--output',
     dest='output',
     required=True,
-    help='''output: screen or db'''
+    help='output: screen or db'
 )
 #
 parser.add_argument(
     '--match',
     dest='match',
-    default=False,
+    default='all',
     help='Find and Print'
 )
 #
@@ -93,8 +93,11 @@ es_port = args.es_port
 netbox = NetboxAPI()
 netbox.conn(host, port)
 if match:
-    netbox.search(match_type='match', match=match, parent=parent, search=search)
+    netresult = netbox.search(match_type='match', match=match, parent=parent, search=search)
 else:
-    netbox.search(match_type='all', match=match, parent=parent, search=search)
-    
-netbox.save_dashboard(output, es_server, es_port)
+    netresult = netbox.search(match_type='all', match=match, parent=parent, search=search)
+
+print(netresult)    
+
+#es = ElsSaveMap(index, index_type)    
+#es.save_dashboard(output, es_server, es_port)
