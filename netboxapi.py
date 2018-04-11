@@ -9,6 +9,8 @@ class ElsSaveMap(object):
         '''
         init global variables
         pass host to elasticsearch connect
+
+        - create elasticsearch index
         '''
         self.client = Elasticsearch(
             hosts=[ os.getenv('ES_SERVER', '127.0.0.1') ]
@@ -463,6 +465,11 @@ class NetboxAPI(object):
 
     '''
     def __init__(self):
+        '''
+        init basic variables
+        self.version and self.g_nb
+
+        '''
         self.version = "v0.1"
 
         self.g_nb = {
@@ -472,7 +479,9 @@ class NetboxAPI(object):
 
     def conn(self, host, port):
         '''
-        create initial connection with netbox
+        - create initial connection with netbox root URL
+        - create self.nb_api dictonary that have path to all netbox api calls
+
         '''
         if port == 443:
             self.netbox_api_url = 'https://%s' % host
@@ -495,9 +504,8 @@ class NetboxAPI(object):
         except:
             print('Fail to connect on: ' + self.netbox_api_url)
             sys.exit(2)
-
         print('Sucessfull connection with: ' + self.netbox_api_url)
-        
+
         # path API URLs
         self.nb_api = {
             'prefix': {
@@ -537,7 +545,8 @@ class NetboxAPI(object):
 
     def make_nb_url(self, parent, match, search):
         '''
-        make netbox url and generate self.url
+        create netbox url based on self.nb_api dict and
+        generate self.url
         '''
         try:
             apiurl = self.nb_api[parent][match][search]
@@ -554,7 +563,11 @@ class NetboxAPI(object):
         '''
         match_result = {}
 
-        print('match_type: %s, match: %s, parent: %s, search: %s' %
+        print('''------- Params:
+        match_type: %s
+        match: %s
+        parent: %s
+        search: %s''' %
               (self.match_type, match, parent, search)
         )
         
@@ -565,11 +578,11 @@ class NetboxAPI(object):
         else:
             nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
             
-        print('Trying to find %s' %  nb_target)
-        
         try:
             nb_result = self.http.request('GET', nb_target)
             self.match_result = self.json_import(nb_result)
+            print(self.match_result['results'])
+            print('Successfull find %s' %  nb_target)
         except:
             print('Fail to connect on: ' + nb_target)
             self.match_result = {}
@@ -578,17 +591,29 @@ class NetboxAPI(object):
         '''
         get list of prefixes inside object
         '''
+        print('get_prefix_from_search')
         apiurl = self.make_nb_url('prefix', 'match', 'prefix')
+        print(apiurl)
         if 'results' in self.match_result.keys():
             for slug in self.match_result['results']:
                 if role:
-                    nb_prefix = '%s%s=%s&limit=%s&role=%s' % (apiurl, self.search_string, slug['slug'], limit, role)
+                    nb_prefix = '%s%s=%s&limit=%s&role=%s' % (
+                        apiurl,
+                        self.search_string,
+                        slug['slug'],
+                        limit,
+                        role)
                     print(nb_prefix)
                 else:
-                    nb_prefix = '%s%s=%s&limit=%s' % (apiurl, self.search_string, slug['slug'], limit)
+                    nb_prefix = '%s%s=%s&limit=%s' % (
+                        apiurl,
+                        self.search_string,
+                        slug['slug'],
+                        limit)
+                    print('sin role: %s' % nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
-
+                #print('prefix: %s' % prefix)
                 slug['prefix'] = prefix
                 
     def get_sites_from_search(self, limit=1000):
