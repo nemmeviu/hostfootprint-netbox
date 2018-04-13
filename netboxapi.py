@@ -5,7 +5,7 @@ from datetime import time as timeee
 #from threading import Lock
 
 class ElsSaveMap(object):
-    def __init__(self, index, index_type): 
+    def __init__(self, index, index_type):
         '''
         init global variables
         pass host to elasticsearch connect
@@ -47,7 +47,7 @@ class ElsSaveMap(object):
                 }
             }
         else:
-            mapping_nmap = {
+            mapping = {
                 "settings" : {
                     "analysis": {
                         "normalizer": {
@@ -147,7 +147,8 @@ class ElsSaveMap(object):
                             },
 	                    "hostname": {
 	                        "index": "true", 
-                                "type": "keyword"
+                                "type": "keyword",
+                                "normalizer": "my_normalizer"                                
 	                    },
 	                    "parsed": {
                                 "type": "short"
@@ -273,17 +274,14 @@ class ElsSaveMap(object):
 	                        "index": "true", 
                                 "type": "keyword"
 	                    },
-	                    "Name_AV" : {
+	                    "Product_Name" : {
 	                        "index": "true", 
-                                "type": "keyword"
-	                    },
-	                    "Version_AV" : {
-	                        "index": "true", 
-                                "type": "keyword"
+                                "type": "keyword",
+                                "normalizer": "my_normalizer"                                
 	                    },
 	                    "HotFixID" : {
 	                        "index": "true", 
-                                "type": "keyword"
+                                "type": "keyword",
 	                    },
                             "DHCPServer": {
                                 "index": "true", 
