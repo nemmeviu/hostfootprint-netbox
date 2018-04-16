@@ -678,13 +678,14 @@ class NetboxAPI(object):
         if output == 'screen':
             print(json.dumps(self.match_result, indent=4, sort_keys=True))
         if output == 'db':
-            "prepair object to nmap process"
+            '''prepair object to nmap process'''
             nmap_list = []
-            prefixcontrol = []            
+            prefixcontrol = []     
             for nb_obj in self.match_result['results']:
                 nmap_object = {}                
-
-                # only for sites search =( .. mvp
+                print(nb_obj)
+                print(nb_obj.keys())
+                print(nb_obj['name'])
                 nmap_object['g_flag'] = nb_obj['tenant']['name']
                 nmap_object['local_id'] = nb_obj['name']
 
@@ -730,16 +731,15 @@ class NetboxAPI(object):
                             prefix_obj['role'] = prefixtmp['role']['name']
                             nmap_list.append(prefix_obj)                        
                 except:
-                            prefix_obj['status'] = 1
-                            print('fora')
-                            # controle ... dashboard
+                    prefix_obj['status'] = 1
+                    print('fora')
+                    # controle ... dashboard
 
-
-                #print(nmap_list)
-                #print(json.dumps(prefix_obj, indent=4, sort_keys=True))
+                    #print(nmap_list)
+                    #print(json.dumps(prefix_obj, indent=4, sort_keys=True))
                 
             return(nmap_list)
-            #print('elasticsearch save :)')
+        #print('elasticsearch save :)')
 
     def output_prefix(self, output):
         '''

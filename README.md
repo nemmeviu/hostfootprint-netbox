@@ -49,9 +49,16 @@ Save all tenants totals counts
 ./dashboard.py --parent tenant --search tenant --output db --host netbox.corp --port 8008
 ```
 
-##### hostfootprint
+#### hostfootprint
 
-Get all tenants
+##### Get all tenants
+
+Get all tenants on screen
+```
+./getnetworks.py --parent tenant --search tenant --output screen --host netbox.localhost.corp --port 80
+```
+
+Send all sites on of some tenant to database
 ```
 ./getnetworks.py --parent tenant --search tenant --output screen \n
   --host netbox.localhost.corp --port 80 
