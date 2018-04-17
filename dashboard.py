@@ -16,7 +16,7 @@ parser.add_argument(
 parser.add_argument(
     '--search',
     dest='search',
-    default='sites',
+    default='site',
     help='search: --search sites|tenacy|regions. Default is "sites"'
 )
 #
@@ -92,11 +92,10 @@ es_port = args.es_port
 
 netbox = NetboxAPI()
 netbox.conn(host, port)
-if match:
+if match != 'all':
     netresult = netbox.search(match_type='match', match=match, parent=parent, search=search)
 else:
     netresult = netbox.search(match_type='all', match=match, parent=parent, search=search)
-
 print(netresult)    
 
 #es = ElsSaveMap(index, index_type)    

@@ -486,7 +486,7 @@ class NetboxAPI(object):
             self.http = urllib3.HTTPSConnectionPool(
                 host=host,
                 port=port,
-                maxsize=100
+                maxsize=2000
             )
         else:
             self.netbox_api_url = 'http://%s:%s' % (host, port)
