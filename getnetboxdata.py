@@ -120,6 +120,21 @@ parser.add_argument(
     type=int,
     help='ex: 80'
 )
+#
+parser.add_argument(
+    '--esserver', '-e',
+    dest='es_server',
+    default='localhost',
+    help='elasticsearch_server'
+)
+#
+parser.add_argument(
+    '--esport', '-ep',
+    dest='es_port',
+    type=int,
+    default=9200,
+    help='elasticsearch_port'
+
 
 ###
 # process argparse

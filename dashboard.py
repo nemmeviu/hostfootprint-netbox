@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from netboxapi import NetboxAPI, ElsSaveMap
-import argparse
+
+
 
 parser = argparse.ArgumentParser(
     description='Netbox API -> pynmap -> elasticsearch',
