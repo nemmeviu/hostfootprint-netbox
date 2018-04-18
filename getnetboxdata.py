@@ -54,21 +54,82 @@ parser = argparse.ArgumentParser(
     epilog='hostfootprint with netbox, elasticsearch and nmap integration.'
 )
 parser.add_argument(
-    '--parent','-p',
+    '--parent', '-P',
     dest='parent',
     required=True,
     help='Parent: --parent tenent'
 )
 #
 parser.add_argument(
-    '--search','-s',
+    '--search', '-s',
     dest='search',
     required=True,
     help='search: --search sites|tenacy|regions'
+)
+#
+parser.add_argument(
+    '--country', '-c',
+    dest='country',
+    required=True,
+    help='search: --search sites|tenacy|regions'
+)
+#
+parser.add_argument(
+    '--tenantgroup', '-tg',
+    dest='tenantgroup',
+    help= '''Tenant group: --tenantgroup super-marketing'''
+)
+#
+parser.add_argument(
+    '--tenant', '-t',
+    dest='tenant',
+    nargs='*',
+    help='''Tenant with spaces: --tenant jumbo'''
+)
+#
+parser.add_argument(
+    '--output', '-o',
+    dest='output',
+    required=True,
+    help='''output: screen or db'''
+)
+#
+parser.add_argument(
+    '--match', '-m',
+    dest='match',
+    default=False,
+    help='Find and Print'
+)
+#
+parser.add_argument(
+    '--role', '-r',
+    dest='role',
+    default=False,
+    help='VLAN/Prefix Roles'
+)
+#
+parser.add_argument(
+    '--host', '-H',
+    required=True,
+    help='ex: netbox.domain.com'
+)
+#
+parser.add_argument(
+    '--port', '-p',
+    default=80,
+    type=int,
+    help='ex: 80'
 )
 
 ###
 # process argparse
 args = parser.parse_args()
-
-
+parent = args.parent
+search = args.match
+country = args.country
+tenantgroup = args.tenantgroup
+tenant = args.tenant
+output = args.output
+host = args.host
+port = args.port
+role = args.role
