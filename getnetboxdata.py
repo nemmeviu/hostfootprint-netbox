@@ -70,8 +70,7 @@ parser.add_argument(
 parser.add_argument(
     '--country', '-c',
     dest='country',
-    required=True,
-    help='search: --search sites|tenacy|regions'
+    help='Country: --country China'
 )
 #
 parser.add_argument(
@@ -134,13 +133,15 @@ parser.add_argument(
     type=int,
     default=9200,
     help='elasticsearch_port'
-
+)
 
 ###
 # process argparse
 args = parser.parse_args()
+#
+match = args.match
 parent = args.parent
-search = args.match
+search = args.search
 country = args.country
 tenantgroup = args.tenantgroup
 tenant = args.tenant
@@ -148,3 +149,44 @@ output = args.output
 host = args.host
 port = args.port
 role = args.role
+es_server = args.es_server
+es_port = args.es_port
+
+##
+netbox = NetboxAPI()
+netbox.conn(host, port)
+
+netbox_options = {
+    'parent': parent,
+    'search': search
+}
+
+if match:
+    netbox_options['match_type'] = 'match'
+    netbox_options['match'] = match
+else:
+    netbox_options['match_type'] = 'all'
+    netbox_options['match'] = False
+
+if role:
+    netbox_options['role'] = role
+
+try:
+    sync = os.getenv('SYNC')
+    if sync == 0:
+        print('sync off!')
+        sync = True
+    else:
+        sync = False
+except:
+    sync = False
+
+
+#######
+
+
+if match != 'all':
+    netresult = netbox.search(match_type='match', match=match, parent=parent, search=search)
+else:
+    netresult = netbox.search(match_type='all', match=match, parent=parent, search=search)
+print(netresult)
