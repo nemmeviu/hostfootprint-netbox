@@ -25,7 +25,6 @@ index = index + '-' +d.strftime('%m%Y')
 NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
 HOSTSPROCS=int(os.getenv('HOSTSPROCS', '20'))
 
-
 class CreateSubNetworks(object):
     '''
     The class CreateSubNetworks receives a object (network) and
@@ -45,46 +44,40 @@ class CreateSubNetworks(object):
             sub_net = list(sub_net)
         except:
             sub_net = [ ip_net ]
+        # gracias fregular old: return(ip_net)
         return(sub_net)
-#        return(ip_net)
 
 ##########
 # argparse
 parser = argparse.ArgumentParser(
-    description='Netbox API -> pynmap -> elasticsearch',
-    epilog='hostfootprint with netbox, elasticsearch and nmap integration.'
+    description='''
+    Map networks based on Netbox IPAM Project.
+    Generate one dashboard with netbox register information.
+    Use elasticsearch in all modes''',
+    epilog='Making inventory about your network!'
 )
+
+################################################################################
+#  required argparses                                                          #
+################################################################################
 parser.add_argument(
-    '--parent', '-P',
-    dest='parent',
+    '--host', '-H',
     required=True,
-    help='Parent: --parent tenent'
+    help='The netbox url. Ex: netbox.domain.com'
 )
 #
 parser.add_argument(
-    '--search', '-s',
-    dest='search',
+    '--port', '-p',
+    required=True,    
+    default=80,
+    type=int,
+    help='ex: 80'
+)
+#
+parser.add_argument(
+    '--type', '-t',
     required=True,
-    help='search: --search sites|tenacy|regions'
-)
-#
-parser.add_argument(
-    '--country', '-c',
-    dest='country',
-    help='Country: --country China'
-)
-#
-parser.add_argument(
-    '--tenantgroup', '-tg',
-    dest='tenantgroup',
-    help= '''Tenant group: --tenantgroup super-marketing'''
-)
-#
-parser.add_argument(
-    '--tenant', '-t',
-    dest='tenant',
-    nargs='*',
-    help='''Tenant with spaces: --tenant jumbo'''
+    help='values: dashboard|prefix'
 )
 #
 parser.add_argument(
@@ -93,13 +86,11 @@ parser.add_argument(
     required=True,
     help='''output: screen or db'''
 )
-#
-parser.add_argument(
-    '--match', '-m',
-    dest='match',
-    default=False,
-    help='Find and Print'
-)
+
+################################################################################
+#  optional argparses                                                          #
+################################################################################
+# optional argparses: if type prefix                                           #
 #
 parser.add_argument(
     '--role', '-r',
@@ -109,20 +100,47 @@ parser.add_argument(
 )
 #
 parser.add_argument(
-    '--host', '-H',
+    '--parent', '-P',
+    dest='parent',
+    help='parent: --parent tenent'
+)
+#
+parser.add_argument(
+    '--country', '-C',
+    dest='country',
+    help='Country: --country China'
+)
+#
+parser.add_argument(
+    '--tenant', '-T',
+    dest='tenant',
+    nargs='*',
+    help='tenant with spaces: --tenant jumbo'
+)
+#
+parser.add_argument(
+    '--tenantgroup', '-tg',
+    dest='tenantgroup',
+    help= 'tenant group: --tenantgroup super-marketing'
+)
+# argparse dashboard
+parser.add_argument(
+    '--search', '-s',
+    dest='search',
     required=True,
-    help='ex: netbox.domain.com'
+    help='search: --search sites|tenacy|regions'
 )
 #
 parser.add_argument(
-    '--port', '-p',
-    default=80,
-    type=int,
-    help='ex: 80'
+    '--match', '-m',
+    dest='match',
+    default='all',
+    help='Find and Print'
 )
-#
+################################################################################
+# optional argparses: if output db                                             #
 parser.add_argument(
-    '--esserver', '-e',
+    '--esserver', '-es',
     dest='es_server',
     default='localhost',
     help='elasticsearch_server'
@@ -135,8 +153,9 @@ parser.add_argument(
     default=9200,
     help='elasticsearch_port'
 )
-
+#
 ###
+
 # process argparse
 args = parser.parse_args()
 #

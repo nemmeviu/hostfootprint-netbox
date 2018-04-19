@@ -115,7 +115,6 @@ def scan_net( subnet_object ):
                 )
 
 def pipeline(n_list):
-
     shared_info['finalizar'] = False
     shared_info['sync'] = sync
     #shared_info['force'] = options['force']

@@ -77,7 +77,7 @@ class ElsSaveMap(object):
                             "g_flag": {
                                 "index": "true", 
                                 "type": "keyword",
-                                "normalizer": "my_normalizer"                    
+                                "normalizer": "my_normalizer"
                             },
                             "g_businessunit": {
                                 "index": "true", 
@@ -553,7 +553,10 @@ class NetboxAPI(object):
             print('maybe the parent or search does not exist.')
             print(self.nb_api[parent][match][search])
             sys.exit(2)
+        print('------------- apiurl: %s' % apiurl)
         return(apiurl)
+
+    
 
     def match(self, match, parent, search, limit=1000):
         '''
@@ -571,7 +574,7 @@ class NetboxAPI(object):
         
         apiurl = self.make_nb_url(parent, self.match_type, search)
 
-        if match is False:
+        if match == 'all':
             nb_target = '%s?limit=%s' % (apiurl, limit)
         else:
             nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
@@ -633,10 +636,9 @@ class NetboxAPI(object):
 
         '''
         print('search: %s' % kwargs['search'])
-
-
-        self.match_type = kwargs['match_type']
         self.search_string = kwargs['search']
+        
+        self.match_type = kwargs['match_type']
 
         # create self.match_result with results
         self.match(
