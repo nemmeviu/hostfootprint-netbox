@@ -46,6 +46,7 @@ class CreateSubNetworks(object):
         except:
             sub_net = [ ip_net ]
         return(sub_net)
+#        return(ip_net)
 
 ##########
 # argparse
@@ -180,13 +181,29 @@ try:
         sync = False
 except:
     sync = False
+####################
+### if !sites and db here ... sys.exit(0)
+print("estoy aca")
+if netbox_options['search'] != 'site' and output == 'db':
+    print('''\nWarning ...
+    Only search:site can be sended to elasticsearch, try output screen.''')
+    sys.exit(0)
+
+es = ElsSaveMap(index, index_type)
+netbox.search(**netbox_options)
+n_list = netbox.output(output)
+if output != 'screen':
+
+    pipeline(n_list)
 
 
 #######
 
-
+print("estoy aqui")
 if match != 'all':
     netresult = netbox.search(match_type='match', match=match, parent=parent, search=search)
+    print("estoy aqui1")
 else:
     netresult = netbox.search(match_type='all', match=match, parent=parent, search=search)
+    print("estoy aqui2")
 print(netresult)
