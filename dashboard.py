@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+from netboxapi import NetboxAPI
+import argparse
 
 
 parser = argparse.ArgumentParser(
