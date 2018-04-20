@@ -22,7 +22,6 @@ index = os.getenv('ES_INDEX', 'nmap')
 index_type = os.getenv('ES_INDEX_TYPE', 'nmap')
 index = index + '-' + d.strftime('%m%Y')
 
-
 NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
 HOSTSPROCS=int(os.getenv('HOSTSPROCS', '20'))
 # windows = 'windows'
@@ -45,6 +44,7 @@ def get_nets_and_clear():
     return(result)
 
 def print_host(host_args):
+    print(' save on elasticsearch ' )
     es.es_save( *host_args )
 
 def do_print():
@@ -116,7 +116,6 @@ def scan_net( subnet_object ):
                 )
 
 def pipeline(n_list):
-
     shared_info['finalizar'] = False
     shared_info['sync'] = sync
     #shared_info['force'] = options['force']
@@ -263,6 +262,7 @@ if match:
     netbox_options['match'] = match
 else:
     netbox_options['match_type'] = 'all'
+    netbox_options['match'] = False
 
 if role:
     netbox_options['role'] = role
@@ -276,6 +276,14 @@ try:
         sync = False
 except:
     sync = False
+
+
+####################
+### if !sites and db here ... sys.exit(0)
+if netbox_options['search'] != 'site' and output == 'db':
+    print('''\nWarning ...
+    Only search:site can be sended to elasticsearch, try output screen.''')
+    sys.exit(0)
     
 es = ElsSaveMap(index, index_type)
 netbox.search(**netbox_options)

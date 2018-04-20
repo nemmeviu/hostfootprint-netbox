@@ -35,11 +35,32 @@ class ElsSaveMap(object):
                             "sites": {
 	                        "type": "integer"
                             },
-                            "prefix": {
+                            "tenant_prefix": {
                                 "type": "integer"
                             },
-                            "sites": {
-                                "index": "true", 
+                            "total_cau": {
+                                "type": "integer"
+                            },
+                            "total_devices": {
+                                "type": "integer"
+                            },
+                            "total_prefix": {
+                                "type": "integer"
+                            },
+                            "contact_email": {
+                                "index": "true",
+                                "type": "keyword"
+                            },
+                            "contact_name": {
+                                "index": "true",
+                                "type": "keyword"
+                            },
+                            "sdm_name": {
+                                "index": "true",
+                                "type": "keyword"
+                            },
+                            "slug": {
+                                "index": "true",
                                 "type": "keyword"
                             }
                         }
@@ -77,7 +98,7 @@ class ElsSaveMap(object):
                             "g_flag": {
                                 "index": "true", 
                                 "type": "keyword",
-                                "normalizer": "my_normalizer"                    
+                                "normalizer": "my_normalizer"
                             },
                             "g_businessunit": {
                                 "index": "true", 
@@ -93,6 +114,9 @@ class ElsSaveMap(object):
 	                        "type": "boolean"
                             },
                             "g_critical": {
+	                        "type": "boolean"
+                            },
+                            "g_sox": {
 	                        "type": "boolean"
                             },
                             "situation": {
@@ -412,50 +436,28 @@ class ElsSaveMap(object):
         except:
             print('fail in _id: %s' % _id )
 
-    def save_dashboard(self, output):
+    def save_dashboard(self, n):
         '''
         make the output:
         screen or db
         '''
-        
-        if output == 'screen':
-            print(json.dumps(self.match_result, indent=4, sort_keys=True))
-        if output == 'db':
-            
-            #try:
-            es = Elasticsearch('127.0.0.1')
-                #es = Elasticsearch(es_server)
-                #es.info()
-            #except:
-            #    print('fail to connect')
-            #    sys.exit(2)
-            
-            INDEX='netbox-dashboard'
 
-            es_obj = {}
-            for i in self.match_result['results']:
-                es_obj['g_flag'] = i['name']
-                es_obj['prefix'] = i['prefix']['count']
-                es_obj['sites'] = i['sites']['count']
-                _id = es_obj['g_flag']                
-                es.index(index=INDEX, doc_type='infra', id=_id, body=es_obj)
-
-# attribute = {
-#     'map_type': '',
-#     'ip': '',
-#     'network': prefix,
-#     'country': (esta en el parent),
-#     'city': site.region.name,
-#     'businessunit': netobject.local.flag.businessunit.businessunit,
-#     'flag': site.tenant.name,
-#     'local_id': netobject.local.local_id,
-#     'local_address': netobject.local.local_address,
-#     'local_desc': netobject.local.local_desc,
-#     'geo_point': {
-#         'lat': netobject.local.lat,
-#         'lon': netobject.local.lon
-#     }
-# }
+        for es_obj in n['tenant_list']:
+            _id = es_obj['g_flag']                
+            self.client.index(
+                index=self.index,
+                doc_type=self.doc_type,
+                id=_id,
+                body=es_obj
+            )
+        for cau_obj in n['cau_list']:
+            _id = cau_obj['slug']
+            self.client.index(
+                index=self.index,
+                doc_type=self.doc_type,
+                id=_id,
+                body=cau_obj
+            )
 
 class NetboxAPI(object):
     '''
@@ -486,7 +488,7 @@ class NetboxAPI(object):
             self.http = urllib3.HTTPSConnectionPool(
                 host=host,
                 port=port,
-                maxsize=100
+                maxsize=2000
             )
         else:
             self.netbox_api_url = 'http://%s:%s' % (host, port)
@@ -553,7 +555,10 @@ class NetboxAPI(object):
             print('maybe the parent or search does not exist.')
             print(self.nb_api[parent][match][search])
             sys.exit(2)
+        print('------------- apiurl: %s' % apiurl)
         return(apiurl)
+
+    
 
     def match(self, match, parent, search, limit=1000):
         '''
@@ -570,8 +575,9 @@ class NetboxAPI(object):
         )
         
         apiurl = self.make_nb_url(parent, self.match_type, search)
-
-        if match is False:
+        print('api-url: {}'.format(apiurl))
+        
+        if self.match_type == 'all':
             nb_target = '%s?limit=%s' % (apiurl, limit)
         else:
             nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
@@ -579,7 +585,7 @@ class NetboxAPI(object):
         try:
             nb_result = self.http.request('GET', nb_target)
             self.match_result = self.json_import(nb_result)
-            print(self.match_result['results'])
+            #print(self.match_result['results'])
             print('Successfull find %s' %  nb_target)
         except:
             print('Fail to connect on: ' + nb_target)
@@ -589,9 +595,8 @@ class NetboxAPI(object):
         '''
         get list of prefixes inside object
         '''
-        print('get_prefix_from_search')
         apiurl = self.make_nb_url('prefix', 'match', 'prefix')
-        print(apiurl)
+        #print(apiurl)
         if 'results' in self.match_result.keys():
             for slug in self.match_result['results']:
                 if role:
@@ -608,7 +613,7 @@ class NetboxAPI(object):
                         self.search_string,
                         slug['slug'],
                         limit)
-                    print('sin role: %s' % nb_prefix)
+                    #print('sin role: %s' % nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 #print('prefix: %s' % prefix)
@@ -626,18 +631,24 @@ class NetboxAPI(object):
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['sites'] = prefix
-                
+
     def search(self, **kwargs):
         '''
+        1 -  first def. 
+        receive dict with required params:
+        - search_type
+        - parent
+        - search
+
         turn all thinks real!
 
         '''
         print('search: %s' % kwargs['search'])
-
-
-        self.match_type = kwargs['match_type']
         self.search_string = kwargs['search']
+        self.search_type = kwargs['search_type']
+        self.match_type = kwargs['match_type']
 
+        ## principal object!!
         # create self.match_result with results
         self.match(
             kwargs['match'],
@@ -650,8 +661,11 @@ class NetboxAPI(object):
             self.get_prefix_from_search(role=kwargs['role'])
         else:
             self.get_prefix_from_search()
-            
-        #self.get_sites_from_search()
+            #else:
+
+        if self.search_type == 'dashboard':
+            self.get_sites_from_search()
+        
         
         try:
             # tenant if tenant
@@ -669,133 +683,144 @@ class NetboxAPI(object):
             print(self.g_nb['tenant'])
             print(sys.exit(2))
 
+        return(self.g_nb)
+    
+    def output(self):
+        if self.search_type == 'prefix':
+            return(self.output_prefix())
+        if self.search_type == 'dashboard':
+            return(self.output_dashboard())
 
-    def output(self, output):
+    def output_dashboard(self):
+
+        cau_list = []
+        tenant_list = []
+        for tenant in self.match_result['results']:
+            tenant_obj = {
+                'g_flag': tenant['name'],
+                'sites': tenant['sites']['count'],
+                'tenant_prefix': tenant['prefix']['count'],
+                'total_prefix': 0,
+                'total_devices': 0,
+                'total_cau': 0,
+            }
+
+            for site in tenant['sites']['results']:
+                if site['custom_fields']['sdm-mail'] == True:
+                    tenant_obj['total_cau'] = \
+                    tenant_obj['total_cau'] + 1
+                    try:
+                        cau_list.append(
+                            { 'contact_email': site['contact_email'],
+                              'contact_name': site['contact_name'],
+                              'sdm_name': site['custom_fields']['sdm_name'],
+                              'slug' : site['slug'],
+                            }
+                        )
+                    except:
+                        pass
+                    
+                tenant_obj['total_prefix'] = \
+                tenant_obj['total_prefix'] + site['count_prefixes']
+                
+                tenant_obj['total_devices'] = \
+                tenant_obj['total_devices'] + site['count_devices']
+            tenant_list.append(tenant_obj)
+
+
+        return({
+            'tenant_list': tenant_list,
+            'cau_list': cau_list
+        })
+        #print(json.dumps(self.match_result, indent=4, sort_keys=True))
+
+    def output_prefix(self): #REAL
         '''
         make the output:
         screen or db
         '''
-        if output == 'screen':
-            print(json.dumps(self.match_result, indent=4, sort_keys=True))
-        if output == 'db':
-            "prepair object to nmap process"
-            nmap_list = []
-            prefixcontrol = []            
-            for nb_obj in self.match_result['results']:
-                nmap_object = {}                
+        '''prepair object to nmap process'''
+        nmap_list = []
+        prefixcontrol = []     
+        for nb_obj in self.match_result['results']:
+            nmap_object = {}                
+            #print(nb_obj)
+            #print(nb_obj.keys())
+            #print(nb_obj['name'])
+            nmap_object['g_flag'] = nb_obj['tenant']['name']
+            nmap_object['local_id'] = nb_obj['name']
 
-                # only for sites search =( .. mvp
-                nmap_object['g_flag'] = nb_obj['tenant']['name']
-                nmap_object['local_id'] = nb_obj['name']
+            try:
+                nmap_object['geo_location'] = {
+                    'lat': nb_obj['custom_fields']['latitud'],
+                    'lon': nb_obj['custom_fields']['longitud']
+                }
+            except:
+                pass
 
-                try:
-                    nmap_object['situation'] = nb_obj['custon_fields']['situation']
-                except:
-                    pass
+            try:
+                nmap_object['situation'] = nb_obj['custon_fields']['situation']
+            except:
+                pass
                 
-                try:
-                    nmap_object['physical_address'] = nb_obj['physical_address']
-                except:
-                    pass
-                try:
-                    nmap_object['city'] = nb_obj['region']['name']
-                except:
-                    pass
+            try:
+                nmap_object['physical_address'] = nb_obj['physical_address']
+            except:
+                pass
+            try:
+                nmap_object['city'] = nb_obj['region']['name']
+            except:
+                pass
+            
+            nmap_object['g_businessunit'] = self.g_nb['tenant']
+            
+            # get country ...
+            # inside loop because the country can change
+            #print('g_nb[country]: %s' % self.g_nb['country'])
+            try:
+                if nmap_object['city'] not in self.g_nb['country'].keys():
+                    country = self.make_nb_url('tenant', 'match', 'regions')
+                    country = '%s%s&limit=%s' % (
+                        country,
+                        nb_obj['region']['slug'],
+                        100
+                    )
+                    country = self.http.request('GET', country)
+                    country = self.json_import(country)
+                    #print(country)
+                    country = country['results'][0]['parent']['name']
+                    self.g_nb['country'][nmap_object['city']] = country
+                    nmap_object['g_country'] = country
+                else:
+                    nmap_object['g_country'] = \
+                        self.g_nb['country'][nmap_object['city']]
+            except:
+                pass
                 
-                nmap_object['g_businessunit'] = self.g_nb['tenant']
 
-                # get country ...
-                # inside loop because the country can change
-                try:
-                    if nmap_object['city'] not in self.g_nb['country'].keys():
-                        country = self.make_nb_url('tenant', 'match', 'regions')
-                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 100)
-                        country = self.http.request('GET', country)
-                        country = self.json_import(country)
-                        print(country)
-                        country = country['results'][0]['parent']['name']
-                        #self.g_nb['country'][nmap_object['city']] = country
-                        nmap_object['g_country'] = country
-                except:
-                    pass
+            try:
+                for prefixtmp in nb_obj['prefix']['results']:
+                    if prefixtmp['prefix'] not in prefixcontrol:
+                        #print('new prefix control: %s' % prefixtmp['prefix'])
+                        prefixcontrol.append(prefixtmp['prefix'])
+                        prefix_obj = dict(nmap_object)
+                        prefix_obj['prefix'] = prefixtmp['prefix']
+                        prefix_obj['role'] = prefixtmp['role']['name']
+                        nmap_list.append(prefix_obj)
+                        #print(prefix_obj)
+            except:
+                prefix_obj['status'] = 1
+                print('fora')
+                # controle ... dashboard
                 
-
-                try:
-                    for prefixtmp in nb_obj['prefix']['results']:
-                        if prefixtmp['prefix'] not in prefixcontrol:
-                            #print('new prefix control: %s' % prefixtmp['prefix'])
-                            prefixcontrol.append(prefixtmp['prefix'])
-                            prefix_obj = dict(nmap_object)
-                            prefix_obj['prefix'] = prefixtmp['prefix']
-                            prefix_obj['role'] = prefixtmp['role']['name']
-                            nmap_list.append(prefix_obj)                        
-                except:
-                            prefix_obj['status'] = 1
-                            print('fora')
-                            # controle ... dashboard
-
-
                 #print(nmap_list)
-                #print(json.dumps(prefix_obj, indent=4, sort_keys=True))
-                
-            return(nmap_list)
-            #print('elasticsearch save :)')
+            #print(prefixtmp)
+            #print(json.dumps(nmap_object, indent=4, sort_keys=True))
+            #print(json.dumps(prefix_obj, indent=4, sort_keys=True))            
 
-    def output_prefix(self, output):
-        '''
-        make the output:
-        screen or db
-        '''
+        print(len(nmap_list))
+        return(nmap_list)
 
-        if output == 'screen':
-            print(json.dumps(self.match_result, indent=4, sort_keys=True))
-        if output == 'db':
-            ''' prepair object to nmap process '''
-            nmap_object = {}
-            for nb_obj in self.match_result['results']:
-                
-                nmap_object['g_flag'] = nb_obj['name']
-                nmap_object['location'] = nb_obj['name']
-
-                try:
-                    nmap_object['geo_location'] 
-                    nmap_object['geo_location'] = {
-                        'lat': nb_obj['custom_fields']['latitud'],
-                        'lon': nb_obj['custom_fields']['longitud']
-                    }
-                except:
-                    pass
-                
-                try:
-                    nmap_object['location'] = nb_obj['custom_fields']
-                except:
-                    pass
-                try:
-                    nmap_object['local_address'] = nb_obj['physical_address']
-                except:
-                    pass
-                try:
-                    nmap_object['city'] = nb_obj['region']['name']
-                except:
-                    pass
-                nmap_object['g_businessunit'] = self.g_nb['tenant']
-
-                try:
-                    # get country ...
-                    # inside loop because the country can change
-                    if nmap_object['city'] not in self.g_nb['country'].keys():
-                        country = self.make_nb_url('tenant', 'regions')
-                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
-                        country = self.http.request('GET', country)
-                        country = self.json_import(country)
-                        country = country['results'][0]['parent']['name']
-                        self.g_nb['country'][nmap_object['city']] = country
-                        nmap_object['g_country'] = country
-                except:
-                    pass
-
-                print(json.dumps(nmap_object, indent=4, sort_keys=True))
-            print('elasticsearch save :)')
 
     def json_import(self, nb_obj):
         '''
@@ -808,122 +833,4 @@ class NetboxAPI(object):
             print('fail to get data from this object')
             print(nb_obj)
             sys.exit(2)
-
-    # def get_nb_api(self, nb_target, identify):
-    #     '''
-    #     Make the api request
-    #     '''
-    #     nb_target = self.nb_api['prefix'][nb_target] + identify + '?limit=4000'
-    #     print(nb_target)
-
-    #     try:
-    #         nb_result = self.http.request('GET', nb_target)
-    #         print(nb_result.data)
-    #     except:
-    #         print('Fail to connect on: ' + nb_target)
-    #         sys.exit(2)
-
-    #     if nb_result.status == 200:
-    #         return(self.json_import(nb_result))
-
-    # def get_countries(self):
-
-    #     try:
-    #         rirs = self.get_nb_api('rir', '?name=' + self.country)
-    #     except:
-    #         rirs = self.get_nb_api('rir', '')            
-
-    #     self.netbox_obj = rirs
-    #     #return(rirs)
-
-    #     #all_agreggates = self.get_nb_api('rir')
-
-    #     #for agreggate in all_agreggates['results']:
-    #     #    country = {
-    #     #        'network': agreggate['prefix'],
-    #     #        'country': agreggate['rir']['name']
-    #     #    }
-    #     #    list_country.append(country)
-    #     #return list_country
-
-    # def parse_prefixes(self):
-        
-    #     #countries = self.get_countries()
-    #     networks = []
-    #     #network_valid = []
-    #     #network_invalid = []
-
-    #     for country in countries:
-    #         network = country['network']
-    #         network = network.replace('/','%2F')
-
-    #         # need FIX - no get inside loop
-    #         prefixes_by_country = self.get_nb_api('prefix', network)
-
-    #         for prefix in prefixes_by_country['results']:
-    #             # print(json.dumps(prefix, indent=4, sort_keys=True))
-    #             try:
-    #                 site_id = prefix['site']['id']
-
-    #                 # need FIX - get inside loop, inside loop - bad!!!
-    #                 site = self.get_nb_api('site', str(site_id))
-    #                 #
-    #                 site_address = site['physical_address']
-    #                 site_city = site['region']['name']
-    #                 tenant_id = site['tenant']['id']
-
-    #                 # need FIX - get inside loop, inside loop - bad!!!
-    #                 tenant = self.get_nb_api('tenant', str(tenant_id))
-    #                 #
-    #                 flag = tenant['name']
-    #                 businessunit = tenant['group']['name']
-
-    #                 # validate region
-    #                 region_id = site['region']['id']
-    #                 region = self.get_nb_api('regions', str(region_id))
-    #                 site_country = region['parent']['name']
-
-    #                 parsed = {
-    #                     'country' : country['country'],
-    #                     'network' : prefix['prefix'],
-    #                     'site_name' : prefix['site']['name'],
-    #                     'site_id' : site_id,
-    #                     'site_address': site_address,
-    #                     'site_city': site_city,
-    #                     'flag': flag,
-    #                     'businessunit':businessunit,
-    #                 }
-
-    #                 if prefix['vlan'] is not None:
-    #                     parsed['vlan_id'] = prefix['vlan']['vid']
-    #                     parsed['vlan_name'] = prefix['vlan']['name']
-                    
-    #                 #if country['country'] == site_country:
-    #                 #    network_valid.append(parsed)
-    #                 #else:
-    #                 #    network_invalid.append(parsed)
-    #                 network.append(parsed)                    
-    #             except:
-    #                 pass
-
-    #     return(network)
-    #     print(json.dumps(network, indent=4, sort_keys=True))
-    #     #print(json.dumps(network_valid, indent=4, sort_keys=True))
-    #     #print('===============================')            
-    #     #print(json.dumps(network_invalid, indent=4, sort_keys=True))
-
-    # def base_scan(self, prefix, sites):
-    #     print(len(prefix))
-    #     print(len(sites))        
-    #     #print(prefix)
-    #     #for x in prefix:
-    #     #    if x['site'] is not None:
-    #     #        print(x['site'])
-    #     #        print('looping 1')
-    #     #        for k in sites:
-    #     #            if x['site']['name'] == k['name']:
-    #     #                print(k['id'])
-    #     #                print(x['site']['id'])
-    #        #print(sites['id'][x['sites']['id']])
-    #     #pass
 
