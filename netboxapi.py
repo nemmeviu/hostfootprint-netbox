@@ -573,7 +573,8 @@ class NetboxAPI(object):
         )
         
         apiurl = self.make_nb_url(parent, self.match_type, search)
-
+        print('api-url: {}'.format(apiurl))
+        
         if match == 'all':
             nb_target = '%s?limit=%s' % (apiurl, limit)
         else:
@@ -632,6 +633,12 @@ class NetboxAPI(object):
                 
     def search(self, **kwargs):
         '''
+        1 -  first def. 
+        receive dict with required parms:
+        - search_type
+        - parent
+        - search
+
         turn all thinks real!
 
         '''
@@ -670,6 +677,8 @@ class NetboxAPI(object):
             print('review your search:')                
             print(self.g_nb['tenant'])
             print(sys.exit(2))
+
+        return(self.g_nb)
 
 
     def output(self, output):

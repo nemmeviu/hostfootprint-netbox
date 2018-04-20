@@ -4,7 +4,7 @@
 # execute nmap on this networks
 # save the result on elasticsearch DB
 #
-from netboxapi import NetboxAPI, ElsSaveMap
+from netboxapi import NetboxAPI
 
 from multiprocessing import Manager
 from multiprocessing.pool import ThreadPool
@@ -62,12 +62,14 @@ parser = argparse.ArgumentParser(
 ################################################################################
 parser.add_argument(
     '--host', '-H',
+    dest='host',
     required=True,
     help='The netbox url. Ex: netbox.domain.com'
 )
 #
 parser.add_argument(
     '--port', '-p',
+    dest='port',
     required=True,    
     default=80,
     type=int,
@@ -76,6 +78,7 @@ parser.add_argument(
 #
 parser.add_argument(
     '--type', '-t',
+    dest='search_type',
     required=True,
     help='values: dashboard|prefix'
 )
@@ -102,7 +105,15 @@ parser.add_argument(
 parser.add_argument(
     '--parent', '-P',
     dest='parent',
-    help='parent: --parent tenent'
+    default='tenant',
+    help='values: tenent'
+)
+#
+parser.add_argument(
+    '--search', '-s',
+    dest='search',
+    default='tenant',
+    help='search: --search site|tenant'
 )
 #
 parser.add_argument(
@@ -122,13 +133,6 @@ parser.add_argument(
     '--tenantgroup', '-tg',
     dest='tenantgroup',
     help= 'tenant group: --tenantgroup super-marketing'
-)
-# argparse dashboard
-parser.add_argument(
-    '--search', '-s',
-    dest='search',
-    required=True,
-    help='search: --search sites|tenacy|regions'
 )
 #
 parser.add_argument(
@@ -156,19 +160,24 @@ parser.add_argument(
 #
 ###
 
-# process argparse
+######## process argparse
 args = parser.parse_args()
-#
-match = args.match
+## required
+host = args.host
+port = args.port
+search_type = args.search_type
+output = args.output
+
+## optional
+role = args.role
 parent = args.parent
 search = args.search
 country = args.country
-tenantgroup = args.tenantgroup
 tenant = args.tenant
-output = args.output
-host = args.host
-port = args.port
-role = args.role
+tenantgroup = args.tenantgroup
+match = args.match
+
+## elasticsearch
 es_server = args.es_server
 es_port = args.es_port
 
@@ -177,6 +186,7 @@ netbox = NetboxAPI()
 netbox.conn(host, port)
 
 netbox_options = {
+    'search_type': search_type,
     'parent': parent,
     'search': search
 }
@@ -191,38 +201,53 @@ else:
 if role:
     netbox_options['role'] = role
 
+sync = False    
 try:
     sync = os.getenv('SYNC')
     if sync == 0:
         print('sync off!')
         sync = True
-    else:
-        sync = False
 except:
-    sync = False
-####################
-### if !sites and db here ... sys.exit(0)
-print("estoy aca")
-if netbox_options['search'] != 'site' and output == 'db':
-    print('''\nWarning ...
-    Only search:site can be sended to elasticsearch, try output screen.''')
-    sys.exit(0)
-
-es = ElsSaveMap(index, index_type)
-netbox.search(**netbox_options)
-n_list = netbox.output(output)
-if output != 'screen':
-
-    pipeline(n_list)
+    pass
 
 
 #######
-
 print("estoy aqui")
 if match != 'all':
-    netresult = netbox.search(match_type='match', match=match, parent=parent, search=search)
+    netresult = netbox.search(
+        match_type='match',
+        match=match,
+        parent=parent,
+        search=search
+    )
     print("estoy aqui1")
 else:
-    netresult = netbox.search(match_type='all', match=match, parent=parent, search=search)
-    print("estoy aqui2")
-print(netresult)
+    print("match: all")    
+    netresult = netbox.search(
+        match_type='all',
+        match=match,
+        parent=parent,
+        search=search
+    )
+
+
+####################
+# db output
+if output == 'db':
+    from netboxapi import ElsSaveMap
+    es = ElsSaveMap(index, index_type)
+    
+    ### if !sites and db here ... sys.exit(0)
+    if netbox_options['search'] != 'site':
+        print('''\nWarning ...
+        Only search:site can be sended to elasticsearch, try output screen.''')
+        sys.exit(0)
+if output == 'screen':
+    print('output screen.... print is free')
+    #pipeline(n_list)
+
+#n_list = netbox.output(output)
+#if output != 'screen':
+#
+
+#print(netresult)
