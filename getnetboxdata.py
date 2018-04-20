@@ -24,6 +24,115 @@ index = index + '-' +d.strftime('%m%Y')
 NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
 HOSTSPROCS=int(os.getenv('HOSTSPROCS', '20'))
 
+def syncronic():
+    return shared_info['sync']
+
+def get_hosts_and_clear():
+    result = []
+    while len(hosts_shared_lists) > 0:
+        result.append(hosts_shared_lists.pop())
+    #print('get host and clear')
+    return(result)
+
+def get_nets_and_clear():
+    result = []
+    while len(nets_shared_lists) > 0:
+        result.append(nets_shared_lists.pop())
+    return(result)
+
+def print_host(host_args):
+    es.es_save( *host_args )
+
+def do_print():
+    if syncronic():
+        hosts_args = get_hosts_and_clear()
+        for host_args in hosts_args:
+            es.es_save( *host_args )
+    else:
+        pool = ThreadPool(processes=HOSTSPROCS)
+        while not shared_info['finalizar'] or len(hosts_shared_lists) > 0:
+            hosts_args = get_hosts_and_clear()
+            if len(hosts_args) > 0:
+                pool.map(print_host, hosts_args )
+            time.sleep(1)
+
+# nmap
+def scan_net( subnet_object ):
+    nm = nmap.PortScanner()
+    nm.scan(
+        hosts=subnet_object['net'],
+        ports="445,22",
+        arguments="-P0 -n --open"
+    )
+
+    for host in nm.all_hosts():
+        # check if hosts exists:
+        with es_lock:
+            # ipaddress id on elasticsearch
+            ipid = "%s-%s" % (host, es.check_time())
+            body = {
+                "query": {
+                    "bool": {
+                        "must":{ "term": { "_id": ipid } }
+                    }
+                }
+            }
+            exist = es.client.search(
+                index=index,
+                doc_type=index_type,
+                body=body
+            )
+            
+        try:
+            old = exist['hits']['hits'][0]['_source']['ip']
+        except:
+            if nm[host].has_tcp(445) is True:
+                hosts_shared_lists.append(
+                    ('windows', host, subnet_object['netobject'])
+                )
+            if nm[host].has_tcp(22) is True:
+                hosts_shared_lists.append(
+                   ('linux', host, subnet_object['netobject'])
+                )
+
+def pipeline(n_list):
+    shared_info['finalizar'] = False
+    shared_info['sync'] = sync
+    #shared_info['force'] = options['force']
+
+    sub_net = CreateSubNetworks()
+    for i in n_list:
+        if 'prefix' in i.keys():
+            print(i)
+            list_sub_net = sub_net.make_subnetworks(i['prefix'])
+            for net in list_sub_net:
+                nets_shared_lists.append(
+                    {
+                        'net': str(net),
+                        'netobject': i
+                    }
+                )
+
+    if syncronic():
+        for net in nets_shared_lists:
+            scan_net( net )
+    else:
+        t = Thread(target=do_print)
+        t.start()
+
+        pool = ThreadPool(processes=NMAPPROCS)
+        while len(nets_shared_lists) > 0:
+            nets = get_nets_and_clear()
+            if len(nets) > 0:
+                pool.map(scan_net, nets)
+            time.sleep(1)
+            #pool.close()
+            #pool.join()
+
+        shared_info['finalizar'] = True
+        t.join()
+
+                
 class CreateSubNetworks(object):
     '''
     The class CreateSubNetworks receives a object (network) and
@@ -45,6 +154,7 @@ class CreateSubNetworks(object):
             sub_net = [ ip_net ]
         # gracias fregular old: return(ip_net)
         return(sub_net)
+
 
 ##########
 # argparse
@@ -180,12 +290,23 @@ match = args.match
 es_server = args.es_server
 es_port = args.es_port
 
+
+###
+
+manager = Manager()
+hosts_shared_lists = manager.list([])
+hosts_error_list = manager.list([])
+nets_shared_lists = manager.list([])
+shared_info = manager.dict()
+
+###
+
 if search_type == 'dashboard':
     index = 'netbox-dashboard'
     index_type = 'netbox'
     save_es = 'save_dashboard'
 else:
-    save_es = 'es_save'
+    save_es = 'pipeline'
     ##
 netbox = NetboxAPI()
 netbox.conn(host, port)
@@ -216,6 +337,7 @@ except:
     pass
 
 
+
 #######
 netbox.search(**netbox_options)
 n = netbox.output()
@@ -225,8 +347,11 @@ n = netbox.output()
 if output == 'db':
     from netboxapi import ElsSaveMap
     es = ElsSaveMap(index, index_type)
-    getattr(es, save_es)(n)
-    
+
+    if search_type == 'dashboard':
+        getattr(es, save_es)(n)
+    else:
+        pipeline(n)
     ### if !sites and db here ... sys.exit(0)
     #if netbox_options['search'] != 'site':
     #print('''\nWarning ...

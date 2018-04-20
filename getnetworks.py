@@ -44,6 +44,7 @@ def get_nets_and_clear():
     return(result)
 
 def print_host(host_args):
+    print(' save on elasticsearch ' )
     es.es_save( *host_args )
 
 def do_print():

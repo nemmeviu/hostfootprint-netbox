@@ -687,10 +687,9 @@ class NetboxAPI(object):
     
     def output(self):
         if self.search_type == 'prefix':
-            self.output_prefix()
+            return(self.output_prefix())
         if self.search_type == 'dashboard':
             return(self.output_dashboard())
-            
 
     def output_dashboard(self):
 
@@ -777,16 +776,24 @@ class NetboxAPI(object):
             
             # get country ...
             # inside loop because the country can change
+            #print('g_nb[country]: %s' % self.g_nb['country'])
             try:
                 if nmap_object['city'] not in self.g_nb['country'].keys():
                     country = self.make_nb_url('tenant', 'match', 'regions')
-                    country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 100)
+                    country = '%s%s&limit=%s' % (
+                        country,
+                        nb_obj['region']['slug'],
+                        100
+                    )
                     country = self.http.request('GET', country)
                     country = self.json_import(country)
-                    print(country)
+                    #print(country)
                     country = country['results'][0]['parent']['name']
                     self.g_nb['country'][nmap_object['city']] = country
                     nmap_object['g_country'] = country
+                else:
+                    nmap_object['g_country'] = \
+                        self.g_nb['country'][nmap_object['city']]
             except:
                 pass
                 

@@ -131,4 +131,5 @@ Save prefixes in elasticsearch
 
 * fix search command line - ok
 * fix dashboard netbox - ok
-* fix g_country
+* fix g_country - ok
+* activar el mapeo
