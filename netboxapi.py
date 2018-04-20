@@ -420,33 +420,15 @@ class ElsSaveMap(object):
         except:
             print('fail in _id: %s' % _id )
 
-    def save_dashboard(self, output):
+    def save_dashboard(self, n):
         '''
         make the output:
         screen or db
         '''
-        
-        if output == 'screen':
-            print(json.dumps(self.match_result, indent=4, sort_keys=True))
-        if output == 'db':
-            
-            #try:
-            es = Elasticsearch('127.0.0.1')
-                #es = Elasticsearch(es_server)
-                #es.info()
-            #except:
-            #    print('fail to connect')
-            #    sys.exit(2)
-            
-            INDEX='netbox-dashboard'
 
-            es_obj = {}
-            for i in self.match_result['results']:
-                es_obj['g_flag'] = i['name']
-                es_obj['prefix'] = i['prefix']['count']
-                es_obj['sites'] = i['sites']['count']
-                _id = es_obj['g_flag']                
-                es.index(index=INDEX, doc_type='infra', id=_id, body=es_obj)
+        for es_obj in n:
+            _id = es_obj['g_flag']                
+            self.client.index(index=self.index, doc_type=self.doc_type, id=_id, body=es_obj)
 
 # attribute = {
 #     'map_type': '',
@@ -691,14 +673,14 @@ class NetboxAPI(object):
 
         return(self.g_nb)
     
-    def output(self, output):
+    def output(self):
         if self.search_type == 'prefix':
             self.output_prefix(output)
         if self.search_type == 'dashboard':
-            self.output_dashboard(output)
+            return(self.output_dashboard())
+            
 
-    def output_dashboard(self, output):
-
+    def output_dashboard(self):
 
         cau_result = []
         tenant_list = []
@@ -735,7 +717,7 @@ class NetboxAPI(object):
             tenant_list.append(tenant_obj)
 
 
-        print(json.dumps(tenant_list, indent=4, sort_keys=True))        
+        return(tenant_list)
         #print(json.dumps(self.match_result, indent=4, sort_keys=True))
 
     def output_prefix(self, output): #REAL

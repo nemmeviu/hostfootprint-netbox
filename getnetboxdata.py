@@ -10,9 +10,8 @@ from multiprocessing import Manager
 from multiprocessing.pool import ThreadPool
 from threading import Thread, Lock
 
-import argparse, sys, os, ipaddress, nmap, datetime
+import argparse, sys, os, ipaddress, nmap, datetime, json, time
 from datetime import time as timee
-import time
 
 es_lock = Lock()
 
@@ -181,7 +180,13 @@ match = args.match
 es_server = args.es_server
 es_port = args.es_port
 
-##
+if search_type == 'dashboard':
+    index = 'netbox-dashboard'
+    index_type = 'netbox'
+    save_es = 'save_dashboard'
+else:
+    save_es = 'es_save'
+    ##
 netbox = NetboxAPI()
 netbox.conn(host, port)
 
@@ -213,22 +218,23 @@ except:
 
 #######
 netbox.search(**netbox_options)
-netbox.output(output)
+n = netbox.output()
 
 ####################
 # db output
 if output == 'db':
     from netboxapi import ElsSaveMap
     es = ElsSaveMap(index, index_type)
+    getattr(es, save_es)(n)
     
     ### if !sites and db here ... sys.exit(0)
-    if netbox_options['search'] != 'site':
-        print('''\nWarning ...
-        Only search:site can be sended to elasticsearch, try output screen.''')
-        sys.exit(0)
+    #if netbox_options['search'] != 'site':
+    #print('''\nWarning ...
+    #Only search:site can be sended to elasticsearch, try output screen.''')
+    #sys.exit(0)
 if output == 'screen':
-    print('output screen.... print is free')
-    #pipeline(n_list)
+    print(json.dumps(n, indent=4, sort_keys=True))        
+   #pipeline(n_list)
 
 #n_list = netbox.output(output)
 #if output != 'screen':
