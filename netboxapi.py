@@ -800,7 +800,7 @@ class NetboxAPI(object):
                         prefix_obj['prefix'] = prefixtmp['prefix']
                         prefix_obj['role'] = prefixtmp['role']['name']
                         nmap_list.append(prefix_obj)
-                        print(prefix_obj)
+                        #print(prefix_obj)
             except:
                 prefix_obj['status'] = 1
                 print('fora')
@@ -811,8 +811,8 @@ class NetboxAPI(object):
             #print(json.dumps(nmap_object, indent=4, sort_keys=True))
             #print(json.dumps(prefix_obj, indent=4, sort_keys=True))            
 
+        print(len(nmap_list))
         return(nmap_list)
-        
 
 
     def json_import(self, nb_obj):

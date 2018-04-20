@@ -233,6 +233,7 @@ if output == 'db':
     #Only search:site can be sended to elasticsearch, try output screen.''')
     #sys.exit(0)
 if output == 'screen':
+    print('que tiene n?')
     print(json.dumps(n, indent=4, sort_keys=True))        
    #pipeline(n_list)
 
