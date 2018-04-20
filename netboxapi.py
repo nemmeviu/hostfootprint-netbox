@@ -706,10 +706,11 @@ class NetboxAPI(object):
             }
 
             for site in tenant['sites']['results']:
-                if site['custom_fields']['sdm-mail'] == True:
-                    tenant_obj['total_cau'] = \
-                    tenant_obj['total_cau'] + 1
-                    try:
+                try:                
+                    if site['custom_fields']['sdm-mail'] == True:
+                        tenant_obj['total_cau'] = \
+                                                  tenant_obj['total_cau'] + 1
+
                         cau_list.append(
                             { 'contact_email': site['contact_email'],
                               'contact_name': site['contact_name'],
@@ -717,8 +718,8 @@ class NetboxAPI(object):
                               'slug' : site['slug'],
                             }
                         )
-                    except:
-                        pass
+                except:
+                    pass
                     
                 tenant_obj['total_prefix'] = \
                 tenant_obj['total_prefix'] + site['count_prefixes']
