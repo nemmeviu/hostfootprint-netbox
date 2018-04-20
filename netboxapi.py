@@ -35,12 +35,17 @@ class ElsSaveMap(object):
                             "sites": {
 	                        "type": "integer"
                             },
-                            "prefix": {
+                            "tenant_prefix": {
                                 "type": "integer"
                             },
-                            "sites": {
-                                "index": "true", 
-                                "type": "keyword"
+                            "total_cau": {
+                                "type": "integer"
+                            },
+                            "total_devices": {
+                                "type": "integer"
+                            },
+                            "total_prefix": {
+                                "type": "integer"
                             }
                         }
                     }
@@ -596,7 +601,6 @@ class NetboxAPI(object):
         '''
         get list of prefixes inside object
         '''
-        print('get_prefix_from_search')
         apiurl = self.make_nb_url('prefix', 'match', 'prefix')
         print(apiurl)
         if 'results' in self.match_result.keys():
@@ -615,7 +619,7 @@ class NetboxAPI(object):
                         self.search_string,
                         slug['slug'],
                         limit)
-                    print('sin role: %s' % nb_prefix)
+                    #print('sin role: %s' % nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 #print('prefix: %s' % prefix)
@@ -626,14 +630,10 @@ class NetboxAPI(object):
         get list of prefixes inside object
         '''
         apiurl = self.make_nb_url('tenant', 'match', 'site')
-        print(apiurl)
         if 'results' in self.match_result.keys():
-            print("estoy aca")
             results = self.match_result['results']
             for slug in results:
-                print(slug["name"])
                 nb_prefix = '%s%s&limit=%s' % (apiurl, slug['slug'], limit)
-                print(nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['sites'] = prefix
@@ -699,25 +699,43 @@ class NetboxAPI(object):
 
     def output_dashboard(self, output):
 
-        total_prefix = 0
-        total_devices = 0
-        total_cau = 0        
-        
-        print(self.match_result['count'])
-        print(self.match_result.keys())
-        for bla in self.match_result['results'][0]['sites']['results']:
-            if bla['custom_fields']['sdm-mail'] == True:
-                total_cau = total_cau + 1
-                print(bla['custom_fields']['sdm_name'])
-            total_prefix = total_prefix + bla['count_prefixes']
-            total_devices = total_devices + bla['count_devices']
-            
-        #print(self.match_result['prefixes']['count'])
-        #print(self.match_result.keys())
-        print(' total prefixes is %d ' % total_prefix)
-        print(' total devices is %d ' % total_devices)
-        print(' total cau is %d ' % total_cau)
-        
+
+        cau_result = []
+        tenant_list = []
+        for tenant in self.match_result['results']:
+            tenant_obj = {
+                'g_flag': tenant['name'],
+                'sites': tenant['sites']['count'],
+                'tenant_prefix': tenant['prefix']['count'],
+                'total_prefix': 0,
+                'total_devices': 0,
+                'total_cau': 0,
+            }
+
+            for site in tenant['sites']['results']:
+                if site['custom_fields']['sdm-mail'] == True:
+                    tenant_obj['total_cau'] = \
+                    tenant_obj['total_cau'] + 1
+                    try:
+                        cau_result.append(
+                            { 'contact_email': site['contact_email'],
+                              'contact_name': site['contact_name'],
+                              'sdm_name': site['custom_fields']['sdm_name']
+                            }
+                        )
+                    except:
+                        pass
+                    
+                tenant_obj['total_prefix'] = \
+                tenant_obj['total_prefix'] + site['count_prefixes']
+                
+                tenant_obj['total_devices'] = \
+                tenant_obj['total_devices'] + site['count_devices']
+                
+            tenant_list.append(tenant_obj)
+
+
+        print(json.dumps(tenant_list, indent=4, sort_keys=True))        
         #print(json.dumps(self.match_result, indent=4, sort_keys=True))
 
     def output_prefix(self, output): #REAL
