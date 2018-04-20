@@ -575,7 +575,7 @@ class NetboxAPI(object):
         apiurl = self.make_nb_url(parent, self.match_type, search)
         print('api-url: {}'.format(apiurl))
         
-        if match == 'all':
+        if self.match_type == 'all':
             nb_target = '%s?limit=%s' % (apiurl, limit)
         else:
             nb_target = '%s%s&limit=%s' % (apiurl, match, limit)
@@ -583,7 +583,7 @@ class NetboxAPI(object):
         try:
             nb_result = self.http.request('GET', nb_target)
             self.match_result = self.json_import(nb_result)
-            print(self.match_result['results'])
+            #print(self.match_result['results'])
             print('Successfull find %s' %  nb_target)
         except:
             print('Fail to connect on: ' + nb_target)
@@ -630,11 +630,11 @@ class NetboxAPI(object):
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['sites'] = prefix
-                
+
     def search(self, **kwargs):
         '''
         1 -  first def. 
-        receive dict with required parms:
+        receive dict with required params:
         - search_type
         - parent
         - search
@@ -647,6 +647,7 @@ class NetboxAPI(object):
         
         self.match_type = kwargs['match_type']
 
+        ## principal object!!
         # create self.match_result with results
         self.match(
             kwargs['match'],
@@ -654,11 +655,21 @@ class NetboxAPI(object):
             kwargs['search'],
         )
 
-        # add prefix inside sites objects
-        if 'role' in kwargs.keys():
-            self.get_prefix_from_search(role=kwargs['role'])
+        if kwargs['search_type'] != 'dashboard':
+            
+            # add prefix inside sites objects
+            if 'role' in kwargs.keys():
+                self.get_prefix_from_search(role=kwargs['role'])
+            else:
+                self.get_prefix_from_search()
         else:
-            self.get_prefix_from_search()
+            print(
+                json.dumps(
+                    self.match_result['results'][4],
+                    indent=4,
+                    sort_keys=True
+                )
+            )
             
         #self.get_sites_from_search()
         

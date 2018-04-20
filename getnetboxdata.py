@@ -138,7 +138,7 @@ parser.add_argument(
 parser.add_argument(
     '--match', '-m',
     dest='match',
-    default='all',
+    default=False,
     help='Find and Print'
 )
 ################################################################################
@@ -174,7 +174,7 @@ parent = args.parent
 search = args.search
 country = args.country
 tenant = args.tenant
-tenantgroup = args.tenantgroup
+ntenantgroup = args.tenantgroup
 match = args.match
 
 ## elasticsearch
@@ -186,17 +186,17 @@ netbox = NetboxAPI()
 netbox.conn(host, port)
 
 netbox_options = {
-    'search_type': search_type,
-    'parent': parent,
-    'search': search
+    'search_type': search_type, 
+    'parent': parent, 
+    'search': search 
 }
 
-if match:
-    netbox_options['match_type'] = 'match'
+if match == False:
+    netbox_options['match_type'] = 'all'
     netbox_options['match'] = match
 else:
-    netbox_options['match_type'] = 'all'
-    netbox_options['match'] = False
+    netbox_options['match_type'] = 'match'
+    netbox_options['match'] = match
 
 if role:
     netbox_options['role'] = role
@@ -212,23 +212,7 @@ except:
 
 
 #######
-print("estoy aqui")
-if match != 'all':
-    netresult = netbox.search(
-        match_type='match',
-        match=match,
-        parent=parent,
-        search=search
-    )
-    print("estoy aqui1")
-else:
-    print("match: all")    
-    netresult = netbox.search(
-        match_type='all',
-        match=match,
-        parent=parent,
-        search=search
-    )
+netresult = netbox.search(**netbox_options)
 
 
 ####################
