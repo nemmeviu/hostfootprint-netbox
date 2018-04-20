@@ -4,9 +4,7 @@
 # execute nmap on this networks
 # save the result on elasticsearch DB
 #
-from netboxapi import NetboxAPI
-
-from elasticsearch import Elasticsearch
+from netboxapi import NetboxAPI, ElsSaveMap
 
 from multiprocessing import Manager
 from multiprocessing.pool import ThreadPool
@@ -16,255 +14,14 @@ import argparse, sys, os, ipaddress, nmap, datetime
 from datetime import time as timeee
 import time
 
+es_lock = Lock()
 
+## ELASTICSEARCH index
 d = datetime.date.today()
 index = os.getenv('ES_INDEX', 'nmap')
 index_type = os.getenv('ES_INDEX_TYPE', 'nmap')
 index = index + '-' + d.strftime('%m%Y')
-es_lock = Lock()
 
-mapping = {
-    "settings" : {
-        "number_of_shards" : 5,
-        "number_of_replicas" : 1,
-    },
-    "mappings": {
-        index_type:{
-            "properties": {
-                "g_last_mod_date": {
-	            "type": "date",
-	            "format": "epoch_millis"
-                },
-                "g_country": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "g_flag": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "g_businessunit": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "g_application": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "g_kpi": {
-	            "type": "boolean"
-                },
-                "g_critical": {
-	            "type": "boolean"	    
-                },
-                "situation": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "physical_address": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "city": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "geo_location": {
-	            "type": "geo_point"
-                },
-	        "local_desc": {
-	            "index": "true", 
-                    "type": "keyword"
-                },
-                "map_type": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "local_id": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-	        "local_address": {
-	            "index": "true", 
-                    "type": "keyword"
-                },
-                "sites": {
-	            "type": "integer"
-                },
-                "network": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "role": {
-                    "index": "true", 
-                    "type": "keyword"
-                },
-                "ip": {
-                    "type": "ip"
-                },
-	        "hostname": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "parsed": {
-                    "type": "short"
-	        },
-	        "exit_code": {
-                    "type": "short"
-	        },
-	        "Caption": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },	    
-	        "FreePhysicalMemory": {
-	            "type": "long"
-	        },
-	        "TotalPhysicalMemory": {
-	            "type": "long"
-	        },
-	        "Model": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "CurrentTimeZone": {
-	            "type": "short"
-	        },
-	        "DaylightInEffect": {
-	            "type": "boolean"
-	        },
-	        "EnableDaylightSavingsTime": {
-	            "type": "boolean"
-	        },
-	        "NumberOfLogicalProcessors": {
-	            "type": "short"
-	        },
-	        "NumberOfProcessors": {
-	            "type": "short"
-	        },
-	        "ProcFamily": {
-	            "type": "short"
-	        },
-	        "ProcLoadPercentage": {
-	            "type": "short"
-	        },
-	        "ThermalState": {
-	            "type": "short"
-	        },
-	        "Vendor": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "err": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "ProcManufacturer": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "ProcName": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "Status": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "SystemType": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "IdentifyingNumber": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "LoadPercentage": {
-	            "type": "short"
-	        },
-	        "Manufacturer": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "Name": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "CSName": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "LastBootUpTime": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "ServicePackMajorVersion": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "HotFixID": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "OSArchitecture": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "Product": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "SerialNumber": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "UUID": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "UserName": {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "Version" : {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "Name_AV" : {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "Version_AV" : {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-	        "HotFixID" : {
-	            "index": "true", 
-                    "type": "keyword"
-	        },
-                "DHCPServer": {
-                    "index": "true", 
-                    "type": "keyword"
-	        },
-                "IPAddress": {
-                    "index": "true", 
-                    "type": "keyword"
-	        },
-                "MACAddress": {
-                    "index": "true", 
-                    "type": "keyword"
-	        },
-                "ServiceName": {
-                    "index": "true", 
-                    "type": "keyword"
-	        }
-            }
-        }
-    }
-}
-
-
-
-## ELASTICSEARCH index
 NMAPPROCS=int(os.getenv('NMAPPROCS', '20'))
 HOSTSPROCS=int(os.getenv('HOSTSPROCS', '20'))
 # windows = 'windows'
@@ -287,6 +44,7 @@ def get_nets_and_clear():
     return(result)
 
 def print_host(host_args):
+    print(' save on elasticsearch ' )
     es.es_save( *host_args )
 
 def do_print():
@@ -306,7 +64,7 @@ class CreateSubNetworks(object):
     def __init__(self):
         pass
     def make_subnetworks(self, network_object):
-        print('loading network: %s' % network_object['prefix'])                        
+        print('loading network: %s' % network_object['prefix'])
         try:
             ip_net = ipaddress.ip_network(network_object['prefix'])
         except:
@@ -317,133 +75,6 @@ class CreateSubNetworks(object):
         except:
             sub_net = [ ip_net ]
         return( [ ip_net ])
-
-class ElsSaveMap(object):
-    def __init__(self, index, index_type): 
-        '''
-        init global variables
-        pass host to elasticsearch connect
-        '''
-        self.client = Elasticsearch(
-            hosts=[ os.getenv('ES_SERVER', '127.0.0.1') ]
-        )
-
-        self.index = index
-        self.doc_type = index_type
-
-        try:
-            self.client.search(index=self.index)
-        except:
-            print('creating...')
-            self.client.indices.create(index=self.index, ignore=400, body=mapping)
-
-    def check_time(self):
-        ''' sub_net = ip_net.subnets(new_prefix=24)
-        import datetimeist(sub_net)
-        20:00 - 06:00 = ip-20-06
-        06:00 - 20:00 = ip-06-20
-        return( [ ip_net ])
-        return('xx-xx')
-        '''
-
-        datenow = datetime.datetime.now()
-        timenow = datenow.time()
-
-        start = timeee(6, 0, 0)
-        end = timeee(20, 0, 0)
-
-        timestr = datenow.strftime("%y%m%d")
-
-        if timenow >= start and timenow < end:
-            return(timestr + '-06-20')
-        else:
-            return(timestr + '-20-06')
-
-    def es_save(self, map_type, host, n_object):
-        #"g_businessunit":
-        #"g_flag": "goncalves-house",
-        #"local_address": "Pasaje Los Guindos 9227 - La Florida",
-        #"location": "goncalves-house",
-        #"prefix": "192.168.1.0/24",
-        #"status": 0
-
-        attribute = {}
-
-        attribute['g_kpi'] = False
-        attribute['g_critical'] = False
-        try:
-            attribute['map_type'] = map_type
-        except:
-            pass
-        try:
-            attribute['ip'] = host
-        except:
-            pass
-        try:
-            attribute['role'] = n_object['role']
-        except:
-            pass
-        try:
-            attribute['network'] = n_object['prefix']
-        except:
-            pass
-        try:
-            attribute['g_country'] = n_object['g_country']
-        except:
-            pass
-        try:
-            attribute['g_flag'] = n_object['g_flag']
-        except:
-            pass
-        try:            
-            attribute['g_businessunit'] = n_object['g_businessunit']
-        except:
-            pass
-        try:
-            attribute['local_id'] = n_object['local_id']
-        except:
-            pass
-        try:
-            attribute['physical_address'] = n_object['physical_address']
-        except:
-            pass
-        try:
-            attribute['local_desc'] = n_object['comments']
-        except:
-            pass
-        
-        try:
-            attribute['geo_location'] = {
-                'lat': n_object['custom_fields']['latitud'],
-                'lon': n_object['custom_fields']['latitud']
-            }
-        except:
-            pass
-
-        normalize = ''.join(c.lower() for c in host if not c.isspace())
-        today = datetime.date.today().strftime("%m%d%Y")
-
-        data = datetime.datetime.now()
-        date_els = int( data.timestamp() * 1000 )
-
-        attribute['g_last_mod_date'] = date_els
-
-        # old 1['finalizar'] = False
-        #_id=(normalize + '-' + today)
-        # old 2o['force'] = options['force']
-        #_id=(normalize + '-' + str(date_els))
-
-        _id=(normalize + '-' + self.check_time())
-
-        try:
-            response = self.client.index(
-                index=self.index,
-                id=_id,
-                doc_type=self.doc_type,
-                body=attribute
-            )
-        except:
-            print('fail in _id: %s' % _id )
 
 # nmap
 def scan_net( subnet_object ):
@@ -485,7 +116,6 @@ def scan_net( subnet_object ):
                 )
 
 def pipeline(n_list):
-
     shared_info['finalizar'] = False
     shared_info['sync'] = sync
     #shared_info['force'] = options['force']
@@ -632,6 +262,7 @@ if match:
     netbox_options['match'] = match
 else:
     netbox_options['match_type'] = 'all'
+    netbox_options['match'] = False
 
 if role:
     netbox_options['role'] = role
@@ -645,6 +276,14 @@ try:
         sync = False
 except:
     sync = False
+
+
+####################
+### if !sites and db here ... sys.exit(0)
+if netbox_options['search'] != 'site' and output == 'db':
+    print('''\nWarning ...
+    Only search:site can be sended to elasticsearch, try output screen.''')
+    sys.exit(0)
     
 es = ElsSaveMap(index, index_type)
 netbox.search(**netbox_options)

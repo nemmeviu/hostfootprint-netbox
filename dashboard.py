@@ -2,6 +2,7 @@
 from netboxapi import NetboxAPI
 import argparse
 
+
 parser = argparse.ArgumentParser(
     description='Netbox API -> pynmap -> elasticsearch',
     epilog='View sites without load information. Send the resume to elasticserch'
@@ -16,34 +17,34 @@ parser.add_argument(
 parser.add_argument(
     '--search',
     dest='search',
-    default='sites',
+    default='site',
     help='search: --search sites|tenacy|regions. Default is "sites"'
 )
 #
 parser.add_argument(
     '--tenantgroup',
     dest='tenantgroup',
-    help='''Tenant group: --tenantgroup super-marketing'''
+    help='Tenant group: --tenantgroup super-marketing'
 )
 #
 parser.add_argument(
     '--tenant',
     dest='tenant',
     nargs='*',
-    help='''Tenant with spaces: --tenant jumbo'''
+    help='Tenant with spaces: --tenant jumbo'
 )
 #
 parser.add_argument(
     '--output',
     dest='output',
     required=True,
-    help='''output: screen or db'''
+    help='output: screen or db'
 )
 #
 parser.add_argument(
     '--match',
     dest='match',
-    default=False,
+    default='all',
     help='Find and Print'
 )
 #
@@ -92,9 +93,11 @@ es_port = args.es_port
 
 netbox = NetboxAPI()
 netbox.conn(host, port)
-if match:
-    netbox.search(match_type='match', match=match, parent=parent, search=search)
+if match != 'all':
+    netresult = netbox.search(match_type='match', match=match, parent=parent, search=search)
 else:
-    netbox.search(match_type='all', match=match, parent=parent, search=search)
-    
-netbox.save_dashboard(output, es_server, es_port)
+    netresult = netbox.search(match_type='all', match=match, parent=parent, search=search)
+print(netresult)    
+
+#es = ElsSaveMap(index, index_type)    
+#es.save_dashboard(output, es_server, es_port)

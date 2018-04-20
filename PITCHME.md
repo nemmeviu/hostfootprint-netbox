@@ -1,14 +1,3 @@
-
-# INTRODUCCIÓN
-
-++
-
-#### Introducción - contexto
-
-Una compañia busca implementar las metodologias de desarrollo con el fin de automatizar procesos hasta lograr en realizar una gran tranformación digital.
-
-Para apoyar estos procesos la compañia adquirio uno de los mejores softwares ya creados.
-
 ++
 
 #### Introducción - contexto
@@ -36,7 +25,7 @@ El software que tiene que garantizar el flujo automatizado, y que debe ser imple
 
 ++
 
-#### Introducción - Pregunta final
+#### Introducción - Pregunta Final
 
 Sín la información principal el software tiene como ser implementado con éxito?
 
@@ -176,4 +165,3 @@ dolor de cabeza seran aliados de nuestro día a día.
 * buena interface web |
 * open source y con gran cantidad de seguidores/desarrolladores |
 
-###### [try netbox in cencosud](http://netbox.cencosud.corp)

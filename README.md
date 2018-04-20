@@ -1,8 +1,14 @@
-# hostfootprint-netbox
+hostfootprint-netbox
+======================
 
-Map networks based on Netbox IPAM Project.
+* Map networks based on Netbox IPAM Project. 
+* Generate one dashboard with netbox register information
 
-Usage:
+Basicaly search for tenants or sites inside netbox and get all prefixes.
+
+Execute on clean nmap on the networks, and send the result to elasticsearch db.
+
+Installation:
 ```
 $ pip3 install -r requirements.txt
 $ python3
@@ -12,6 +18,49 @@ $ python3
 'v0.1'
 >>> exit()
 ```
+
+#### usage
+```
+$ ./getnetboxdata.py  -h
+usage: getnetboxdata.py [-h] --host HOST --port PORT --type TYPE --output OUTPUT
+                        [--role ROLE] [--parent PARENT] [--country COUNTRY]
+                        [--tenant [TENANT [TENANT ...]]]
+                        [--tenantgroup TENANTGROUP] --search SEARCH
+                        [--match MATCH] [--esserver ES_SERVER] [--esport ES_PORT]
+
+Map networks based on Netbox IPAM Project. Generate one dashboard with netbox
+register information. Use elasticsearch in all modes
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --host HOST, -H HOST  The netbox url. Ex: netbox.domain.com
+  --port PORT, -p PORT  ex: 80
+  --type TYPE, -t TYPE  values: dashboard|prefix
+  --output OUTPUT, -o OUTPUT
+                        output: screen or db
+  --role ROLE, -r ROLE  VLAN/Prefix Roles
+  --parent PARENT, -P PARENT
+                        parent: --parent tenent
+  --country COUNTRY, -C COUNTRY
+                        Country: --country China
+  --tenant [TENANT [TENANT ...]], -T [TENANT [TENANT ...]]
+                        tenant with spaces: --tenant jumbo
+  --tenantgroup TENANTGROUP, -tg TENANTGROUP
+                        tenant group: --tenantgroup super-marketing
+  --search SEARCH, -s SEARCH
+                        search: --search sites|tenacy|regions
+  --match MATCH, -m MATCH
+                        Find and Print
+  --esserver ES_SERVER, -es ES_SERVER
+                        elasticsearch_server
+  --esport ES_PORT, -ep ES_PORT
+                        elasticsearch_port
+
+Making inventory about your network!
+```
+
+### required argparses
+
 * ti (tenent)
 * sites (type of search)
 * tenant (type of parent)
@@ -40,7 +89,6 @@ Difference
 | HOSTSPROCS    | 2              | Number of simultaneos wmic procs       |
 | SYNC          | 1              | multiprocessing active or not: 1 or 0  |
 
-#### usage
 
 ##### dashboard
 
@@ -49,9 +97,16 @@ Save all tenants totals counts
 ./dashboard.py --parent tenant --search tenant --output db --host netbox.corp --port 8008
 ```
 
-##### hostfootprint
+#### hostfootprint
 
-Get all tenants
+##### Get all tenants
+
+Get all tenants on screen
+```
+./getnetworks.py --parent tenant --search tenant --output screen --host netbox.localhost.corp --port 80
+```
+
+Send all sites on of some tenant to database
 ```
 ./getnetworks.py --parent tenant --search tenant --output screen \n
   --host netbox.localhost.corp --port 80 
@@ -72,3 +127,9 @@ Save prefixes in elasticsearch
 ```
 ./getnetworks.py  --parent tenant --search site --output db  --host netbox.company.corp --port 80 --match flag_name --role site-summarized
 ```
+
+
+* fix search command line - ok
+* fix dashboard netbox - ok
+* fix g_country - ok
+* activar el mapeo
