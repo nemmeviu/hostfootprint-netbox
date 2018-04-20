@@ -46,6 +46,22 @@ class ElsSaveMap(object):
                             },
                             "total_prefix": {
                                 "type": "integer"
+                            },
+                            "contact_email": {
+                                "index": "true",
+                                "type": "keyword"
+                            },
+                            "contact_name": {
+                                "index": "true",
+                                "type": "keyword"
+                            },
+                            "sdm_name": {
+                                "index": "true",
+                                "type": "keyword"
+                            },
+                            "slug": {
+                                "index": "true",
+                                "type": "keyword"
                             }
                         }
                     }
@@ -426,26 +442,22 @@ class ElsSaveMap(object):
         screen or db
         '''
 
-        for es_obj in n:
+        for es_obj in n['tenant_list']:
             _id = es_obj['g_flag']                
-            self.client.index(index=self.index, doc_type=self.doc_type, id=_id, body=es_obj)
-
-# attribute = {
-#     'map_type': '',
-#     'ip': '',
-#     'network': prefix,
-#     'country': (esta en el parent),
-#     'city': site.region.name,
-#     'businessunit': netobject.local.flag.businessunit.businessunit,
-#     'flag': site.tenant.name,
-#     'local_id': netobject.local.local_id,
-#     'local_address': netobject.local.local_address,
-#     'local_desc': netobject.local.local_desc,
-#     'geo_point': {
-#         'lat': netobject.local.lat,
-#         'lon': netobject.local.lon
-#     }
-# }
+            self.client.index(
+                index=self.index,
+                doc_type=self.doc_type,
+                id=_id,
+                body=es_obj
+            )
+        for cau_obj in n['cau_list']:
+            _id = cau_obj['slug']
+            self.client.index(
+                index=self.index,
+                doc_type=self.doc_type,
+                id=_id,
+                body=cau_obj
+            )
 
 class NetboxAPI(object):
     '''
@@ -584,7 +596,7 @@ class NetboxAPI(object):
         get list of prefixes inside object
         '''
         apiurl = self.make_nb_url('prefix', 'match', 'prefix')
-        print(apiurl)
+        #print(apiurl)
         if 'results' in self.match_result.keys():
             for slug in self.match_result['results']:
                 if role:
@@ -675,14 +687,14 @@ class NetboxAPI(object):
     
     def output(self):
         if self.search_type == 'prefix':
-            self.output_prefix(output)
+            self.output_prefix()
         if self.search_type == 'dashboard':
             return(self.output_dashboard())
             
 
     def output_dashboard(self):
 
-        cau_result = []
+        cau_list = []
         tenant_list = []
         for tenant in self.match_result['results']:
             tenant_obj = {
@@ -699,10 +711,11 @@ class NetboxAPI(object):
                     tenant_obj['total_cau'] = \
                     tenant_obj['total_cau'] + 1
                     try:
-                        cau_result.append(
+                        cau_list.append(
                             { 'contact_email': site['contact_email'],
                               'contact_name': site['contact_name'],
-                              'sdm_name': site['custom_fields']['sdm_name']
+                              'sdm_name': site['custom_fields']['sdm_name'],
+                              'slug' : site['slug'],
                             }
                         )
                     except:
@@ -713,14 +726,16 @@ class NetboxAPI(object):
                 
                 tenant_obj['total_devices'] = \
                 tenant_obj['total_devices'] + site['count_devices']
-                
             tenant_list.append(tenant_obj)
 
 
-        return(tenant_list)
+        return({
+            'tenant_list': tenant_list,
+            'cau_list': cau_list
+        })
         #print(json.dumps(self.match_result, indent=4, sort_keys=True))
 
-    def output_prefix(self, output): #REAL
+    def output_prefix(self): #REAL
         '''
         make the output:
         screen or db
@@ -730,9 +745,9 @@ class NetboxAPI(object):
         prefixcontrol = []     
         for nb_obj in self.match_result['results']:
             nmap_object = {}                
-            print(nb_obj)
-            print(nb_obj.keys())
-            print(nb_obj['name'])
+            #print(nb_obj)
+            #print(nb_obj.keys())
+            #print(nb_obj['name'])
             nmap_object['g_flag'] = nb_obj['tenant']['name']
             nmap_object['local_id'] = nb_obj['name']
 
@@ -784,19 +799,20 @@ class NetboxAPI(object):
                         prefix_obj = dict(nmap_object)
                         prefix_obj['prefix'] = prefixtmp['prefix']
                         prefix_obj['role'] = prefixtmp['role']['name']
-                        nmap_list.append(prefix_obj)                        
+                        nmap_list.append(prefix_obj)
+                        print(prefix_obj)
             except:
                 prefix_obj['status'] = 1
                 print('fora')
                 # controle ... dashboard
                 
                 #print(nmap_list)
-                #print(json.dumps(prefix_obj, indent=4, sort_keys=True))
-        if output == 'screen':
-            print(json.dumps(nmap_list, indent=4, sort_keys=True))
-        if output == 'db':
-            return(nmap_list)
-        #print('elasticsearch save :)')
+            #print(prefixtmp)
+            #print(json.dumps(nmap_object, indent=4, sort_keys=True))
+            #print(json.dumps(prefix_obj, indent=4, sort_keys=True))            
+
+        return(nmap_list)
+        
 
 
     def json_import(self, nb_obj):
@@ -810,122 +826,4 @@ class NetboxAPI(object):
             print('fail to get data from this object')
             print(nb_obj)
             sys.exit(2)
-
-    # def get_nb_api(self, nb_target, identify):
-    #     '''
-    #     Make the api request
-    #     '''
-    #     nb_target = self.nb_api['prefix'][nb_target] + identify + '?limit=4000'
-    #     print(nb_target)
-
-    #     try:
-    #         nb_result = self.http.request('GET', nb_target)
-    #         print(nb_result.data)
-    #     except:
-    #         print('Fail to connect on: ' + nb_target)
-    #         sys.exit(2)
-
-    #     if nb_result.status == 200:
-    #         return(self.json_import(nb_result))
-
-    # def get_countries(self):
-
-    #     try:
-    #         rirs = self.get_nb_api('rir', '?name=' + self.country)
-    #     except:
-    #         rirs = self.get_nb_api('rir', '')            
-
-    #     self.netbox_obj = rirs
-    #     #return(rirs)
-
-    #     #all_agreggates = self.get_nb_api('rir')
-
-    #     #for agreggate in all_agreggates['results']:
-    #     #    country = {
-    #     #        'network': agreggate['prefix'],
-    #     #        'country': agreggate['rir']['name']
-    #     #    }
-    #     #    list_country.append(country)
-    #     #return list_country
-
-    # def parse_prefixes(self):
-        
-    #     #countries = self.get_countries()
-    #     networks = []
-    #     #network_valid = []
-    #     #network_invalid = []
-
-    #     for country in countries:
-    #         network = country['network']
-    #         network = network.replace('/','%2F')
-
-    #         # need FIX - no get inside loop
-    #         prefixes_by_country = self.get_nb_api('prefix', network)
-
-    #         for prefix in prefixes_by_country['results']:
-    #             # print(json.dumps(prefix, indent=4, sort_keys=True))
-    #             try:
-    #                 site_id = prefix['site']['id']
-
-    #                 # need FIX - get inside loop, inside loop - bad!!!
-    #                 site = self.get_nb_api('site', str(site_id))
-    #                 #
-    #                 site_address = site['physical_address']
-    #                 site_city = site['region']['name']
-    #                 tenant_id = site['tenant']['id']
-
-    #                 # need FIX - get inside loop, inside loop - bad!!!
-    #                 tenant = self.get_nb_api('tenant', str(tenant_id))
-    #                 #
-    #                 flag = tenant['name']
-    #                 businessunit = tenant['group']['name']
-
-    #                 # validate region
-    #                 region_id = site['region']['id']
-    #                 region = self.get_nb_api('regions', str(region_id))
-    #                 site_country = region['parent']['name']
-
-    #                 parsed = {
-    #                     'country' : country['country'],
-    #                     'network' : prefix['prefix'],
-    #                     'site_name' : prefix['site']['name'],
-    #                     'site_id' : site_id,
-    #                     'site_address': site_address,
-    #                     'site_city': site_city,
-    #                     'flag': flag,
-    #                     'businessunit':businessunit,
-    #                 }
-
-    #                 if prefix['vlan'] is not None:
-    #                     parsed['vlan_id'] = prefix['vlan']['vid']
-    #                     parsed['vlan_name'] = prefix['vlan']['name']
-                    
-    #                 #if country['country'] == site_country:
-    #                 #    network_valid.append(parsed)
-    #                 #else:
-    #                 #    network_invalid.append(parsed)
-    #                 network.append(parsed)                    
-    #             except:
-    #                 pass
-
-    #     return(network)
-    #     print(json.dumps(network, indent=4, sort_keys=True))
-    #     #print(json.dumps(network_valid, indent=4, sort_keys=True))
-    #     #print('===============================')            
-    #     #print(json.dumps(network_invalid, indent=4, sort_keys=True))
-
-    # def base_scan(self, prefix, sites):
-    #     print(len(prefix))
-    #     print(len(sites))        
-    #     #print(prefix)
-    #     #for x in prefix:
-    #     #    if x['site'] is not None:
-    #     #        print(x['site'])
-    #     #        print('looping 1')
-    #     #        for k in sites:
-    #     #            if x['site']['name'] == k['name']:
-    #     #                print(k['id'])
-    #     #                print(x['site']['id'])
-    #        #print(sites['id'][x['sites']['id']])
-    #     #pass
 

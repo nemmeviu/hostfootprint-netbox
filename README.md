@@ -129,6 +129,6 @@ Save prefixes in elasticsearch
 ```
 
 
-* fix search command line
-* fix dashboard netbox
+* fix search command line - ok
+* fix dashboard netbox - ok
 * fix g_country
