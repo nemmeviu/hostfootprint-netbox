@@ -212,8 +212,8 @@ except:
 
 
 #######
-netresult = netbox.search(**netbox_options)
-
+netbox.search(**netbox_options)
+netbox.output(output)
 
 ####################
 # db output

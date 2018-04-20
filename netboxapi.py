@@ -95,6 +95,9 @@ class ElsSaveMap(object):
                             "g_critical": {
 	                        "type": "boolean"
                             },
+                            "g_sox": {
+	                        "type": "boolean"
+                            },
                             "situation": {
                                 "index": "true", 
                                 "type": "keyword"
@@ -648,7 +651,7 @@ class NetboxAPI(object):
         '''
         print('search: %s' % kwargs['search'])
         self.search_string = kwargs['search']
-        
+        self.search_type = kwargs['search_type']
         self.match_type = kwargs['match_type']
 
         ## principal object!!
@@ -666,18 +669,9 @@ class NetboxAPI(object):
             self.get_prefix_from_search()
             #else:
 
-        if kwargs['search_type'] == 'dashboard':
+        if self.search_type == 'dashboard':
             self.get_sites_from_search()
         
-        print(
-            json.dumps(
-                self.match_result,
-                indent=4,
-                sort_keys=True
-            )
-        )
-            
-
         
         try:
             # tenant if tenant
@@ -696,134 +690,114 @@ class NetboxAPI(object):
             print(sys.exit(2))
 
         return(self.g_nb)
+    
+    def output(self, output):
+        if self.search_type == 'prefix':
+            self.output_prefix(output)
+        if self.search_type == 'dashboard':
+            self.output_dashboard(output)
 
+    def output_dashboard(self, output):
+
+        total_prefix = 0
+        total_devices = 0
+        total_cau = 0        
+        
+        print(self.match_result['count'])
+        print(self.match_result.keys())
+        for bla in self.match_result['results'][0]['sites']['results']:
+            if bla['custom_fields']['sdm-mail'] == True:
+                total_cau = total_cau + 1
+                print(bla['custom_fields']['sdm_name'])
+            total_prefix = total_prefix + bla['count_prefixes']
+            total_devices = total_devices + bla['count_devices']
+            
+        #print(self.match_result['prefixes']['count'])
+        #print(self.match_result.keys())
+        print(' total prefixes is %d ' % total_prefix)
+        print(' total devices is %d ' % total_devices)
+        print(' total cau is %d ' % total_cau)
+        
+        #print(json.dumps(self.match_result, indent=4, sort_keys=True))
 
     def output_prefix(self, output): #REAL
         '''
         make the output:
         screen or db
         '''
+        '''prepair object to nmap process'''
+        nmap_list = []
+        prefixcontrol = []     
+        for nb_obj in self.match_result['results']:
+            nmap_object = {}                
+            print(nb_obj)
+            print(nb_obj.keys())
+            print(nb_obj['name'])
+            nmap_object['g_flag'] = nb_obj['tenant']['name']
+            nmap_object['local_id'] = nb_obj['name']
+
+            try:
+                nmap_object['geo_location'] = {
+                    'lat': nb_obj['custom_fields']['latitud'],
+                    'lon': nb_obj['custom_fields']['longitud']
+                }
+            except:
+                pass
+
+            try:
+                nmap_object['situation'] = nb_obj['custon_fields']['situation']
+            except:
+                pass
+                
+            try:
+                nmap_object['physical_address'] = nb_obj['physical_address']
+            except:
+                pass
+            try:
+                nmap_object['city'] = nb_obj['region']['name']
+            except:
+                pass
+            
+            nmap_object['g_businessunit'] = self.g_nb['tenant']
+            
+            # get country ...
+            # inside loop because the country can change
+            try:
+                if nmap_object['city'] not in self.g_nb['country'].keys():
+                    country = self.make_nb_url('tenant', 'match', 'regions')
+                    country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 100)
+                    country = self.http.request('GET', country)
+                    country = self.json_import(country)
+                    print(country)
+                    country = country['results'][0]['parent']['name']
+                    self.g_nb['country'][nmap_object['city']] = country
+                    nmap_object['g_country'] = country
+            except:
+                pass
+                
+
+            try:
+                for prefixtmp in nb_obj['prefix']['results']:
+                    if prefixtmp['prefix'] not in prefixcontrol:
+                        #print('new prefix control: %s' % prefixtmp['prefix'])
+                        prefixcontrol.append(prefixtmp['prefix'])
+                        prefix_obj = dict(nmap_object)
+                        prefix_obj['prefix'] = prefixtmp['prefix']
+                        prefix_obj['role'] = prefixtmp['role']['name']
+                        nmap_list.append(prefix_obj)                        
+            except:
+                prefix_obj['status'] = 1
+                print('fora')
+                # controle ... dashboard
+                
+                #print(nmap_list)
+                #print(json.dumps(prefix_obj, indent=4, sort_keys=True))
         if output == 'screen':
-            print(json.dumps(self.match_result, indent=4, sort_keys=True))
+            print(json.dumps(nmap_list, indent=4, sort_keys=True))
         if output == 'db':
-            '''prepair object to nmap process'''
-            nmap_list = []
-            prefixcontrol = []     
-            for nb_obj in self.match_result['results']:
-                nmap_object = {}                
-                print(nb_obj)
-                print(nb_obj.keys())
-                print(nb_obj['name'])
-                nmap_object['g_flag'] = nb_obj['tenant']['name']
-                nmap_object['local_id'] = nb_obj['name']
-
-                try:
-                    nmap_object['situation'] = nb_obj['custon_fields']['situation']
-                except:
-                    pass
-                
-                try:
-                    nmap_object['physical_address'] = nb_obj['physical_address']
-                except:
-                    pass
-                try:
-                    nmap_object['city'] = nb_obj['region']['name']
-                except:
-                    pass
-                
-                nmap_object['g_businessunit'] = self.g_nb['tenant']
-
-                # get country ...
-                # inside loop because the country can change
-                try:
-                    if nmap_object['city'] not in self.g_nb['country'].keys():
-                        country = self.make_nb_url('tenant', 'match', 'regions')
-                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 100)
-                        country = self.http.request('GET', country)
-                        country = self.json_import(country)
-                        print(country)
-                        country = country['results'][0]['parent']['name']
-                        #self.g_nb['country'][nmap_object['city']] = country
-                        nmap_object['g_country'] = country
-                except:
-                    pass
-                
-
-                try:
-                    for prefixtmp in nb_obj['prefix']['results']:
-                        if prefixtmp['prefix'] not in prefixcontrol:
-                            #print('new prefix control: %s' % prefixtmp['prefix'])
-                            prefixcontrol.append(prefixtmp['prefix'])
-                            prefix_obj = dict(nmap_object)
-                            prefix_obj['prefix'] = prefixtmp['prefix']
-                            prefix_obj['role'] = prefixtmp['role']['name']
-                            nmap_list.append(prefix_obj)                        
-                except:
-                    prefix_obj['status'] = 1
-                    print('fora')
-                    # controle ... dashboard
-
-                    #print(nmap_list)
-                    #print(json.dumps(prefix_obj, indent=4, sort_keys=True))
-                
             return(nmap_list)
         #print('elasticsearch save :)')
 
-    def output_prefix(self, output):
-        '''
-        make the output:
-        screen or db
-        '''
-
-        if output == 'screen':
-            print(json.dumps(self.match_result, indent=4, sort_keys=True))
-        if output == 'db':
-            ''' prepair object to nmap process '''
-            nmap_object = {}
-            for nb_obj in self.match_result['results']:
-                
-                nmap_object['g_flag'] = nb_obj['name']
-                nmap_object['location'] = nb_obj['name']
-
-                try:
-                    nmap_object['geo_location'] 
-                    nmap_object['geo_location'] = {
-                        'lat': nb_obj['custom_fields']['latitud'],
-                        'lon': nb_obj['custom_fields']['longitud']
-                    }
-                except:
-                    pass
-                
-                try:
-                    nmap_object['location'] = nb_obj['custom_fields']
-                except:
-                    pass
-                try:
-                    nmap_object['local_address'] = nb_obj['physical_address']
-                except:
-                    pass
-                try:
-                    nmap_object['city'] = nb_obj['region']['name']
-                except:
-                    pass
-                nmap_object['g_businessunit'] = self.g_nb['tenant']
-
-                try:
-                    # get country ...
-                    # inside loop because the country can change
-                    if nmap_object['city'] not in self.g_nb['country'].keys():
-                        country = self.make_nb_url('tenant', 'regions')
-                        country = '%s%s&limit=%s' % (country, nb_obj['region']['slug'], 1)
-                        country = self.http.request('GET', country)
-                        country = self.json_import(country)
-                        country = country['results'][0]['parent']['name']
-                        self.g_nb['country'][nmap_object['city']] = country
-                        nmap_object['g_country'] = country
-                except:
-                    pass
-
-                print(json.dumps(nmap_object, indent=4, sort_keys=True))
-            print('elasticsearch save :)')
 
     def json_import(self, nb_obj):
         '''
