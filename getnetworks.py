@@ -288,5 +288,4 @@ es = ElsSaveMap(index, index_type)
 netbox.search(**netbox_options)
 n_list = netbox.output(output)
 if output != 'screen':
-
     pipeline(n_list)

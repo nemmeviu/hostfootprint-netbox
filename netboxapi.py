@@ -623,10 +623,14 @@ class NetboxAPI(object):
         get list of prefixes inside object
         '''
         apiurl = self.make_nb_url('tenant', 'match', 'site')
+        print(apiurl)
         if 'results' in self.match_result.keys():
+            print("estoy aca")
             results = self.match_result['results']
             for slug in results:
+                print(slug["name"])
                 nb_prefix = '%s%s&limit=%s' % (apiurl, slug['slug'], limit)
+                print(nb_prefix)
                 nb_result = self.http.request('GET', nb_prefix)
                 prefix = self.json_import(nb_result)
                 slug['sites'] = prefix
@@ -655,23 +659,25 @@ class NetboxAPI(object):
             kwargs['search'],
         )
 
-        if kwargs['search_type'] != 'dashboard':
-            
-            # add prefix inside sites objects
-            if 'role' in kwargs.keys():
-                self.get_prefix_from_search(role=kwargs['role'])
-            else:
-                self.get_prefix_from_search()
+        # add prefix inside sites objects
+        if 'role' in kwargs.keys():
+            self.get_prefix_from_search(role=kwargs['role'])
         else:
-            print(
-                json.dumps(
-                    self.match_result['results'][4],
-                    indent=4,
-                    sort_keys=True
-                )
+            self.get_prefix_from_search()
+            #else:
+
+        if kwargs['search_type'] == 'dashboard':
+            self.get_sites_from_search()
+        
+        print(
+            json.dumps(
+                self.match_result,
+                indent=4,
+                sort_keys=True
             )
+        )
             
-        #self.get_sites_from_search()
+
         
         try:
             # tenant if tenant
@@ -692,7 +698,7 @@ class NetboxAPI(object):
         return(self.g_nb)
 
 
-    def output(self, output):
+    def output_prefix(self, output): #REAL
         '''
         make the output:
         screen or db
