@@ -24,8 +24,9 @@ es = ElsSaveMap(index, index)
 ## ELASTICSEARCH index
 NMAPPROCS=int(os.getenv('NMAPPROCS'))
 HOSTSPROCS=int(os.getenv('HOSTSPROCS'))
-# windows = 'windows'
-# linux = 'linux'
+
+UNIX_MAP_TYPE = os.getenv('UNIX_MAP_TYPE', 'unix')
+WINTEL_MAP_TYPE = os.getenv('WINTEL_MAP_TYPE', 'wintel')
 
 def syncronic():
     return shared_info['sync']
@@ -91,11 +92,11 @@ def scan_net( subnet_object ):
         except:
             if nm[host].has_tcp(445) is True:
                 hosts_shared_lists.append(
-                    ('windows', host, subnet_object['netobject'])
+                    (WINTEL_MAP_TYPE, host, subnet_object['netobject'])
                 )
             if nm[host].has_tcp(22) is True:
                 hosts_shared_lists.append(
-                   ('linux', host, subnet_object['netobject'])
+                   (UNIX_MAP_TYPE, host, subnet_object['netobject'])
                 )
 
 def main(options):
