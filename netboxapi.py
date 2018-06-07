@@ -322,6 +322,74 @@ class ElsSaveMap(object):
                             "ServiceName": {
                                 "index": "true", 
                                 "type": "keyword"
+	                    },
+                            "CurrentTimeZoneUnix": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "IP": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "arquitectura_version": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "banner": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "cores": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "cores_count": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "distribucion": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "distribucion_version": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "intefaces_red": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "kernel": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "memoria": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "memoria_swap": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "procesador": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "python": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "sistema": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "ssh_PYversion": {
+                                "index": "true", 
+                                "type": "keyword"
+	                    },
+                            "ssh_SOversion": {
+                                "index": "true", 
+                                "type": "keyword"
 	                    }
                         }
                     }
@@ -424,7 +492,7 @@ class ElsSaveMap(object):
         # old 2o['force'] = options['force']
         #_id=(normalize + '-' + str(date_els))
 
-        _id=(normalize + '-' + self.check_time())
+        _id='%s-%s-%s' % (normalize, map_type, self.check_time())
 
         try:
             response = self.client.index(
