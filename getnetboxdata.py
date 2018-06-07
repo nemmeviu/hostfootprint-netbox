@@ -88,11 +88,11 @@ def scan_net( subnet_object ):
         except:
             if nm[host].has_tcp(445) is True:
                 hosts_shared_lists.append(
-                    ('windows', host, subnet_object['netobject'])
+                    ('wintel', host, subnet_object['netobject'])
                 )
             if nm[host].has_tcp(22) is True:
                 hosts_shared_lists.append(
-                   ('linux', host, subnet_object['netobject'])
+                   ('unix', host, subnet_object['netobject'])
                 )
 
 def pipeline(n_list):
