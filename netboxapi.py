@@ -495,12 +495,13 @@ class ElsSaveMap(object):
         _id='%s-%s-%s' % (normalize, map_type, self.check_time())
 
         try:
-            response = self.client.index(
-                index=self.index,
-                id=_id,
-                doc_type=self.doc_type,
-                body=attribute
-            )
+            if not self.client.exists(self.index, doc_type=self.doc_type, id=_id):
+                response = self.client.index(
+                    index=self.index,
+                    id=_id,
+                    doc_type=self.doc_type,
+                    body=attribute
+                )
         except:
             print('fail in _id: %s' % _id )
 
