@@ -424,7 +424,7 @@ class ElsSaveMap(object):
         # old 2o['force'] = options['force']
         #_id=(normalize + '-' + str(date_els))
 
-        _id=(normalize + '-' + self.check_time())
+        _id='%s-%s-%s' % (normalize, map_type, self.check_time())
 
         try:
             response = self.client.index(
