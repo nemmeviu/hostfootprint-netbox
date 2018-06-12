@@ -390,7 +390,11 @@ class ElsSaveMap(object):
                             "ssh_SOversion": {
                                 "index": "true", 
                                 "type": "keyword"
-	                    }
+	                    },
+                            "interfaces_red": {
+                                "index": "true"
+                                "type": "keyword"
+                            }
                         }
                     }
                 }
