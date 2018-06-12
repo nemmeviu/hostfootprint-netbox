@@ -341,11 +341,11 @@ class ElsSaveMap(object):
 	                    },
                             "cores": {
                                 "index": "true", 
-                                "type": "keyword"
+                                "type": "integer"
 	                    },
                             "cores_count": {
                                 "index": "true", 
-                                "type": "keyword"
+                                "type": "integer"
 	                    },
                             "distribucion": {
                                 "index": "true", 
@@ -365,11 +365,11 @@ class ElsSaveMap(object):
 	                    },
                             "memoria": {
                                 "index": "true", 
-                                "type": "keyword"
+                                "type": "integer"
 	                    },
                             "memoria_swap": {
                                 "index": "true", 
-                                "type": "keyword"
+                                "type": "integer"
 	                    },
                             "procesador": {
                                 "index": "true", 
@@ -390,7 +390,11 @@ class ElsSaveMap(object):
                             "ssh_SOversion": {
                                 "index": "true", 
                                 "type": "keyword"
-	                    }
+	                    },
+                            "interfaces_red": {
+                                "index": "true"
+                                "type": "keyword"
+                            }
                         }
                     }
                 }
