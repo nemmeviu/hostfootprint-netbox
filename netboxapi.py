@@ -355,7 +355,7 @@ class ElsSaveMap(object):
                                 "index": "true", 
                                 "type": "keyword"
 	                    },
-                            "intefaces_red": {
+                            "interfaces_red": {
                                 "index": "true", 
                                 "type": "keyword"
 	                    },
@@ -390,11 +390,7 @@ class ElsSaveMap(object):
                             "ssh_SOversion": {
                                 "index": "true", 
                                 "type": "keyword"
-	                    },
-                            "interfaces_red": {
-                                "index": "true"
-                                "type": "keyword"
-                            }
+	                    }
                         }
                     }
                 }
